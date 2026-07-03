@@ -61,6 +61,10 @@ The key is not returned in tool output. `steam_auth_status` only reports whether
 
 Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys are not modified.
 
+## Financial Key Flow
+
+Partner financial tools require `STEAM_FINANCIAL_KEY`, a dedicated Financial API Group key from Steamworks. This key is separate from `STEAM_PUBLISHER_KEY` and is never returned in tool output.
+
 ## OAuth Token Flow
 
 Steam Cloud and some Workshop OAuth APIs require a Steam OAuth client ID issued by Valve. Set `STEAM_OAUTH_CLIENT_ID`, then call `steam_oauth_start` and open the returned `loginUrl`.
@@ -82,6 +86,7 @@ Use `steam_oauth_set_access_token` only when you already obtained a Steam OAuth 
 - `steam_get_game_inventory_history_command_details`, `steam_get_game_inventory_user_history`, and `steam_get_game_inventory_asset_history` require `STEAM_PUBLISHER_KEY`; history command execution and item definition updates are not exposed.
 - `steam_get_inventory_service_inventory`, `steam_get_inventory_item_defs`, `steam_get_inventory_price_sheet`, and `steam_get_inventory_quantity` require `STEAM_PUBLISHER_KEY` with Economy permissions; inventory mutation methods such as add, consume, exchange, consolidate, and modify are not exposed.
 - `steam_get_lobby_data` requires `STEAM_PUBLISHER_KEY`; lobby creation and user removal are not exposed.
+- `steam_financial_get_changed_dates`, `steam_financial_get_detailed_sales`, and `steam_financial_get_app_wishlist_reporting` require `STEAM_FINANCIAL_KEY`; these tools read financial reporting data only.
 - `steam_get_site_license_current_client_connections` and `steam_get_site_license_total_playtime` require `STEAM_PUBLISHER_KEY` for Steam PC Cafe site-license data.
 - `steam_query_workshop_files` and `steam_get_ugc_file_details` require a Web API key; Workshop delete/update/subscribe endpoints are not exposed.
 - `steam_get_owned_games` can use `appidsFilter` to restrict a library query to specific Steam appids.

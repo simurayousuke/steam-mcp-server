@@ -133,6 +133,12 @@
 
 - `steam_get_lobby_data`
 
+## Partner Financials
+
+- `steam_financial_get_changed_dates`
+- `steam_financial_get_detailed_sales`
+- `steam_financial_get_app_wishlist_reporting`
+
 ## Steam Site License
 
 - `steam_get_site_license_current_client_connections`

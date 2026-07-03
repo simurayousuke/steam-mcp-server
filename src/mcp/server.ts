@@ -17,6 +17,7 @@ import { SteamGameNotificationsClient } from '../steam/game-notifications-client
 import { SteamGameServersClient } from '../steam/game-servers-client.js';
 import { SteamInventoryClient } from '../steam/inventory-client.js';
 import { SteamLobbyMatchmakingClient } from '../steam/lobby-matchmaking-client.js';
+import { SteamPartnerFinancialsClient } from '../steam/partner-financials-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamPublisherClient } from '../steam/publisher-client.js';
 import { SteamSiteLicenseClient } from '../steam/site-license-client.js';
@@ -37,6 +38,7 @@ import { registerGameServersTools } from '../tools/game-servers.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerInventoryTools } from '../tools/inventory.js';
 import { registerLobbyMatchmakingTools } from '../tools/lobby-matchmaking.js';
+import { registerPartnerFinancialsTools } from '../tools/partner-financials.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerPublisherTools } from '../tools/publisher.js';
 import { registerSiteLicenseTools } from '../tools/site-license.js';
@@ -60,6 +62,7 @@ export function createSteamMcpServer(): McpServer {
     config.STEAM_WEB_API_KEY,
     config.STEAM_PUBLISHER_KEY,
     config.STEAM_OAUTH_CLIENT_ID,
+    config.STEAM_FINANCIAL_KEY,
   );
   const server = new McpServer(metadata);
   const http = new HttpJsonClient({
@@ -154,6 +157,11 @@ export function createSteamMcpServer(): McpServer {
     publisherKey: () => credentialManager.getPublisherKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const partnerFinancialsClient = new SteamPartnerFinancialsClient({
+    http,
+    financialKey: () => credentialManager.getFinancialKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const publisherClient = new SteamPublisherClient({
     http,
     publisherKey: () => credentialManager.getPublisherKey(),
@@ -178,6 +186,7 @@ export function createSteamMcpServer(): McpServer {
   registerGameServersTools(server, gameServersClient);
   registerInventoryTools(server, inventoryClient, authManager);
   registerLobbyMatchmakingTools(server, lobbyClient);
+  registerPartnerFinancialsTools(server, partnerFinancialsClient);
   registerPlayerTools(server, playerClient, authManager);
   registerPublisherTools(server, publisherClient, authManager);
   registerSiteLicenseTools(server, siteLicenseClient);

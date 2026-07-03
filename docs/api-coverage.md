@@ -27,6 +27,7 @@ Implemented high-level tools cover:
 - Game Inventory history command details, user history, and asset history reads through `IGameInventory`; history command execution and item definition updates are not exposed as high-level tools
 - Inventory Service inventory, item definition, price sheet, and quantity read endpoints when `STEAM_PUBLISHER_KEY` has Economy permissions; inventory mutation endpoints are not exposed as high-level tools
 - Lobby data reads through `ILobbyMatchmakingService`; lobby creation and member removal are not exposed as high-level tools
+- Partner financial changed-date, detailed-sales, and wishlist-reporting reads through `IPartnerFinancialsService` when `STEAM_FINANCIAL_KEY` is configured
 - Publisher-only user ticket authentication, app beta/build/depot/server metadata, game server player stats, leaderboards, partner app lists, banned-player records, Workshop finalized contributors, subscribed-file enumeration, published-item search and vote summaries, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
 - PC Cafe site-license current connection and total playtime reads through `ISiteLicenseService`
 - Store search, app details, reviews, package details, and public wishlist JSON
@@ -41,6 +42,7 @@ Implemented high-level tools cover:
 - Private wishlists are not read through cookies or passwords.
 - Steam trade tools are read-only and require the user's Web API key; trade mutations are not exposed.
 - Steam Market partner tools are read-only and require `STEAM_PUBLISHER_KEY`; listing cancellation is not exposed.
+- Partner financial tools require a dedicated `STEAM_FINANCIAL_KEY`; they do not reuse `STEAM_PUBLISHER_KEY`, and the key is never returned in tool output.
 - Publisher-only, financial, transaction, inventory mutation, and other write-capable APIs are not callable by default.
 - Game server account-list and login-token APIs are intentionally excluded from high-level tools because they expose or operate on server login credentials.
 - Game notification create, update, request, and delete APIs are intentionally excluded from high-level tools because they create or mutate user-visible notification state.

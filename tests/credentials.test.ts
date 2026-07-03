@@ -12,6 +12,7 @@ describe('SteamCredentialManager', () => {
       hasEnvironmentWebApiKey: true,
       hasSessionWebApiKey: false,
       hasPublisherKey: false,
+      hasFinancialKey: false,
       hasOAuthClientId: false,
       hasOAuthAccessToken: false,
       hasSessionOAuthAccessToken: false,
@@ -27,6 +28,7 @@ describe('SteamCredentialManager', () => {
       hasEnvironmentWebApiKey: true,
       hasSessionWebApiKey: true,
       hasPublisherKey: false,
+      hasFinancialKey: false,
       hasOAuthAccessToken: false,
       webApiKeySource: 'session',
     });
@@ -36,6 +38,7 @@ describe('SteamCredentialManager', () => {
       clearedSessionWebApiKey: true,
       hasWebApiKey: true,
       hasPublisherKey: false,
+      hasFinancialKey: false,
       hasOAuthAccessToken: false,
       webApiKeySource: 'environment',
     });
@@ -51,10 +54,22 @@ describe('SteamCredentialManager', () => {
       hasEnvironmentWebApiKey: false,
       hasSessionWebApiKey: false,
       hasPublisherKey: true,
+      hasFinancialKey: false,
       hasOAuthClientId: false,
       hasOAuthAccessToken: false,
       hasSessionOAuthAccessToken: false,
       webApiKeySource: 'none',
+    });
+  });
+
+  it('reports financial keys without exposing the key', () => {
+    const manager = new SteamCredentialManager(undefined, undefined, undefined, 'financial-secret');
+
+    expect(manager.getFinancialKey()).toBe('financial-secret');
+    expect(manager.getStatus()).toMatchObject({
+      hasFinancialKey: true,
+      hasPublisherKey: false,
+      hasWebApiKey: false,
     });
   });
 

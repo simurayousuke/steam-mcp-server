@@ -96,6 +96,9 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_deleted_steam_ids`
 - `steam_get_public_inventory`
 - `steam_get_lobby_data`
+- `steam_financial_get_changed_dates`
+- `steam_financial_get_detailed_sales`
+- `steam_financial_get_app_wishlist_reporting`
 - `steam_get_site_license_current_client_connections`
 - `steam_get_site_license_total_playtime`
 - `steam_search_apps`

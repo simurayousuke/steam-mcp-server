@@ -20,9 +20,11 @@ describe('loadConfig', () => {
     const config = loadConfig({
       STEAM_WEB_API_KEY: '   ',
       STEAM_PUBLISHER_KEY: ' publisher-key ',
+      STEAM_FINANCIAL_KEY: ' financial-key ',
     });
 
     expect(config.STEAM_WEB_API_KEY).toBeUndefined();
     expect(config.STEAM_PUBLISHER_KEY).toBe('publisher-key');
+    expect(config.STEAM_FINANCIAL_KEY).toBe('financial-key');
   });
 });

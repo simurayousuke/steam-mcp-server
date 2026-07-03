@@ -98,6 +98,9 @@ describe('Steam MCP server', () => {
           'steam_get_player_bans',
           'steam_get_user_group_list',
           'steam_get_lobby_data',
+          'steam_financial_get_changed_dates',
+          'steam_financial_get_detailed_sales',
+          'steam_financial_get_app_wishlist_reporting',
           'steam_get_site_license_current_client_connections',
           'steam_get_site_license_total_playtime',
           'steam_query_workshop_files',
@@ -141,6 +144,7 @@ describe('Steam MCP server', () => {
         credentials: {
           hasWebApiKey: true,
           hasSessionWebApiKey: true,
+          hasFinancialKey: false,
           hasOAuthAccessToken: false,
           webApiKeySource: 'session',
         },
@@ -154,6 +158,7 @@ describe('Steam MCP server', () => {
       expect(authStatus.structuredContent).toMatchObject({
         credentials: {
           hasWebApiKey: true,
+          hasFinancialKey: false,
           hasOAuthAccessToken: false,
           webApiKeySource: 'session',
         },

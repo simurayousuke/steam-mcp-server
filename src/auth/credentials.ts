@@ -5,6 +5,7 @@ export type CredentialStatus = {
   hasEnvironmentWebApiKey: boolean;
   hasSessionWebApiKey: boolean;
   hasPublisherKey: boolean;
+  hasFinancialKey: boolean;
   hasOAuthClientId: boolean;
   hasOAuthAccessToken: boolean;
   hasSessionOAuthAccessToken: boolean;
@@ -19,6 +20,7 @@ export class SteamCredentialManager {
     private readonly environmentWebApiKey: string | undefined,
     private readonly environmentPublisherKey: string | undefined = undefined,
     private readonly environmentOAuthClientId: string | undefined = undefined,
+    private readonly environmentFinancialKey: string | undefined = undefined,
   ) {}
 
   getWebApiKey(): string | undefined {
@@ -27,6 +29,10 @@ export class SteamCredentialManager {
 
   getPublisherKey(): string | undefined {
     return this.environmentPublisherKey;
+  }
+
+  getFinancialKey(): string | undefined {
+    return this.environmentFinancialKey;
   }
 
   getOAuthClientId(): string | undefined {
@@ -81,6 +87,7 @@ export class SteamCredentialManager {
       hasEnvironmentWebApiKey,
       hasSessionWebApiKey,
       hasPublisherKey: Boolean(this.environmentPublisherKey),
+      hasFinancialKey: Boolean(this.environmentFinancialKey),
       hasOAuthClientId: Boolean(this.environmentOAuthClientId),
       hasOAuthAccessToken: Boolean(this.sessionOAuthAccessToken),
       hasSessionOAuthAccessToken: Boolean(this.sessionOAuthAccessToken),

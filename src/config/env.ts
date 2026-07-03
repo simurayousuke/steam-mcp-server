@@ -17,6 +17,7 @@ const optionalSecret = z
 const envSchema = z.object({
   STEAM_WEB_API_KEY: optionalSecret,
   STEAM_PUBLISHER_KEY: optionalSecret,
+  STEAM_FINANCIAL_KEY: optionalSecret,
   STEAM_OAUTH_CLIENT_ID: optionalSecret,
   STEAM_OAUTH_CLIENT_SECRET: optionalSecret,
   STEAM_OAUTH_REDIRECT_URI: optionalSecret,
