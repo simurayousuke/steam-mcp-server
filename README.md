@@ -162,6 +162,7 @@ docs/       design and development notes
 
 - Usage guide: docs/usage.md
 - API coverage notes: docs/api-coverage.md
+- Official Web API audit: docs/official-webapi-audit.md
 - Tool reference: docs/tools.md
 - Official TypeScript SDK repository: https://github.com/modelcontextprotocol/typescript-sdk
 - MCP documentation: https://modelcontextprotocol.io/

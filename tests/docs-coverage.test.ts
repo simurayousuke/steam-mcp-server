@@ -1,0 +1,81 @@
+import { readFileSync } from 'node:fs';
+
+import { describe, expect, it } from 'vitest';
+
+const auditDoc = readFileSync(new URL('../docs/official-webapi-audit.md', import.meta.url), 'utf8');
+
+describe('official Steam Web API audit documentation', () => {
+  it('lists the currently tracked official Web API interfaces', () => {
+    const interfaces = [
+      'IBroadcastService',
+      'ICheatReportingService',
+      'ICloudService',
+      'IEconMarketService',
+      'IEconService',
+      'IGameInventory',
+      'IGameNotificationsService',
+      'IGameServersService',
+      'IInventoryService',
+      'ILobbyMatchmakingService',
+      'IPartnerFinancialsService',
+      'IPlayerService',
+      'IPublishedFileService',
+      'ISiteLicenseService',
+      'ISteamApps',
+      'ISteamCommunity',
+      'ISteamEconomy',
+      'ISteamGameServerStats',
+      'ISteamLeaderboards',
+      'ISteamMicroTxn',
+      'ISteamMicroTxnSandbox',
+      'ISteamNews',
+      'ISteamPublishedItemSearch',
+      'ISteamPublishedItemVoting',
+      'ISteamRemoteStorage',
+      'ISteamUserAuth',
+      'ISteamUser',
+      'ISteamUserStats',
+      'ISteamWebAPIUtil',
+      'IStoreService',
+      'IWorkshopService',
+    ];
+
+    for (const interfaceName of interfaces) {
+      expect(auditDoc).toContain(`\`${interfaceName}\``);
+      expect(auditDoc).toContain(`https://partner.steamgames.com/doc/webapi/${interfaceName}`);
+    }
+  });
+
+  it('keeps explicit notes for sensitive or write-capable methods', () => {
+    const excludedMethods = [
+      'SetAppBuildLive',
+      'StartAssetTransaction',
+      'FinalizeAssetTransaction',
+      'StartTrade',
+      'RefundTxn',
+      'ReportAbuse',
+      'AddItem',
+      'ConsumeItem',
+      'ModifyItems',
+      'UpdateItemDefs',
+      'HistoryExecuteCommands',
+      'CancelAppListingsForUser',
+      'ReportCheatData',
+      'RequestPlayerGameBan',
+      'SetUserStatsForGame',
+      'SetItemPaymentRules',
+    ];
+
+    for (const methodName of excludedMethods) {
+      expect(auditDoc).toContain(methodName);
+    }
+  });
+
+  it('documents user authorization boundaries for private data', () => {
+    expect(auditDoc).toContain('Steam OpenID proves control of a SteamID');
+    expect(auditDoc).toContain('A user-provided Steam Web API key');
+    expect(auditDoc).toContain('Steam OAuth is supported');
+    expect(auditDoc).toContain('Public wishlist JSON only');
+    expect(auditDoc).toContain('does not use Steam credentials, browser cookies, or private wishlist scraping');
+  });
+});

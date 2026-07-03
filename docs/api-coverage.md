@@ -2,6 +2,8 @@
 
 This server handles Steam API coverage through two layers.
 
+For the per-interface audit of official Steam Web API coverage, see `docs/official-webapi-audit.md`.
+
 ## Catalog Layer
 
 `steam_api_refresh_catalog`, `steam_api_list_interfaces`, `steam_api_list_methods`, `steam_api_get_method_schema`, and `steam_api_get_coverage_summary` use `ISteamWebAPIUtil/GetSupportedAPIList` as the source of truth for official Steam Web API metadata.
