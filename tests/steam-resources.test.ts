@@ -64,6 +64,32 @@ describe('Steam MCP resources', () => {
             total_count: 1,
           },
         }),
+        getSingleGamePlaytime: async ({ steamId, appid }) => ({
+          steamId,
+          appid,
+          response: {
+            playtime_forever: 120,
+          },
+        }),
+        getSteamLevel: async ({ steamId }) => ({
+          steamId,
+          response: {
+            player_level: 42,
+          },
+        }),
+        getBadges: async ({ steamId }) => ({
+          steamId,
+          response: {
+            badges: [],
+          },
+        }),
+        getCommunityBadgeProgress: async ({ steamId, badgeid }) => ({
+          steamId,
+          badgeid,
+          response: {
+            quests: [],
+          },
+        }),
         getFriendList: async ({ steamId }) => ({
           steamId,
           friendslist: {
@@ -137,6 +163,17 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const appPlaytime = await client.readResource({
+        uri: 'steam://players/76561197960434622/apps/620/playtime',
+      });
+      expect(JSON.parse(appPlaytime.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        appid: 620,
+        response: {
+          playtime_forever: 120,
+        },
+      });
+
       const recentlyPlayed = await client.readResource({
         uri: 'steam://players/76561197960434622/recently-played',
       });
@@ -144,6 +181,37 @@ describe('Steam MCP resources', () => {
         steamId: '76561197960434622',
         response: {
           total_count: 1,
+        },
+      });
+
+      const steamLevel = await client.readResource({
+        uri: 'steam://players/76561197960434622/steam-level',
+      });
+      expect(JSON.parse(steamLevel.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          player_level: 42,
+        },
+      });
+
+      const badges = await client.readResource({
+        uri: 'steam://players/76561197960434622/badges',
+      });
+      expect(JSON.parse(badges.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          badges: [],
+        },
+      });
+
+      const badgeProgress = await client.readResource({
+        uri: 'steam://players/76561197960434622/badges/2/progress',
+      });
+      expect(JSON.parse(badgeProgress.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        badgeid: 2,
+        response: {
+          quests: [],
         },
       });
 

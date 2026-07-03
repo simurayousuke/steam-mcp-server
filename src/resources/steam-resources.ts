@@ -7,7 +7,14 @@ import type { SteamWebApiClient } from '../steam/web-api-client.js';
 export type SteamResourceClients = {
   playerClient: Pick<
     SteamPlayerClient,
-    'getFriendList' | 'getOwnedGames' | 'getPlayerSummary' | 'getRecentlyPlayedGames'
+    | 'getBadges'
+    | 'getCommunityBadgeProgress'
+    | 'getFriendList'
+    | 'getOwnedGames'
+    | 'getPlayerSummary'
+    | 'getRecentlyPlayedGames'
+    | 'getSingleGamePlaytime'
+    | 'getSteamLevel'
   >;
   storeClient: Pick<SteamStoreClient, 'getAppDetails'>;
   webApiClient: Pick<SteamWebApiClient, 'getNewsForApp' | 'getSchemaForGame'>;
@@ -99,6 +106,23 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
   );
 
   server.registerResource(
+    'steam-player-app-playtime',
+    new ResourceTemplate('steam://players/{steamid}/apps/{appid}/playtime', { list: undefined }),
+    {
+      title: 'Steam player app playtime',
+      description: 'Single-app Steam playtime for a player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.playerClient.getSingleGamePlaytime({ steamId, appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
     'steam-player-recently-played',
     new ResourceTemplate('steam://players/{steamid}/recently-played', { list: undefined }),
     {
@@ -109,6 +133,55 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri, variables) => {
       const steamId = variableToString(variables.steamid);
       const data = await clients.playerClient.getRecentlyPlayedGames({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-steam-level',
+    new ResourceTemplate('steam://players/{steamid}/steam-level', { list: undefined }),
+    {
+      title: 'Steam player level',
+      description: 'Steam level for a player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.playerClient.getSteamLevel({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-badges',
+    new ResourceTemplate('steam://players/{steamid}/badges', { list: undefined }),
+    {
+      title: 'Steam player badges',
+      description: 'Badges owned by a Steam player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.playerClient.getBadges({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-community-badge-progress',
+    new ResourceTemplate('steam://players/{steamid}/badges/{badgeid}/progress', { list: undefined }),
+    {
+      title: 'Steam community badge progress',
+      description: 'Community badge quest progress for a Steam player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const badgeid = parsePositiveInteger(variableToString(variables.badgeid), 'badgeid');
+      const data = await clients.playerClient.getCommunityBadgeProgress({ steamId, badgeid });
 
       return jsonResource(uri, data);
     },

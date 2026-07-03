@@ -81,7 +81,11 @@ steam://apps/{appid}/news
 steam://apps/{appid}/schema
 steam://players/{steamid}
 steam://players/{steamid}/owned-games
+steam://players/{steamid}/apps/{appid}/playtime
 steam://players/{steamid}/recently-played
+steam://players/{steamid}/steam-level
+steam://players/{steamid}/badges
+steam://players/{steamid}/badges/{badgeid}/progress
 steam://players/{steamid}/friends
 ```
 
