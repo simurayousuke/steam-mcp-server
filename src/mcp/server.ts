@@ -7,6 +7,7 @@ import { HttpJsonClient } from '../common/http.js';
 import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
+import { SteamAppSpecificClient } from '../steam/app-specific-client.js';
 import { SteamCheatReportingClient } from '../steam/cheat-reporting-client.js';
 import { SteamCloudClient } from '../steam/cloud-client.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
@@ -30,6 +31,7 @@ import { SteamWebApiClient } from '../steam/web-api-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { SteamWishlistClient } from '../steam/wishlist-client.js';
 import { SteamWorkshopClient } from '../steam/workshop-client.js';
+import { registerAppSpecificTools } from '../tools/app-specific.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCheatReportingTools } from '../tools/cheat-reporting.js';
@@ -206,8 +208,13 @@ export function createSteamMcpServer(): McpServer {
     http,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const appSpecificClient = new SteamAppSpecificClient({
+    http,
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
+  registerAppSpecificTools(server, appSpecificClient);
   registerAuthTools(server, authManager, credentialManager);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCheatReportingTools(server, cheatReportingClient);

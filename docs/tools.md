@@ -29,6 +29,10 @@
 
 ## Official Web API High-Level Tools
 
+- `steam_get_gc_client_version`
+- `steam_get_gc_server_version`
+- `steam_get_portal2_leaderboard_bucketized_data`
+- `steam_get_tf2_world_status`
 - `steam_get_cheating_reports`
 - `steam_cloud_enumerate_user_files`
 - `steam_get_cm_list`

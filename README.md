@@ -22,6 +22,10 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_oauth_set_access_token`
 - `steam_oauth_clear_access_token`
 - `steam_oauth_get_token_details`
+- `steam_get_gc_client_version`
+- `steam_get_gc_server_version`
+- `steam_get_portal2_leaderboard_bucketized_data`
+- `steam_get_tf2_world_status`
 - `steam_api_get_coverage_summary`
 - `steam_api_refresh_catalog`
 - `steam_api_list_interfaces`

@@ -49,8 +49,11 @@ describe('official Steam Web API audit documentation', () => {
   it('lists tracked public catalog interfaces without dedicated Steamworks doc pages', () => {
     const publicCatalogInterfaces = [
       'IContentServerDirectoryService',
+      'IGCVersion_<appid>',
+      'IPortal2Leaderboards_620',
       'ISteamDirectory',
       'ISteamUserOAuth',
+      'ITFSystem_440',
       'IWishlistService',
     ];
 

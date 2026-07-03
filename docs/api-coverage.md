@@ -18,6 +18,7 @@ Implemented high-level tools cover:
 - Steam OAuth login URL generation, callback-fragment completion, in-memory OAuth access-token storage, token-detail reads, and read-only Steam Cloud file enumeration with `read_cloud`
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
+- Public app-specific Game Coordinator version, Portal 2 leaderboard bucket, and Team Fortress 2 world status reads
 - Anti-cheat report and ban-request reads through `ICheatReportingService/GetCheatingReports`; report creation, ban requests, ban removal, and secure-session mutation methods are not exposed as high-level tools
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
