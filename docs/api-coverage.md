@@ -18,6 +18,8 @@ The same catalog data is available to MCP resource clients through `steam://api/
 
 `steam_api_call_readonly` can call default-safe official methods. Methods that are POST, match risky operation names, belong to sensitive authentication flows, or are known GET endpoints with side effects are blocked unless explicitly listed in `STEAM_API_ALLOWLIST_FILE`.
 
+Generic catalog calls always request JSON by setting `format=json`; callers cannot override reserved server-managed parameters such as `format`.
+
 `steam_api_get_coverage_summary` returns both aggregate and per-interface counts for default-allowed, allowlisted, blocked, and POST methods, plus default blocking reason counts. This makes catalog drift and safety-policy gaps visible without calling individual Steam methods.
 
 Shared Steam HTTP handling treats non-success `x-eresult` response headers as upstream errors even when the HTTP status is `200`, matching Steam service-interface behavior.

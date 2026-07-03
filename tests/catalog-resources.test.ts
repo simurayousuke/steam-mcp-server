@@ -208,6 +208,7 @@ describe('Steam Web API catalog resources', () => {
           methodIdentifier: 'isteamnews.getnewsforapp.v2',
           defaultReadOnlyAllowed: true,
           callableByGenericReadOnlyTool: true,
+          reservedServerParameters: ['format'],
           requiredUserParameters: ['appid'],
         },
       });

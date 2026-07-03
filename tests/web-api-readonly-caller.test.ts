@@ -111,6 +111,33 @@ describe('SteamWebApiReadonlyCaller', () => {
     });
   });
 
+  it('rejects reserved server-managed parameters supplied as arguments', async () => {
+    const caller = new SteamWebApiReadonlyCaller({
+      catalogClient: {
+        getMethodSchema: async () => getNewsMethod,
+      } as never,
+      http: {
+        getJson: async () => ({}),
+      },
+    });
+
+    await expect(
+      caller.call({
+        interfaceName: 'ISteamNews',
+        methodName: 'GetNewsForApp',
+        params: {
+          appid: 10,
+          format: 'xml',
+        },
+      }),
+    ).rejects.toMatchObject({
+      code: 'validation_error',
+      details: {
+        parameters: ['format'],
+      },
+    });
+  });
+
   it('injects the session OAuth token for access_token catalog parameters', async () => {
     let requestedUrl: URL | undefined;
     const caller = new SteamWebApiReadonlyCaller({

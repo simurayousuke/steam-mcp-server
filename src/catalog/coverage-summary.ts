@@ -1,8 +1,7 @@
+import { getReservedApiParameterNames, isReservedApiParameterName, isSecretApiParameterName } from './api-parameters.js';
 import { classifyReadonlySafety } from './safety.js';
 import type { SteamWebApiCatalog, SteamWebApiMethodSchema } from './steam-web-api-catalog.js';
 import { methodIdentifier } from '../config/allowlist.js';
-
-const secretParameterNames = new Set(['key', 'access_token', 'token']);
 
 export type CatalogCoverageReasonCount = {
   reason: string;
@@ -121,11 +120,12 @@ export function describeCatalogMethodAccess(
   });
   const allowlisted = allowlistedMethods.has(identifier);
   const secretParameters = method.parameters
-    .filter((parameter) => secretParameterNames.has(parameter.name.toLowerCase()))
+    .filter((parameter) => isSecretApiParameterName(parameter.name))
     .map((parameter) => parameter.name);
   const requiredUserParameters = method.parameters
     .filter((parameter) => !parameter.optional)
-    .filter((parameter) => !secretParameterNames.has(parameter.name.toLowerCase()))
+    .filter((parameter) => !isSecretApiParameterName(parameter.name))
+    .filter((parameter) => !isReservedApiParameterName(parameter.name))
     .map((parameter) => parameter.name);
 
   return {
@@ -141,6 +141,7 @@ export function describeCatalogMethodAccess(
       (parameter) => parameter.name.toLowerCase() === 'access_token' && !parameter.optional,
     ),
     secretParameters,
+    reservedServerParameters: getReservedApiParameterNames(),
     requiredUserParameters,
   };
 }

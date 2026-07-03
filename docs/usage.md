@@ -249,6 +249,8 @@ steam://me/friends
 
 Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile. Catalog resources use `ISteamWebAPIUtil/GetSupportedAPIList` and include the same generic read-only access metadata as the catalog tools.
 
+Generic catalog calls always set `format=json`; do not pass reserved server-managed parameters such as `format` in `steam_api_call_readonly.params`.
+
 After Steam OpenID authentication, `steam://me` resources resolve the authenticated SteamID automatically.
 
 ## Allowlisted Web API Methods

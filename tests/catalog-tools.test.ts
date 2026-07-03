@@ -245,6 +245,7 @@ describe('Steam Web API catalog tools', () => {
             access: {
               defaultReadOnlyAllowed: true,
               callableByGenericReadOnlyTool: true,
+              reservedServerParameters: ['format'],
               requiredUserParameters: ['appid'],
             },
           },

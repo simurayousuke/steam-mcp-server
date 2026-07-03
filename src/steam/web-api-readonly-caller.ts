@@ -1,4 +1,5 @@
 import type { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
+import { isReservedApiParameterName, isSecretApiParameterName } from '../catalog/api-parameters.js';
 import { classifyReadonlySafety } from '../catalog/safety.js';
 import { SteamMcpError } from '../common/errors.js';
 import type { HttpJsonClient } from '../common/http.js';
@@ -24,8 +25,6 @@ export type ReadonlyApiCallResponse = {
   };
   response: unknown;
 };
-
-const secretParameterNames = new Set(['key', 'access_token', 'token']);
 
 export class SteamWebApiReadonlyCaller {
   constructor(
@@ -71,7 +70,7 @@ export class SteamWebApiReadonlyCaller {
     }
 
     const params = request.params ?? {};
-    const secretParams = Object.keys(params).filter((name) => secretParameterNames.has(name.toLowerCase()));
+    const secretParams = Object.keys(params).filter((name) => isSecretApiParameterName(name));
 
     if (secretParams.length > 0) {
       throw new SteamMcpError({
@@ -83,10 +82,23 @@ export class SteamWebApiReadonlyCaller {
       });
     }
 
+    const reservedParams = Object.keys(params).filter((name) => isReservedApiParameterName(name));
+
+    if (reservedParams.length > 0) {
+      throw new SteamMcpError({
+        code: 'validation_error',
+        message: 'Reserved Steam Web API parameters are managed by the server, not tool arguments.',
+        details: {
+          parameters: reservedParams,
+        },
+      });
+    }
+
     const missingRequiredParameters = method.parameters
       .filter((parameter) => !parameter.optional)
       .map((parameter) => parameter.name)
-      .filter((name) => !secretParameterNames.has(name.toLowerCase()))
+      .filter((name) => !isSecretApiParameterName(name))
+      .filter((name) => !isReservedApiParameterName(name))
       .filter((name) => params[name] === undefined);
 
     if (missingRequiredParameters.length > 0) {
@@ -108,7 +120,7 @@ export class SteamWebApiReadonlyCaller {
     const unsupportedRequiredSecretParameters = method.parameters
       .filter((parameter) => !parameter.optional)
       .map((parameter) => parameter.name)
-      .filter((name) => secretParameterNames.has(name.toLowerCase()))
+      .filter((name) => isSecretApiParameterName(name))
       .filter((name) => {
         const normalized = name.toLowerCase();
         return normalized !== 'key' && normalized !== 'access_token';
