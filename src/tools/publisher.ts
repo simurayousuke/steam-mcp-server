@@ -7,6 +7,7 @@ import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import type { SteamPublisherClient } from '../steam/publisher-client.js';
 
 const appTypeFilterSchema = z.enum(['game', 'application', 'tool', 'demo', 'dlc', 'music']);
+const publishedItemSearchTypeSchema = z.enum(['publicationOrder', 'trend', 'vote']);
 
 export function registerPublisherTools(
   server: McpServer,
@@ -231,6 +232,184 @@ export function registerPublisherTools(
           data: await publisherClient.getWorkshopFinalizedContributors({
             appid: args.appid,
             gameItemId: args.gameItemId,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_enumerate_user_subscribed_files',
+    {
+      title: 'Enumerate Steam user subscribed files',
+      description:
+        'Enumerate Workshop files subscribed by a Steam user for one app using a publisher Web API key. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        listType: z.number().int().nonnegative(),
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.enumerateUserSubscribedFiles({
+            steamId: resolveSteamId(args.steamId, authManager),
+            appid: args.appid,
+            listType: args.listType,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_search_published_items',
+    {
+      title: 'Search Steam published items',
+      description:
+        'Search publisher-visible Steam Workshop items using ISteamPublishedItemSearch and a publisher Web API key. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        searchType: publishedItemSearchTypeSchema,
+        appid: z.number().int().positive(),
+        steamId: z.string().min(1).optional(),
+        startIndex: z.number().int().nonnegative().optional(),
+        count: z.number().int().positive().max(100).optional(),
+        tags: z.array(z.string().min(1)).min(1).max(50).optional(),
+        userTags: z.array(z.string().min(1)).min(1).max(50).optional(),
+        hasAppAdminAccess: z.boolean().optional(),
+        fileType: z.number().int().min(0).max(20).optional(),
+        days: z.number().int().min(1).max(7).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.searchPublishedItems({
+            steamId: resolveSteamId(args.steamId, authManager),
+            appid: args.appid,
+            searchType: args.searchType,
+            startIndex: args.startIndex,
+            count: args.count,
+            tags: args.tags,
+            userTags: args.userTags,
+            hasAppAdminAccess: args.hasAppAdminAccess,
+            fileType: args.fileType,
+            days: args.days,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_published_item_search_summary',
+    {
+      title: 'Get Steam published item search summary',
+      description:
+        'Get a publisher-visible Workshop search result summary using a publisher Web API key. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        steamId: z.string().min(1).optional(),
+        tags: z.array(z.string().min(1)).min(1).max(50).optional(),
+        userTags: z.array(z.string().min(1)).min(1).max(50).optional(),
+        hasAppAdminAccess: z.boolean().optional(),
+        fileType: z.number().int().min(0).max(20).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getPublishedItemSearchSummary({
+            steamId: resolveSteamId(args.steamId, authManager),
+            appid: args.appid,
+            tags: args.tags,
+            userTags: args.userTags,
+            hasAppAdminAccess: args.hasAppAdminAccess,
+            fileType: args.fileType,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_published_item_vote_summary',
+    {
+      title: 'Get Steam published item vote summary',
+      description:
+        'Get vote summaries for Workshop items using a publisher Web API key. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        publishedFileIds: z.array(z.string().regex(/^\d+$/)).min(1).max(100),
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getPublishedItemVoteSummary({
+            steamId: resolveSteamId(args.steamId, authManager),
+            appid: args.appid,
+            publishedFileIds: args.publishedFileIds,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_user_published_item_vote_summary',
+    {
+      title: 'Get Steam user published item vote summary',
+      description:
+        'Get one user vote summary for Workshop items using a publisher Web API key. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        publishedFileIds: z.array(z.string().regex(/^\d+$/)).min(1).max(100),
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getUserPublishedItemVoteSummary({
+            steamId: resolveSteamId(args.steamId, authManager),
+            publishedFileIds: args.publishedFileIds,
           }),
         });
       } catch (error: unknown) {

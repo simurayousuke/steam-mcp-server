@@ -262,6 +262,82 @@ describe('SteamPublisherClient', () => {
     expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
   });
 
+  it('posts publisher Workshop query endpoints with expected form parameters', async () => {
+    const requestedPaths: string[] = [];
+    const submittedForms: URLSearchParams[] = [];
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async () => ({}),
+        postFormJson: async (url, form) => {
+          requestedPaths.push(url.pathname);
+          submittedForms.push(form);
+          return {
+            response: {},
+          };
+        },
+      },
+    });
+
+    await client.enumerateUserSubscribedFiles({
+      steamId: '76561197960434622',
+      appid: 620,
+      listType: 0,
+    });
+    await client.searchPublishedItems({
+      searchType: 'trend',
+      steamId: '76561197960434622',
+      appid: 620,
+      startIndex: 5,
+      count: 10,
+      tags: ['Puzzle'],
+      userTags: ['Favorite'],
+      hasAppAdminAccess: true,
+      fileType: 0,
+      days: 7,
+    });
+    await client.getPublishedItemSearchSummary({
+      steamId: '76561197960434622',
+      appid: 620,
+      tags: ['Puzzle'],
+    });
+    await client.getPublishedItemVoteSummary({
+      steamId: '76561197960434622',
+      appid: 620,
+      publishedFileIds: ['123', '456'],
+    });
+    await client.getUserPublishedItemVoteSummary({
+      steamId: '76561197960434622',
+      publishedFileIds: ['123'],
+    });
+
+    expect(requestedPaths).toEqual([
+      '/ISteamRemoteStorage/EnumerateUserSubscribedFiles/v1/',
+      '/ISteamPublishedItemSearch/RankedByTrend/v1/',
+      '/ISteamPublishedItemSearch/ResultSetSummary/v1/',
+      '/ISteamPublishedItemVoting/ItemVoteSummary/v1/',
+      '/ISteamPublishedItemVoting/UserVoteSummary/v1/',
+    ]);
+    expect(submittedForms[0]?.get('key')).toBe('publisher-key');
+    expect(submittedForms[0]?.get('steamid')).toBe('76561197960434622');
+    expect(submittedForms[0]?.get('appid')).toBe('620');
+    expect(submittedForms[0]?.get('listtype')).toBe('0');
+    expect(submittedForms[1]?.get('startidx')).toBe('5');
+    expect(submittedForms[1]?.get('count')).toBe('10');
+    expect(submittedForms[1]?.get('tagcount')).toBe('1');
+    expect(submittedForms[1]?.get('tag[0]')).toBe('Puzzle');
+    expect(submittedForms[1]?.get('usertagcount')).toBe('1');
+    expect(submittedForms[1]?.get('usertag[0]')).toBe('Favorite');
+    expect(submittedForms[1]?.get('hasappadminaccess')).toBe('true');
+    expect(submittedForms[1]?.get('fileType')).toBe('0');
+    expect(submittedForms[1]?.get('days')).toBe('7');
+    expect(submittedForms[2]?.get('tag[0]')).toBe('Puzzle');
+    expect(submittedForms[3]?.get('publishedfileid[0]')).toBe('123');
+    expect(submittedForms[3]?.get('publishedfileid[1]')).toBe('456');
+    expect(submittedForms[4]?.get('publishedfileid[0]')).toBe('123');
+  });
+
   it('requires STEAM_PUBLISHER_KEY before making requests', async () => {
     let requestCount = 0;
     const client = new SteamPublisherClient({

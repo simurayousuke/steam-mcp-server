@@ -3,7 +3,7 @@ import { SteamMcpError } from '../common/errors.js';
 import type { HttpJsonClient } from '../common/http.js';
 
 export type SteamPublisherClientOptions = {
-  http: Pick<HttpJsonClient, 'getJson'>;
+  http: Pick<HttpJsonClient, 'getJson'> & Partial<Pick<HttpJsonClient, 'postFormJson'>>;
   publisherKey?: string | (() => string | undefined);
   cacheTtlMs: number;
 };
@@ -37,6 +37,38 @@ export type PublisherServerListRequest = {
 export type PublisherWorkshopItemRequest = {
   appid: number;
   gameItemId: number;
+};
+
+export type EnumerateUserSubscribedFilesRequest = PublisherSteamAppRequest & {
+  listType: number;
+};
+
+export type PublishedItemSearchType = 'publicationOrder' | 'trend' | 'vote';
+
+export type PublishedItemSearchRequest = PublisherSteamAppRequest & {
+  searchType: PublishedItemSearchType;
+  startIndex?: number;
+  count?: number;
+  tags?: string[];
+  userTags?: string[];
+  hasAppAdminAccess?: boolean;
+  fileType?: number;
+  days?: number;
+};
+
+export type PublishedItemSearchSummaryRequest = PublisherSteamAppRequest & {
+  tags?: string[];
+  userTags?: string[];
+  hasAppAdminAccess?: boolean;
+  fileType?: number;
+};
+
+export type PublishedItemVoteSummaryRequest = PublisherSteamAppRequest & {
+  publishedFileIds: string[];
+};
+
+export type UserPublishedItemVoteSummaryRequest = PublisherSteamIdRequest & {
+  publishedFileIds: string[];
 };
 
 export type AppPriceInfoRequest = PublisherSteamIdRequest & {
@@ -137,6 +169,64 @@ export class SteamPublisherClient {
     });
   }
 
+  async enumerateUserSubscribedFiles(request: EnumerateUserSubscribedFilesRequest): Promise<Record<string, unknown>> {
+    return this.postForm('ISteamRemoteStorage', 'EnumerateUserSubscribedFiles', 1, {
+      steamid: request.steamId,
+      appid: request.appid,
+      listtype: request.listType,
+    });
+  }
+
+  async searchPublishedItems(request: PublishedItemSearchRequest): Promise<Record<string, unknown>> {
+    return this.postForm('ISteamPublishedItemSearch', mapPublishedItemSearchMethod(request.searchType), 1, {
+      steamid: request.steamId,
+      appid: request.appid,
+      startidx: request.startIndex ?? 0,
+      count: request.count ?? 20,
+      tagcount: request.tags?.length ?? 0,
+      usertagcount: request.userTags?.length ?? 0,
+      hasappadminaccess: request.hasAppAdminAccess,
+      fileType: request.fileType,
+      days: request.days,
+      tag: request.tags,
+      usertag: request.userTags,
+    });
+  }
+
+  async getPublishedItemSearchSummary(request: PublishedItemSearchSummaryRequest): Promise<Record<string, unknown>> {
+    return this.postForm('ISteamPublishedItemSearch', 'ResultSetSummary', 1, {
+      steamid: request.steamId,
+      appid: request.appid,
+      tagcount: request.tags?.length ?? 0,
+      usertagcount: request.userTags?.length ?? 0,
+      hasappadminaccess: request.hasAppAdminAccess,
+      fileType: request.fileType,
+      tag: request.tags,
+      usertag: request.userTags,
+    });
+  }
+
+  async getPublishedItemVoteSummary(request: PublishedItemVoteSummaryRequest): Promise<Record<string, unknown>> {
+    const publishedFileIds = normalizePublishedFileIds(request.publishedFileIds);
+
+    return this.postForm('ISteamPublishedItemVoting', 'ItemVoteSummary', 1, {
+      steamid: request.steamId,
+      appid: request.appid,
+      count: publishedFileIds.length,
+      publishedfileid: publishedFileIds,
+    });
+  }
+
+  async getUserPublishedItemVoteSummary(request: UserPublishedItemVoteSummaryRequest): Promise<Record<string, unknown>> {
+    const publishedFileIds = normalizePublishedFileIds(request.publishedFileIds);
+
+    return this.postForm('ISteamPublishedItemVoting', 'UserVoteSummary', 1, {
+      steamid: request.steamId,
+      count: publishedFileIds.length,
+      publishedfileid: publishedFileIds,
+    });
+  }
+
   async authenticateUserTicket(request: AuthenticateUserTicketRequest): Promise<Record<string, unknown>> {
     return this.call('ISteamUserAuth', 'AuthenticateUserTicket', 1, {
       appid: request.appid,
@@ -198,8 +288,97 @@ export class SteamPublisherClient {
       response,
     };
   }
+
+  private async postForm(
+    interfaceName: string,
+    methodName: string,
+    version: number,
+    params: Record<string, string | number | boolean | string[] | number[] | undefined>,
+  ): Promise<Record<string, unknown>> {
+    const publisherKey = resolvePublisherKey(this.options.publisherKey);
+
+    if (!publisherKey) {
+      throw new SteamMcpError({
+        code: 'authorization_required',
+        message: 'This Steam publisher Web API method requires STEAM_PUBLISHER_KEY.',
+      });
+    }
+
+    if (!this.options.http.postFormJson) {
+      throw new SteamMcpError({
+        code: 'upstream_error',
+        message: 'Publisher POST HTTP client is not configured.',
+      });
+    }
+
+    const url = new URL(`https://partner.steam-api.com/${interfaceName}/${methodName}/v${version}/`);
+    url.searchParams.set('format', 'json');
+
+    const form = new URLSearchParams();
+    form.set('key', publisherKey);
+
+    for (const [name, value] of Object.entries(params)) {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => form.set(`${name}[${index}]`, String(item)));
+      } else if (value !== undefined) {
+        form.set(name, String(value));
+      }
+    }
+
+    const cacheKey = `${url.toString()}?${form.toString()}`;
+    const cached = this.cache.get(cacheKey);
+
+    if (cached !== undefined) {
+      return {
+        request: {
+          interfaceName,
+          methodName,
+          version,
+          cache: 'hit',
+        },
+        response: cached,
+      };
+    }
+
+    const response = await this.options.http.postFormJson<unknown>(url, form);
+    this.cache.set(cacheKey, response);
+
+    return {
+      request: {
+        interfaceName,
+        methodName,
+        version,
+        cache: 'miss',
+      },
+      response,
+    };
+  }
 }
 
 function resolvePublisherKey(publisherKey: string | (() => string | undefined) | undefined): string | undefined {
   return typeof publisherKey === 'function' ? publisherKey() : publisherKey;
+}
+
+function mapPublishedItemSearchMethod(searchType: PublishedItemSearchType): string {
+  switch (searchType) {
+    case 'publicationOrder':
+      return 'RankedByPublicationOrder';
+    case 'trend':
+      return 'RankedByTrend';
+    case 'vote':
+      return 'RankedByVote';
+  }
+}
+
+function normalizePublishedFileIds(ids: string[]): string[] {
+  const normalized = ids.map((id) => id.trim()).filter((id) => id.length > 0);
+
+  if (normalized.length === 0) {
+    throw new SteamMcpError({
+      code: 'validation_error',
+      message: 'At least one published file id is required.',
+    });
+  }
+
+  return normalized;
 }
