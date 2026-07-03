@@ -9,6 +9,7 @@ import { loadConfig } from '../config/env.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCloudClient } from '../steam/cloud-client.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
+import { SteamEconMarketClient } from '../steam/econ-market-client.js';
 import { SteamEconServiceClient } from '../steam/econ-service-client.js';
 import { SteamEconomyClient } from '../steam/economy-client.js';
 import { SteamGameNotificationsClient } from '../steam/game-notifications-client.js';
@@ -24,6 +25,7 @@ import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCloudTools } from '../tools/cloud.js';
 import { registerCommunityTools } from '../tools/community.js';
+import { registerEconMarketTools } from '../tools/econ-market.js';
 import { registerEconServiceTools } from '../tools/econ-service.js';
 import { registerEconomyTools } from '../tools/economy.js';
 import { registerGameNotificationsTools } from '../tools/game-notifications.js';
@@ -116,6 +118,11 @@ export function createSteamMcpServer(): McpServer {
     webApiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const econMarketClient = new SteamEconMarketClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const gameServersClient = new SteamGameServersClient({
     http,
     webApiKey: () => credentialManager.getWebApiKey(),
@@ -142,6 +149,7 @@ export function createSteamMcpServer(): McpServer {
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCloudTools(server, cloudClient);
   registerCommunityTools(server, communityClient, authManager);
+  registerEconMarketTools(server, econMarketClient, authManager);
   registerEconServiceTools(server, econServiceClient);
   registerEconomyTools(server, economyClient);
   registerGameNotificationsTools(server, gameNotificationsClient, authManager);

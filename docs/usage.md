@@ -74,6 +74,7 @@ Use `steam_oauth_set_access_token` only when you already obtained a Steam OAuth 
 - Player Web API tools, including summaries, owned games, recently played games, friend lists, ban status, achievements, and stats, require a Web API key and are still limited by Steam privacy settings.
 - `steam_cloud_enumerate_user_files` requires a Steam OAuth access token with `read_cloud`; Cloud upload, delete, and batch mutation APIs are not exposed.
 - `steam_get_trade_history`, `steam_get_trade_offers`, `steam_get_trade_offer`, and `steam_get_trade_offers_summary` require a Web API key for the account being inspected; trade mutation endpoints are not exposed.
+- `steam_get_market_eligibility`, `steam_get_market_asset_id`, and `steam_get_market_popular` require `STEAM_PUBLISHER_KEY`; market listing cancellation is not exposed.
 - `steam_get_store_app_list` requires a Web API key and uses the current `IStoreService/GetAppList` endpoint instead of the deprecated `ISteamApps/GetAppList`.
 - `steam_get_asset_class_info` and `steam_get_asset_prices` require a Web API key and expose read-only Steam Economy metadata and price data; transaction/trade endpoints are not exposed.
 - `steam_get_game_server_account_public_info`, `steam_get_server_steam_ids_by_ip`, and `steam_get_server_ips_by_steam_id` require a Web API key; game server account-list and login-token endpoints are not exposed because they can reveal or operate on server login credentials.
