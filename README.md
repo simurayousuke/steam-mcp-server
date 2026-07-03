@@ -67,6 +67,9 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_server_ips_by_steam_id`
 - `steam_get_game_notification_sessions`
 - `steam_get_game_notification_session_details`
+- `steam_get_game_inventory_history_command_details`
+- `steam_get_game_inventory_user_history`
+- `steam_get_game_inventory_asset_history`
 - `steam_get_inventory_service_inventory`
 - `steam_get_inventory_item_defs`
 - `steam_get_inventory_price_sheet`
@@ -92,6 +95,9 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_app_price_info`
 - `steam_get_deleted_steam_ids`
 - `steam_get_public_inventory`
+- `steam_get_lobby_data`
+- `steam_get_site_license_current_client_connections`
+- `steam_get_site_license_total_playtime`
 - `steam_search_apps`
 - `steam_get_app_details`
 - `steam_get_app_reviews`

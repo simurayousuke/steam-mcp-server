@@ -64,6 +64,12 @@
 - `steam_get_game_notification_sessions`
 - `steam_get_game_notification_session_details`
 
+## Game Inventory
+
+- `steam_get_game_inventory_history_command_details`
+- `steam_get_game_inventory_user_history`
+- `steam_get_game_inventory_asset_history`
+
 ## Steam Inventory Service
 
 - `steam_get_inventory_service_inventory`
@@ -122,6 +128,15 @@
 ## Steam Community
 
 - `steam_get_public_inventory`
+
+## Steam Lobby Matchmaking
+
+- `steam_get_lobby_data`
+
+## Steam Site License
+
+- `steam_get_site_license_current_client_connections`
+- `steam_get_site_license_total_playtime`
 
 ## Steam Workshop
 

@@ -12,11 +12,14 @@ import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamEconMarketClient } from '../steam/econ-market-client.js';
 import { SteamEconServiceClient } from '../steam/econ-service-client.js';
 import { SteamEconomyClient } from '../steam/economy-client.js';
+import { SteamGameInventoryClient } from '../steam/game-inventory-client.js';
 import { SteamGameNotificationsClient } from '../steam/game-notifications-client.js';
 import { SteamGameServersClient } from '../steam/game-servers-client.js';
 import { SteamInventoryClient } from '../steam/inventory-client.js';
+import { SteamLobbyMatchmakingClient } from '../steam/lobby-matchmaking-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamPublisherClient } from '../steam/publisher-client.js';
+import { SteamSiteLicenseClient } from '../steam/site-license-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
 import { SteamWebApiClient } from '../steam/web-api-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
@@ -28,12 +31,15 @@ import { registerCommunityTools } from '../tools/community.js';
 import { registerEconMarketTools } from '../tools/econ-market.js';
 import { registerEconServiceTools } from '../tools/econ-service.js';
 import { registerEconomyTools } from '../tools/economy.js';
+import { registerGameInventoryTools } from '../tools/game-inventory.js';
 import { registerGameNotificationsTools } from '../tools/game-notifications.js';
 import { registerGameServersTools } from '../tools/game-servers.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerInventoryTools } from '../tools/inventory.js';
+import { registerLobbyMatchmakingTools } from '../tools/lobby-matchmaking.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerPublisherTools } from '../tools/publisher.js';
+import { registerSiteLicenseTools } from '../tools/site-license.js';
 import { registerStoreTools } from '../tools/store.js';
 import { registerWebApiTools } from '../tools/web-api.js';
 import { registerWorkshopTools } from '../tools/workshop.js';
@@ -133,6 +139,21 @@ export function createSteamMcpServer(): McpServer {
     publisherKey: () => credentialManager.getPublisherKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const gameInventoryClient = new SteamGameInventoryClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
+  const lobbyClient = new SteamLobbyMatchmakingClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
+  const siteLicenseClient = new SteamSiteLicenseClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const publisherClient = new SteamPublisherClient({
     http,
     publisherKey: () => credentialManager.getPublisherKey(),
@@ -152,11 +173,14 @@ export function createSteamMcpServer(): McpServer {
   registerEconMarketTools(server, econMarketClient, authManager);
   registerEconServiceTools(server, econServiceClient);
   registerEconomyTools(server, economyClient);
+  registerGameInventoryTools(server, gameInventoryClient, authManager);
   registerGameNotificationsTools(server, gameNotificationsClient, authManager);
   registerGameServersTools(server, gameServersClient);
   registerInventoryTools(server, inventoryClient, authManager);
+  registerLobbyMatchmakingTools(server, lobbyClient);
   registerPlayerTools(server, playerClient, authManager);
   registerPublisherTools(server, publisherClient, authManager);
+  registerSiteLicenseTools(server, siteLicenseClient);
   registerStoreTools(server, storeClient, authManager);
   registerWebApiTools(server, webApiClient, authManager);
   registerWorkshopTools(server, workshopClient);
