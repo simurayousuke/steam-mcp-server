@@ -14,6 +14,7 @@ describe('Steam MCP resources', () => {
     registerSteamResources(server, {
       authManager: {
         getStatus: () => ({
+          sessions: [],
           authenticatedSteamIds: ['76561197960434622'],
         }),
       },
@@ -142,6 +143,7 @@ describe('Steam MCP resources', () => {
       expect(listedResources.resources.map((resource) => resource.uri)).toEqual(
         expect.arrayContaining([
           'steam://me',
+          'steam://me/overview',
           'steam://me/owned-games',
           'steam://me/wishlist',
           'steam://me/wishlist/count',
@@ -208,6 +210,24 @@ describe('Steam MCP resources', () => {
               steamid: '76561197960434622',
             },
           ],
+        },
+      });
+
+      const authorizedOverview = await client.readResource({
+        uri: 'steam://me/overview',
+      });
+      expect(JSON.parse(authorizedOverview.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        sections: {
+          profile: {
+            ok: true,
+          },
+          ownedGames: {
+            ok: true,
+          },
+          wishlist: {
+            ok: true,
+          },
         },
       });
 

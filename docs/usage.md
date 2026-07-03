@@ -115,7 +115,7 @@ Fetch the combined read-only overview:
 }
 ```
 
-MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/owned-games`, `steam://me/wishlist`, and `steam://me/recently-played`.
+MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, and `steam://me/recently-played`.
 
 ## Web API Key Flow
 
@@ -190,6 +190,7 @@ steam://players/{steamid}/badges/{badgeid}/progress
 steam://players/{steamid}/friends
 steam://profiles/{vanity}/wishlist
 steam://me
+steam://me/overview
 steam://me/owned-games
 steam://me/wishlist
 steam://me/wishlist/count

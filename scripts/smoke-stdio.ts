@@ -93,7 +93,7 @@ async function main(): Promise<void> {
     );
     assertIncludes(
       resources.resources.map((resource) => resource.uri),
-      ['steam://me', 'steam://me/owned-games', 'steam://me/wishlist', 'steam://me/wishlist/count'],
+      ['steam://me', 'steam://me/overview', 'steam://me/owned-games', 'steam://me/wishlist', 'steam://me/wishlist/count'],
       'resources',
     );
     assertIncludes(

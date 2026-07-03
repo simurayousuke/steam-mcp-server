@@ -162,6 +162,7 @@ describe('Steam MCP server', () => {
       expect(resources.resources.map((resource) => resource.uri)).toEqual(
         expect.arrayContaining([
           'steam://me',
+          'steam://me/overview',
           'steam://me/owned-games',
           'steam://me/wishlist',
           'steam://me/wishlist/count',

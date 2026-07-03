@@ -117,6 +117,7 @@ describe('official Steam Web API audit documentation', () => {
       'steam_get_official_wishlist',
       'steam_get_official_wishlist_sorted_filtered',
       'steam_get_authorized_user_overview',
+      'steam://me/overview',
       'steam://me/owned-games',
       'steam://me/wishlist',
       'steam://me/recently-played',

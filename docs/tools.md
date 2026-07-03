@@ -200,6 +200,7 @@
 - `steam://players/{steamid}/friends`
 - `steam://profiles/{vanity}/wishlist`
 - `steam://me`
+- `steam://me/overview`
 - `steam://me/owned-games`
 - `steam://me/wishlist`
 - `steam://me/wishlist/count`

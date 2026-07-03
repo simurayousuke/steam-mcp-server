@@ -1,5 +1,7 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 
+import { buildAuthorizedUserOverview } from '../auth/authorized-overview.js';
+import type { AuthStatusResult } from '../auth/session.js';
 import { SteamMcpError } from '../common/errors.js';
 import type { SteamPlayerClient } from '../steam/player-client.js';
 import type { SteamStoreClient } from '../steam/store-client.js';
@@ -7,9 +9,7 @@ import type { SteamWebApiClient } from '../steam/web-api-client.js';
 import type { SteamWishlistClient } from '../steam/wishlist-client.js';
 
 type SteamAuthStatusProvider = {
-  getStatus: () => {
-    authenticatedSteamIds: string[];
-  };
+  getStatus: () => AuthStatusResult;
 };
 
 export type SteamResourceClients = {
@@ -110,6 +110,22 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri) => {
       const steamId = resolveAuthorizedSteamId(clients.authManager);
       const data = await clients.playerClient.getPlayerSummary({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-authorized-player-overview',
+    'steam://me/overview',
+    {
+      title: 'Authorized Steam player overview',
+      description:
+        'Combined read-only overview for the authenticated OpenID SteamID as JSON. Sections may contain per-source errors.',
+      mimeType: 'application/json',
+    },
+    async (uri) => {
+      const data = await buildAuthorizedUserOverview(clients.authManager, clients.playerClient, clients.wishlistClient);
 
       return jsonResource(uri, data);
     },
