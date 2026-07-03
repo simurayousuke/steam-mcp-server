@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const auditDoc = readFileSync(new URL('../docs/official-webapi-audit.md', import.meta.url), 'utf8');
 const usageDoc = readFileSync(new URL('../docs/usage.md', import.meta.url), 'utf8');
+const designDoc = readFileSync(new URL('../docs/design.md', import.meta.url), 'utf8');
 
 describe('official Steam Web API audit documentation', () => {
   it('lists the currently tracked Steamworks-documented Web API interfaces', () => {
@@ -126,5 +127,24 @@ describe('official Steam Web API audit documentation', () => {
     for (const entry of expectedUsageEntries) {
       expect(usageDoc).toContain(entry);
     }
+  });
+
+  it('keeps the Chinese design document readable and current', () => {
+    const expectedDesignEntries = [
+      'Steam MCP Server 设计方案',
+      '授权模型',
+      '默认安全策略',
+      'MCP Tools',
+      'MCP Resources',
+      'steam://me/overview',
+      'npm run audit:steam-catalog',
+    ];
+
+    for (const entry of expectedDesignEntries) {
+      expect(designDoc).toContain(entry);
+    }
+
+    expect(designDoc).not.toContain('璁');
+    expect(designDoc).not.toContain('鈥');
   });
 });
