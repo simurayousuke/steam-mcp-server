@@ -41,6 +41,12 @@
 - `steam_get_asset_class_info`
 - `steam_get_asset_prices`
 
+## Game Servers
+
+- `steam_get_game_server_account_public_info`
+- `steam_get_server_steam_ids_by_ip`
+- `steam_get_server_ips_by_steam_id`
+
 ## Publisher-Only Web API Tools
 
 - `steam_authenticate_user_ticket`

@@ -19,6 +19,7 @@ Implemented high-level tools cover:
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Store app list pagination through `IStoreService/GetAppList`
 - Public Steam Economy asset class and asset price read endpoints
+- Game server account public info and server IP/SteamID lookup through `IGameServersService`; token-bearing account-list and login-token endpoints are not exposed as high-level tools
 - Publisher-only user ticket authentication, app beta/build/depot/server metadata, game server player stats, leaderboards, partner app lists, banned-player records, Workshop finalized contributors, subscribed-file enumeration, published-item search and vote summaries, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
 - Store search, app details, reviews, package details, and public wishlist JSON
 - Player profile summaries, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
@@ -30,4 +31,5 @@ Implemented high-level tools cover:
 - Steam OpenID proves SteamID ownership but does not grant broad private-data access.
 - Private wishlists are not read through cookies or passwords.
 - Publisher-only, financial, transaction, inventory mutation, and other write-capable APIs are not callable by default.
+- Game server account-list and login-token APIs are intentionally excluded from high-level tools because they expose or operate on server login credentials.
 - `STEAM_API_ALLOWLIST_FILE` is intentionally explicit and reviewed line by line.

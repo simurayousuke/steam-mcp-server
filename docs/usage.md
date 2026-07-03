@@ -66,6 +66,7 @@ Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys ar
 - Player Web API tools, including summaries, owned games, recently played games, friend lists, ban status, achievements, and stats, require a Web API key and are still limited by Steam privacy settings.
 - `steam_get_store_app_list` requires a Web API key and uses the current `IStoreService/GetAppList` endpoint instead of the deprecated `ISteamApps/GetAppList`.
 - `steam_get_asset_class_info` and `steam_get_asset_prices` require a Web API key and expose read-only Steam Economy metadata and price data; transaction/trade endpoints are not exposed.
+- `steam_get_game_server_account_public_info`, `steam_get_server_steam_ids_by_ip`, and `steam_get_server_ips_by_steam_id` require a Web API key; game server account-list and login-token endpoints are not exposed because they can reveal or operate on server login credentials.
 - `steam_query_workshop_files` and `steam_get_ugc_file_details` require a Web API key; Workshop delete/update/subscribe endpoints are not exposed.
 - `steam_get_owned_games` can use `appidsFilter` to restrict a library query to specific Steam appids.
 - Publisher-only tools, including app beta/build/depot/server metadata, game server player stats, leaderboards, partner app lists, banned-player records, Workshop finalized contributors, subscribed-file enumeration, published-item search and vote summaries, and user group list queries, require `STEAM_PUBLISHER_KEY`; they are read-only in this server and are kept separate from user Web API keys.
