@@ -3,11 +3,13 @@ import { z } from 'zod';
 
 import { classifyReadonlySafety } from '../catalog/safety.js';
 import type { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
+import type { SteamWebApiMethodSchema } from '../catalog/steam-web-api-catalog.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import { methodIdentifier } from '../config/allowlist.js';
 import type { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 
 const readonlyApiParameterValueSchema = z.union([z.string(), z.number(), z.boolean()]);
+const secretParameterNames = new Set(['key', 'access_token', 'token']);
 
 export function registerCatalogTools(
   server: McpServer,
@@ -165,12 +167,26 @@ export function registerCatalogTools(
           interfaceName: args.interfaceName,
           nameContains: args.nameContains,
         });
+        const methodsWithAccess = await Promise.all(
+          methods.map(async (method) => {
+            const schema = await catalogClient.getMethodSchema({
+              interfaceName: method.interfaceName,
+              methodName: method.name,
+              version: method.version,
+            });
+
+            return {
+              ...method,
+              access: describeMethodAccess(schema, allowlistedMethods),
+            };
+          }),
+        );
 
         return toolSuccess({
           data: {
             interfaceName: args.interfaceName,
-            methods,
-            count: methods.length,
+            methods: methodsWithAccess,
+            count: methodsWithAccess.length,
           },
         });
       } catch (error: unknown) {
@@ -204,7 +220,10 @@ export function registerCatalogTools(
         });
 
         return toolSuccess({
-          data: method,
+          data: {
+            ...method,
+            access: describeMethodAccess(method, allowlistedMethods),
+          },
         });
       } catch (error: unknown) {
         return toolFailure(error);
@@ -249,4 +268,34 @@ export function registerCatalogTools(
       }
     },
   );
+}
+
+function describeMethodAccess(method: SteamWebApiMethodSchema, allowlistedMethods: ReadonlySet<string>) {
+  const safety = classifyReadonlySafety(method);
+  const identifier = methodIdentifier({
+    interfaceName: method.interfaceName,
+    methodName: method.name,
+    version: method.version,
+  });
+  const allowlisted = allowlistedMethods.has(identifier);
+  const secretParameters = method.parameters
+    .filter((parameter) => secretParameterNames.has(parameter.name.toLowerCase()))
+    .map((parameter) => parameter.name);
+  const requiredUserParameters = method.parameters
+    .filter((parameter) => !parameter.optional)
+    .filter((parameter) => !secretParameterNames.has(parameter.name.toLowerCase()))
+    .map((parameter) => parameter.name);
+
+  return {
+    methodIdentifier: identifier,
+    defaultReadOnlyAllowed: safety.allowed,
+    allowlisted,
+    callableByGenericReadOnlyTool: (safety.allowed || allowlisted) && (method.httpMethod === 'GET' || method.httpMethod === 'POST'),
+    reasons: safety.reasons,
+    requiresWebApiKey: method.parameters.some(
+      (parameter) => parameter.name.toLowerCase() === 'key' && !parameter.optional,
+    ),
+    secretParameters,
+    requiredUserParameters,
+  };
 }

@@ -216,4 +216,4 @@
 - OpenID confirms SteamID ownership but does not grant broad private-data access.
 - Web API keys can be provided through `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`.
 - Publisher-only tools require `STEAM_PUBLISHER_KEY` and are separate from user Web API keys.
-- The generic `steam_api_call_readonly` tool covers additional official catalog methods that pass the safety policy.
+- The generic `steam_api_call_readonly` tool covers additional official catalog methods that pass the safety policy. Use `steam_api_list_methods` or `steam_api_get_method_schema` to inspect `access.callableByGenericReadOnlyTool`, required user parameters, secret parameters, and allowlist status.
