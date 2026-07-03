@@ -1,8 +1,13 @@
 import { readFileSync } from 'node:fs';
 
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { describe, expect, it } from 'vitest';
 
+import { createSteamMcpServer } from '../src/mcp/server.js';
+
 const auditDoc = readFileSync(new URL('../docs/official-webapi-audit.md', import.meta.url), 'utf8');
+const toolsDoc = readFileSync(new URL('../docs/tools.md', import.meta.url), 'utf8');
 const usageDoc = readFileSync(new URL('../docs/usage.md', import.meta.url), 'utf8');
 const designDoc = readFileSync(new URL('../docs/design.md', import.meta.url), 'utf8');
 
@@ -128,6 +133,42 @@ describe('official Steam Web API audit documentation', () => {
 
     for (const entry of expectedUsageEntries) {
       expect(usageDoc).toContain(entry);
+    }
+  });
+
+  it('keeps the tool reference synchronized with the real MCP server manifest', async () => {
+    const server = createSteamMcpServer();
+    const client = new Client({
+      name: 'steam-docs-coverage-client',
+      version: '0.0.0',
+    });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+
+    try {
+      await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+      const [tools, resources, resourceTemplates] = await Promise.all([
+        client.listTools(),
+        client.listResources(),
+        client.listResourceTemplates(),
+      ]);
+
+      for (const tool of tools.tools) {
+        expect(toolsDoc, `docs/tools.md is missing tool ${tool.name}`).toContain(`\`${tool.name}\``);
+      }
+
+      for (const resource of resources.resources) {
+        expect(toolsDoc, `docs/tools.md is missing resource ${resource.uri}`).toContain(`\`${resource.uri}\``);
+      }
+
+      for (const resourceTemplate of resourceTemplates.resourceTemplates) {
+        expect(
+          toolsDoc,
+          `docs/tools.md is missing resource template ${resourceTemplate.uriTemplate}`,
+        ).toContain(`\`${resourceTemplate.uriTemplate}\``);
+      }
+    } finally {
+      await client.close();
+      await server.close();
     }
   });
 
