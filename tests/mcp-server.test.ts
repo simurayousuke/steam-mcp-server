@@ -24,6 +24,7 @@ describe('Steam MCP server', () => {
           'steam_auth_start',
           'steam_auth_set_web_api_key',
           'steam_auth_clear_web_api_key',
+          'steam_get_authorized_user_overview',
           'steam_oauth_start',
           'steam_oauth_complete',
           'steam_oauth_set_access_token',
@@ -223,6 +224,19 @@ describe('Steam MCP server', () => {
         arguments: {},
       });
       expect(wishlistWithoutIdentity).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: {
+            code: 'authentication_required',
+          },
+        },
+      });
+
+      const overviewWithoutIdentity = await client.callTool({
+        name: 'steam_get_authorized_user_overview',
+        arguments: {},
+      });
+      expect(overviewWithoutIdentity).toMatchObject({
         isError: true,
         structuredContent: {
           error: {

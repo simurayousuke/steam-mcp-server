@@ -33,6 +33,7 @@ import { SteamWishlistClient } from '../steam/wishlist-client.js';
 import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAppSpecificTools } from '../tools/app-specific.js';
 import { registerAuthTools } from '../tools/auth.js';
+import { registerAuthorizedUserTools } from '../tools/authorized-user.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCheatReportingTools } from '../tools/cheat-reporting.js';
 import { registerCloudTools } from '../tools/cloud.js';
@@ -216,6 +217,7 @@ export function createSteamMcpServer(): McpServer {
   registerHealthTool(server, metadata);
   registerAppSpecificTools(server, appSpecificClient);
   registerAuthTools(server, authManager, credentialManager);
+  registerAuthorizedUserTools(server, authManager, playerClient, wishlistClient);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCheatReportingTools(server, cheatReportingClient);
   registerCloudTools(server, cloudClient);

@@ -17,6 +17,7 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_auth_logout`
 - `steam_auth_set_web_api_key`
 - `steam_auth_clear_web_api_key`
+- `steam_get_authorized_user_overview`
 - `steam_oauth_start`
 - `steam_oauth_complete`
 - `steam_oauth_set_access_token`

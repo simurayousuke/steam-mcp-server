@@ -47,6 +47,20 @@ If the browser cannot reach the local callback server, copy the final callback U
 
 OpenID proves SteamID ownership. It does not grant broad private-data access.
 
+## Authorized User Overview
+
+After `steam_auth_status` shows an authenticated SteamID, call `steam_get_authorized_user_overview` to fetch a combined read-only snapshot for that user.
+
+By default the overview attempts to include:
+
+- player profile summary
+- owned games
+- recently played games
+- official wishlist
+- official wishlist item count
+
+Profile, owned games, and recently played games require a Steam Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist sections only return data Steam exposes for that user. If one section is private, missing, or lacks required credentials, the overview returns an error for that section while preserving the other sections.
+
 ## Web API Key Flow
 
 Use `steam_auth_set_web_api_key` to store a key in memory for the running MCP server process:
