@@ -197,6 +197,39 @@ export function registerWebApiTools(
   );
 
   server.registerTool(
+    'steam_get_store_app_list',
+    {
+      title: 'Get Steam Store app list',
+      description: 'Fetch a paged Steam Store app list through IStoreService/GetAppList using a Web API key.',
+      inputSchema: {
+        ifModifiedSince: z.number().int().nonnegative().optional(),
+        haveDescriptionLanguage: z.string().min(2).optional(),
+        includeGames: z.boolean().optional(),
+        includeDlc: z.boolean().optional(),
+        includeSoftware: z.boolean().optional(),
+        includeVideos: z.boolean().optional(),
+        includeHardware: z.boolean().optional(),
+        lastAppid: z.number().int().nonnegative().optional(),
+        maxResults: z.number().int().positive().max(50000).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getStoreAppList(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_games_followed',
     {
       title: 'Get followed Steam games',

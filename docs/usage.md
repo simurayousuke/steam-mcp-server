@@ -64,6 +64,7 @@ Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys ar
 ## Data Boundaries
 
 - Player Web API tools, including summaries, owned games, recently played games, friend lists, ban status, achievements, and stats, require a Web API key and are still limited by Steam privacy settings.
+- `steam_get_store_app_list` requires a Web API key and uses the current `IStoreService/GetAppList` endpoint instead of the deprecated `ISteamApps/GetAppList`.
 - `steam_get_owned_games` can use `appidsFilter` to restrict a library query to specific Steam appids.
 - Publisher-only tools, including app beta/build/depot/server metadata, partner app lists, banned-player records, and user group list queries, require `STEAM_PUBLISHER_KEY`; they are read-only in this server and are kept separate from user Web API keys.
 - `steam_authenticate_user_ticket` is intended for secure server-side validation of Steam auth tickets; do not call it from untrusted clients.

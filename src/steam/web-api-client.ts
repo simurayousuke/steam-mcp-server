@@ -87,6 +87,18 @@ export type GetSchemaForGameRequest = {
   language?: string;
 };
 
+export type GetStoreAppListRequest = {
+  ifModifiedSince?: number;
+  haveDescriptionLanguage?: string;
+  includeGames?: boolean;
+  includeDlc?: boolean;
+  includeSoftware?: boolean;
+  includeVideos?: boolean;
+  includeHardware?: boolean;
+  lastAppid?: number;
+  maxResults?: number;
+};
+
 export type StoreSteamIdRequest = {
   steamId: string;
 };
@@ -281,6 +293,45 @@ export class SteamWebApiClient {
     };
   }
 
+  async getStoreAppList(request: GetStoreAppListRequest): Promise<Record<string, unknown>> {
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
+
+    if (!webApiKey) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: 'This Steam Store Web API method requires STEAM_WEB_API_KEY.',
+      });
+    }
+
+    const inputJson = removeUndefined({
+      if_modified_since: request.ifModifiedSince,
+      have_description_language: request.haveDescriptionLanguage,
+      include_games: request.includeGames,
+      include_dlc: request.includeDlc,
+      include_software: request.includeSoftware,
+      include_videos: request.includeVideos,
+      include_hardware: request.includeHardware,
+      last_appid: request.lastAppid,
+      max_results: request.maxResults,
+    });
+    const url = new URL('https://partner.steam-api.com/IStoreService/GetAppList/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('key', webApiKey);
+    url.searchParams.set('input_json', JSON.stringify(inputJson));
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam Store app list response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      query: request,
+      response: parsed.data.response,
+    };
+  }
+
   async getGamesFollowed(request: StoreSteamIdRequest): Promise<Record<string, unknown>> {
     const url = new URL('https://api.steampowered.com/IStoreService/GetGamesFollowed/v1/');
     url.searchParams.set('format', 'json');
@@ -339,6 +390,18 @@ function setOptionalParam(url: URL, name: string, value: string | number | undef
 
 function resolveWebApiKey(webApiKey: string | (() => string | undefined) | undefined): string | undefined {
   return typeof webApiKey === 'function' ? webApiKey() : webApiKey;
+}
+
+function removeUndefined(params: Record<string, string | number | boolean | undefined>): Record<string, string | number | boolean> {
+  const result: Record<string, string | number | boolean> = {};
+
+  for (const [name, value] of Object.entries(params)) {
+    if (value !== undefined) {
+      result[name] = value;
+    }
+  }
+
+  return result;
 }
 
 function invalidWebApiResponse(message: string, error: z.ZodError): SteamMcpError {

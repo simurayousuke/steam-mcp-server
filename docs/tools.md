@@ -31,6 +31,7 @@
 - `steam_check_app_up_to_date`
 - `steam_get_global_stats_for_game`
 - `steam_get_schema_for_game`
+- `steam_get_store_app_list`
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
 

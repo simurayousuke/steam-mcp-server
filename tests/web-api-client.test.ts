@@ -236,6 +236,71 @@ describe('SteamWebApiClient', () => {
     expect(requestCount).toBe(0);
   });
 
+  it('fetches the Store app list with input_json and a Web API key', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(
+      async (url) => {
+        requestedUrl = url;
+        return {
+          response: {
+            apps: [
+              {
+                appid: 620,
+                name: 'Portal 2',
+              },
+            ],
+            last_appid: 620,
+            have_more_results: false,
+          },
+        };
+      },
+      {
+        webApiKey: 'configured-key',
+      },
+    );
+
+    await expect(
+      client.getStoreAppList({
+        includeGames: true,
+        includeDlc: false,
+        haveDescriptionLanguage: 'en',
+        lastAppid: 100,
+        maxResults: 200,
+      }),
+    ).resolves.toMatchObject({
+      response: {
+        apps: [
+          {
+            appid: 620,
+          },
+        ],
+      },
+    });
+    expect(requestedUrl?.origin).toBe('https://partner.steam-api.com');
+    expect(requestedUrl?.pathname).toBe('/IStoreService/GetAppList/v1/');
+    expect(requestedUrl?.searchParams.get('key')).toBe('configured-key');
+    expect(JSON.parse(requestedUrl?.searchParams.get('input_json') ?? '{}')).toEqual({
+      have_description_language: 'en',
+      include_games: true,
+      include_dlc: false,
+      last_appid: 100,
+      max_results: 200,
+    });
+  });
+
+  it('requires a Web API key before fetching the Store app list', async () => {
+    let requestCount = 0;
+    const client = createWebApiClient(async () => {
+      requestCount += 1;
+      return {};
+    });
+
+    await expect(client.getStoreAppList({ maxResults: 10 })).rejects.toMatchObject({
+      code: 'authentication_required',
+    });
+    expect(requestCount).toBe(0);
+  });
+
   it('fetches games followed and followed game count', async () => {
     const client = createWebApiClient(async (url) => {
       if (url.pathname.includes('GetGamesFollowedCount')) {
