@@ -10,6 +10,7 @@ import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamEconomyClient } from '../steam/economy-client.js';
 import { SteamGameServersClient } from '../steam/game-servers-client.js';
+import { SteamInventoryClient } from '../steam/inventory-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamPublisherClient } from '../steam/publisher-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
@@ -22,6 +23,7 @@ import { registerCommunityTools } from '../tools/community.js';
 import { registerEconomyTools } from '../tools/economy.js';
 import { registerGameServersTools } from '../tools/game-servers.js';
 import { registerHealthTool } from '../tools/health.js';
+import { registerInventoryTools } from '../tools/inventory.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerPublisherTools } from '../tools/publisher.js';
 import { registerStoreTools } from '../tools/store.js';
@@ -104,6 +106,11 @@ export function createSteamMcpServer(): McpServer {
     publisherKey: () => credentialManager.getPublisherKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const inventoryClient = new SteamInventoryClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
@@ -111,6 +118,7 @@ export function createSteamMcpServer(): McpServer {
   registerCommunityTools(server, communityClient, authManager);
   registerEconomyTools(server, economyClient);
   registerGameServersTools(server, gameServersClient);
+  registerInventoryTools(server, inventoryClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
   registerPublisherTools(server, publisherClient, authManager);
   registerStoreTools(server, storeClient, authManager);

@@ -47,6 +47,13 @@
 - `steam_get_server_steam_ids_by_ip`
 - `steam_get_server_ips_by_steam_id`
 
+## Steam Inventory Service
+
+- `steam_get_inventory_service_inventory`
+- `steam_get_inventory_item_defs`
+- `steam_get_inventory_price_sheet`
+- `steam_get_inventory_quantity`
+
 ## Publisher-Only Web API Tools
 
 - `steam_authenticate_user_ticket`
