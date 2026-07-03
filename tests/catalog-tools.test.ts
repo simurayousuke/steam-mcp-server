@@ -4,7 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { describe, expect, it } from 'vitest';
 
 import type { SteamWebApiMethodSchema } from '../src/catalog/steam-web-api-catalog.js';
-import { registerCatalogTools } from '../src/tools/catalog.js';
+import { buildCatalogCoverageSummary, registerCatalogTools } from '../src/tools/catalog.js';
 
 const methodSchemas: SteamWebApiMethodSchema[] = [
   {
@@ -54,6 +54,110 @@ const methodSchemas: SteamWebApiMethodSchema[] = [
 ];
 
 describe('Steam Web API catalog tools', () => {
+  it('summarizes generic coverage by interface and default blocking reason', () => {
+    const summary = buildCatalogCoverageSummary(
+      {
+        fetchedAt: '2026-07-03T00:00:00.000Z',
+        interfaces: [
+          {
+            name: 'IAuthenticationService',
+            methods: [
+              {
+                name: 'GetAuthSessionInfo',
+                version: 1,
+                httpMethod: 'GET',
+                parameters: [],
+              },
+            ],
+          },
+          {
+            name: 'ISteamNews',
+            methods: [
+              {
+                name: 'GetNewsForApp',
+                version: 2,
+                httpMethod: 'GET',
+                parameters: [
+                  {
+                    name: 'appid',
+                    optional: false,
+                  },
+                ],
+              },
+              {
+                name: 'SetNewsForApp',
+                version: 1,
+                httpMethod: 'POST',
+                parameters: [],
+              },
+            ],
+          },
+          {
+            name: 'ISteamRemoteStorage',
+            methods: [
+              {
+                name: 'GetPublishedFileDetails',
+                version: 1,
+                httpMethod: 'POST',
+                parameters: [
+                  {
+                    name: 'itemcount',
+                    optional: false,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      new Set(['isteamremotestorage.getpublishedfiledetails.v1']),
+    );
+
+    expect(summary).toMatchObject({
+      interfaceCount: 3,
+      methodCount: 4,
+      defaultAllowedMethods: 1,
+      allowlistedBlockedMethods: 1,
+      blockedMethods: 2,
+      postMethods: 2,
+      configuredAllowlistCount: 1,
+      interfaces: [
+        {
+          name: 'IAuthenticationService',
+          methodCount: 1,
+          defaultAllowedMethods: 0,
+          blockedMethods: 1,
+        },
+        {
+          name: 'ISteamNews',
+          methodCount: 2,
+          defaultAllowedMethods: 1,
+          blockedMethods: 1,
+          postMethods: 1,
+        },
+        {
+          name: 'ISteamRemoteStorage',
+          methodCount: 1,
+          allowlistedBlockedMethods: 1,
+          blockedMethods: 0,
+          postMethods: 1,
+        },
+      ],
+    });
+    expect(summary.defaultBlockedReasonCounts).toEqual(
+      expect.arrayContaining([
+        {
+          reason: 'HTTP method POST is not allowed by the default read-only policy.',
+          count: 2,
+        },
+        {
+          reason: 'Interface IAuthenticationService is blocked by the default policy because it handles Steam authentication flows.',
+          count: 1,
+        },
+      ]),
+    );
+  });
+
   it('adds generic read-only access metadata to method listings and schemas', async () => {
     const server = new McpServer({
       name: 'steam-catalog-tool-test-server',
