@@ -96,6 +96,10 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_deleted_steam_ids`
 - `steam_get_public_inventory`
 - `steam_get_lobby_data`
+- `steam_microtxn_get_report`
+- `steam_microtxn_get_user_agreement_info`
+- `steam_microtxn_get_user_info`
+- `steam_microtxn_query_txn`
 - `steam_financial_get_changed_dates`
 - `steam_financial_get_detailed_sales`
 - `steam_financial_get_app_wishlist_reporting`

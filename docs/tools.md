@@ -133,6 +133,13 @@
 
 - `steam_get_lobby_data`
 
+## Steam MicroTxn
+
+- `steam_microtxn_get_report`
+- `steam_microtxn_get_user_agreement_info`
+- `steam_microtxn_get_user_info`
+- `steam_microtxn_query_txn`
+
 ## Partner Financials
 
 - `steam_financial_get_changed_dates`
