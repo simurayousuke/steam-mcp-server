@@ -64,6 +64,7 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_app_reviews`
 - `steam_get_store_package`
 - `steam_get_user_wishlist`
+- `steam_query_workshop_files`
 - `steam_get_workshop_file_details`
 - `steam_get_workshop_collection_details`
 

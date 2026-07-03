@@ -80,6 +80,7 @@
 
 ## Steam Workshop
 
+- `steam_query_workshop_files`
 - `steam_get_workshop_file_details`
 - `steam_get_workshop_collection_details`
 

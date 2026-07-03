@@ -21,7 +21,7 @@ Implemented high-level tools cover:
 - Store search, app details, reviews, package details, and public wishlist JSON
 - Player profile summaries, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
 - Public Steam Community inventory
-- Workshop published file details and collection details
+- Workshop published file search, published file details, and collection details
 
 ## Known Boundaries
 

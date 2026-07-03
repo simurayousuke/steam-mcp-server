@@ -61,6 +61,7 @@ describe('Steam MCP server', () => {
           'steam_get_friend_list',
           'steam_get_player_bans',
           'steam_get_user_group_list',
+          'steam_query_workshop_files',
           'steam_get_workshop_file_details',
           'steam_get_workshop_collection_details',
         ]),

@@ -77,6 +77,7 @@ export function createSteamMcpServer(): McpServer {
   });
   const workshopClient = new SteamWorkshopClient({
     http,
+    webApiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
   const webApiClient = new SteamWebApiClient({
