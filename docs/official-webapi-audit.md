@@ -62,6 +62,63 @@ The scope of this audit is Valve's HTTP-based Steam Web API and related public S
 | `IWishlistService` | `steam_get_official_wishlist`, `steam_get_official_wishlist_sorted_filtered`, and `steam_get_official_wishlist_item_count` cover `GetWishlist`, `GetWishlistSortedFiltered`, and `GetWishlistItemCount`. | No write methods are exposed as high-level tools. | https://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v1/?format=json |
 | `IWorkshopService` | `steam_get_workshop_finalized_contributors` and `steam_get_workshop_item_daily_revenue`. | `SetItemPaymentRules` and `PopulateItemDescriptions`. | https://partner.steamgames.com/doc/webapi/IWorkshopService |
 
+## Public Catalog Method Inventory
+
+This inventory is checked by `npm run audit:steam-catalog` against the current public `ISteamWebAPIUtil/GetSupportedAPIList` response. App-specific Game Coordinator interfaces are normalized to `IGCVersion_<appid>`.
+
+- `IAuthenticationService.BeginAuthSessionViaCredentials.v1`
+- `IAuthenticationService.BeginAuthSessionViaQR.v1`
+- `IAuthenticationService.GetAuthSessionInfo.v1`
+- `IAuthenticationService.GetAuthSessionRiskInfo.v1`
+- `IAuthenticationService.GetPasswordRSAPublicKey.v1`
+- `IAuthenticationService.NotifyRiskQuizResults.v1`
+- `IAuthenticationService.PollAuthSessionStatus.v1`
+- `IAuthenticationService.UpdateAuthSessionWithMobileConfirmation.v1`
+- `IAuthenticationService.UpdateAuthSessionWithSteamGuardCode.v1`
+- `IBroadcastService.PostGameDataFrameRTMP.v1`
+- `IClientStats_1046930.ReportEvent.v1`
+- `IContentServerDirectoryService.GetCDNForVideo.v1`
+- `IContentServerDirectoryService.GetClientUpdateHosts.v1`
+- `IContentServerDirectoryService.GetDepotPatchInfo.v1`
+- `IContentServerDirectoryService.GetServersForSteamPipe.v1`
+- `IContentServerDirectoryService.PickSingleContentServer.v1`
+- `IGCVersion_<appid>.GetClientVersion.v1`
+- `IGCVersion_<appid>.GetServerVersion.v1`
+- `IGameNotificationsService.UserCreateSession.v1`
+- `IGameNotificationsService.UserDeleteSession.v1`
+- `IGameNotificationsService.UserUpdateSession.v1`
+- `IHelpRequestLogsService.GetApplicationLogDemand.v1`
+- `IHelpRequestLogsService.UploadUserApplicationLog.v1`
+- `IPlayerService.RecordOfflinePlaytime.v1`
+- `IPortal2Leaderboards_620.GetBucketizedData.v1`
+- `IPublishedFileService.GetUserVoteSummary.v1`
+- `ISteamApps.GetSDRConfig.v1`
+- `ISteamApps.GetServersAtAddress.v1`
+- `ISteamApps.UpToDateCheck.v1`
+- `ISteamBroadcast.PlayerStats.v1`
+- `ISteamBroadcast.ViewerHeartbeat.v1`
+- `ISteamDirectory.GetCMList.v1`
+- `ISteamDirectory.GetCMListForConnect.v1`
+- `ISteamDirectory.GetSteamPipeDomains.v1`
+- `ISteamNews.GetNewsForApp.v1`
+- `ISteamNews.GetNewsForApp.v2`
+- `ISteamRemoteStorage.GetCollectionDetails.v1`
+- `ISteamRemoteStorage.GetPublishedFileDetails.v1`
+- `ISteamUserOAuth.GetTokenDetails.v1`
+- `ISteamUserStats.GetGlobalAchievementPercentagesForApp.v1`
+- `ISteamUserStats.GetGlobalAchievementPercentagesForApp.v2`
+- `ISteamUserStats.GetGlobalStatsForGame.v1`
+- `ISteamUserStats.GetNumberOfCurrentPlayers.v1`
+- `ISteamWebAPIUtil.GetServerInfo.v1`
+- `ISteamWebAPIUtil.GetSupportedAPIList.v1`
+- `IStoreService.GetGamesFollowed.v1`
+- `IStoreService.GetGamesFollowedCount.v1`
+- `IStoreService.GetRecommendedTagsForUser.v1`
+- `ITFSystem_440.GetWorldStatus.v1`
+- `IWishlistService.GetWishlist.v1`
+- `IWishlistService.GetWishlistItemCount.v1`
+- `IWishlistService.GetWishlistSortedFiltered.v1`
+
 ## Public Store and Community Endpoints
 
 These are not part of `GetSupportedAPIList`, but they are important for the user's requested workflows:
@@ -69,7 +126,7 @@ These are not part of `GetSupportedAPIList`, but they are important for the user
 | Area | High-level coverage | Boundary |
 | --- | --- | --- |
 | Steam Store search and app metadata | `steam_search_apps`, `steam_get_app_details`, `steam_get_app_reviews`, and `steam_get_store_package`. | Public Store endpoint stability is lower than documented Web API interfaces, so handlers normalize errors and avoid authenticated scraping. |
-| Public wishlists | `steam_get_official_wishlist`, `steam_get_official_wishlist_item_count`, and `steam_get_user_wishlist`. | Official wishlist reads and public Store wishlist JSON only. The server does not use Steam credentials, browser cookies, or private wishlist scraping. |
+| Public wishlists | `steam_get_official_wishlist`, `steam_get_official_wishlist_sorted_filtered`, `steam_get_official_wishlist_item_count`, and `steam_get_user_wishlist`. | Official wishlist reads and public Store wishlist JSON only. The server does not use Steam credentials, browser cookies, or private wishlist scraping. |
 | Public community inventory | `steam_get_public_inventory`. | Public inventory only, subject to the user's Steam privacy settings. |
 
 ## Authorization Notes

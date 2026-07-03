@@ -7,6 +7,12 @@ const DEFAULT_AUDIT_DOC = 'docs/official-webapi-audit.md';
 
 type SteamCatalogInterface = {
   name: string;
+  methods?: SteamCatalogMethod[];
+};
+
+type SteamCatalogMethod = {
+  name: string;
+  version: number;
 };
 
 type SteamCatalogResponse = {
@@ -20,6 +26,10 @@ export type CatalogAuditResult = {
   auditDocPath: string;
   interfaceCount: number;
   interfaces: string[];
+  methodCount: number;
+  methods: string[];
+  missingInterfaces: string[];
+  missingMethods: string[];
   missing: string[];
 };
 
@@ -40,9 +50,40 @@ export function extractDocumentedInterfaces(auditDocText: string): Set<string> {
   return documented;
 }
 
+export function normalizeMethodIdentifier(interfaceName: string, methodName: string, version: number): string {
+  return `${normalizeInterfaceName(interfaceName)}.${methodName}.v${version}`;
+}
+
+export function extractDocumentedMethodIdentifiers(auditDocText: string): Set<string> {
+  const documented = new Set<string>();
+  const methodPattern = /`([A-Za-z0-9_<>\-]+(?:\.[A-Za-z0-9_]+\.v\d+))`/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = methodPattern.exec(auditDocText)) !== null) {
+    documented.add(match[1] ?? '');
+  }
+
+  documented.delete('');
+  return documented;
+}
+
 export function getCatalogInterfaceNames(catalog: SteamCatalogResponse): string[] {
   const interfaces = catalog.apilist?.interfaces ?? [];
   return [...new Set(interfaces.map((entry) => normalizeInterfaceName(entry.name)))].sort();
+}
+
+export function getCatalogMethodIdentifiers(catalog: SteamCatalogResponse): string[] {
+  const interfaces = catalog.apilist?.interfaces ?? [];
+
+  return [
+    ...new Set(
+      interfaces.flatMap((apiInterface) =>
+        (apiInterface.methods ?? []).map((method) =>
+          normalizeMethodIdentifier(apiInterface.name, method.name, method.version),
+        ),
+      ),
+    ),
+  ].sort();
 }
 
 export function auditCatalogCoverage(input: {
@@ -52,14 +93,21 @@ export function auditCatalogCoverage(input: {
   auditDocPath?: string;
 }): CatalogAuditResult {
   const interfaces = getCatalogInterfaceNames(input.catalog);
+  const methods = getCatalogMethodIdentifiers(input.catalog);
   const documented = extractDocumentedInterfaces(input.auditDocText);
+  const documentedMethods = extractDocumentedMethodIdentifiers(input.auditDocText);
   const missing = interfaces.filter((interfaceName) => !documented.has(interfaceName));
+  const missingMethods = methods.filter((methodIdentifier) => !documentedMethods.has(methodIdentifier));
 
   return {
     catalogUrl: input.catalogUrl ?? DEFAULT_CATALOG_URL,
     auditDocPath: input.auditDocPath ?? DEFAULT_AUDIT_DOC,
     interfaceCount: interfaces.length,
     interfaces,
+    methodCount: methods.length,
+    methods,
+    missingInterfaces: missing,
+    missingMethods,
     missing,
   };
 }
@@ -90,7 +138,7 @@ async function main(): Promise<void> {
 
   console.log(JSON.stringify(result, null, 2));
 
-  if (result.missing.length > 0) {
+  if (result.missing.length > 0 || result.missingMethods.length > 0) {
     process.exitCode = 1;
   }
 }
