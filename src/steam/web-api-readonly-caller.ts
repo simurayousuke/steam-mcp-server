@@ -14,14 +14,14 @@ export type ReadonlyApiCallRequest = {
 };
 
 export type ReadonlyApiCallResponse = {
-      request: {
-        interfaceName: string;
-        methodName: string;
-        version: number;
-        httpMethod: string;
-        allowlisted: boolean;
-        parameterNames: string[];
-      };
+  request: {
+    interfaceName: string;
+    methodName: string;
+    version: number;
+    httpMethod: string;
+    allowlisted: boolean;
+    parameterNames: string[];
+  };
   response: unknown;
 };
 
