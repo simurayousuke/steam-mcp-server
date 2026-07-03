@@ -19,6 +19,7 @@ Implemented high-level tools cover:
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Store app list pagination through `IStoreService/GetAppList`
+- Trade history, trade offers, individual trade offer, and trade offer summary reads through `IEconService`; cache flush and mutation endpoints are not exposed as high-level tools
 - Public Steam Economy asset class and asset price read endpoints
 - Game server account public info and server IP/SteamID lookup through `IGameServersService`; token-bearing account-list and login-token endpoints are not exposed as high-level tools
 - Game notification session enumeration and session detail reads through `IGameNotificationsService`; create, update, request, and delete notification methods are not exposed as high-level tools
@@ -34,6 +35,7 @@ Implemented high-level tools cover:
 - Steam OpenID proves SteamID ownership but does not grant broad private-data access.
 - Steam OAuth access tokens are only stored in memory and are never returned in tool output.
 - Private wishlists are not read through cookies or passwords.
+- Steam trade tools are read-only and require the user's Web API key; trade mutations are not exposed.
 - Publisher-only, financial, transaction, inventory mutation, and other write-capable APIs are not callable by default.
 - Game server account-list and login-token APIs are intentionally excluded from high-level tools because they expose or operate on server login credentials.
 - Game notification create, update, request, and delete APIs are intentionally excluded from high-level tools because they create or mutate user-visible notification state.

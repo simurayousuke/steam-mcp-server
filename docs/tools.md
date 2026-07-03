@@ -40,6 +40,10 @@
 - `steam_get_store_app_list`
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
+- `steam_get_trade_history`
+- `steam_get_trade_offers`
+- `steam_get_trade_offer`
+- `steam_get_trade_offers_summary`
 
 ## Steam Economy
 

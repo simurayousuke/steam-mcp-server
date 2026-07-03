@@ -53,6 +53,10 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_store_app_list`
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
+- `steam_get_trade_history`
+- `steam_get_trade_offers`
+- `steam_get_trade_offer`
+- `steam_get_trade_offers_summary`
 - `steam_get_asset_class_info`
 - `steam_get_asset_prices`
 - `steam_get_game_server_account_public_info`
