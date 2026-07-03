@@ -5,7 +5,15 @@ import type { AuthStatusResult, SteamOpenIdAuthManager } from './session.js';
 
 type AuthorizedOverviewPlayerClient = Pick<
   SteamPlayerClient,
-  'getOwnedGames' | 'getPlayerSummary' | 'getRecentlyPlayedGames'
+  | 'getBadges'
+  | 'getFriendList'
+  | 'getOwnedGames'
+  | 'getPlayerAchievements'
+  | 'getPlayerBans'
+  | 'getPlayerSummary'
+  | 'getRecentlyPlayedGames'
+  | 'getSteamLevel'
+  | 'getUserStatsForGame'
 >;
 
 type AuthorizedOverviewWishlistClient = Pick<SteamWishlistClient, 'getWishlist' | 'getWishlistItemCount'>;
@@ -16,10 +24,18 @@ export type AuthorizedUserOverviewOptions = {
   includeRecentlyPlayedGames?: boolean;
   includeWishlist?: boolean;
   includeWishlistItemCount?: boolean;
+  includeSteamLevel?: boolean;
+  includeBadges?: boolean;
+  includeFriends?: boolean;
+  includePlayerBans?: boolean;
   ownedGamesIncludeAppInfo?: boolean;
   ownedGamesIncludePlayedFreeGames?: boolean;
   ownedGamesAppidsFilter?: number[];
   recentlyPlayedCount?: number;
+  friendsRelationship?: string;
+  achievementAppids?: number[];
+  statsAppids?: number[];
+  gameLanguage?: string;
 };
 
 export type OverviewSection =
@@ -85,6 +101,57 @@ export async function buildAuthorizedUserOverview(
     sections.wishlistItemCount = await readOverviewSection(() => wishlistClient.getWishlistItemCount({ steamId }));
   }
 
+  if (options.includeSteamLevel ?? false) {
+    sections.steamLevel = await readOverviewSection(() => playerClient.getSteamLevel({ steamId }));
+  }
+
+  if (options.includeBadges ?? false) {
+    sections.badges = await readOverviewSection(() => playerClient.getBadges({ steamId }));
+  }
+
+  if (options.includeFriends ?? false) {
+    sections.friends = await readOverviewSection(() =>
+      playerClient.getFriendList({
+        steamId,
+        relationship: options.friendsRelationship,
+      }),
+    );
+  }
+
+  if (options.includePlayerBans ?? false) {
+    sections.playerBans = await readOverviewSection(() =>
+      playerClient.getPlayerBans({
+        steamIds: [steamId],
+      }),
+    );
+  }
+
+  if (options.achievementAppids && options.achievementAppids.length > 0) {
+    sections.achievementsByApp = {
+      ok: true,
+      data: await readAppSections(options.achievementAppids, (appid) =>
+        playerClient.getPlayerAchievements({
+          steamId,
+          appid,
+          language: options.gameLanguage,
+        }),
+      ),
+    };
+  }
+
+  if (options.statsAppids && options.statsAppids.length > 0) {
+    sections.statsByApp = {
+      ok: true,
+      data: await readAppSections(options.statsAppids, (appid) =>
+        playerClient.getUserStatsForGame({
+          steamId,
+          appid,
+          language: options.gameLanguage,
+        }),
+      ),
+    };
+  }
+
   return {
     steamId,
     auth: authStatus,
@@ -124,4 +191,17 @@ async function readOverviewSection(read: () => Promise<Record<string, unknown>>)
       },
     };
   }
+}
+
+async function readAppSections(
+  appids: number[],
+  read: (appid: number) => Promise<Record<string, unknown>>,
+): Promise<Record<string, OverviewSection>> {
+  const sections: Record<string, OverviewSection> = {};
+
+  for (const appid of appids) {
+    sections[String(appid)] = await readOverviewSection(() => read(appid));
+  }
+
+  return sections;
 }

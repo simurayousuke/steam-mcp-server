@@ -20,10 +20,13 @@ export type SteamResourceClients = {
     | 'getCommunityBadgeProgress'
     | 'getFriendList'
     | 'getOwnedGames'
+    | 'getPlayerAchievements'
+    | 'getPlayerBans'
     | 'getPlayerSummary'
     | 'getRecentlyPlayedGames'
     | 'getSingleGamePlaytime'
     | 'getSteamLevel'
+    | 'getUserStatsForGame'
   >;
   storeClient: Pick<SteamStoreClient, 'getAppDetails' | 'getPublicWishlist'>;
   webApiClient: Pick<SteamWebApiClient, 'getNewsForApp' | 'getSchemaForGame'>;

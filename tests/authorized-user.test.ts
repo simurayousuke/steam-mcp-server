@@ -31,6 +31,34 @@ describe('authorized user overview helpers', () => {
             steamId,
             games: [],
           }),
+          getSteamLevel: async ({ steamId }) => ({
+            steamId,
+            level: 42,
+          }),
+          getBadges: async ({ steamId }) => ({
+            steamId,
+            badges: [],
+          }),
+          getFriendList: async ({ steamId, relationship }) => ({
+            steamId,
+            relationship,
+            friends: [],
+          }),
+          getPlayerBans: async ({ steamIds }) => ({
+            players: steamIds,
+          }),
+          getPlayerAchievements: async ({ steamId, appid, language }) => ({
+            steamId,
+            appid,
+            language,
+            achievements: [],
+          }),
+          getUserStatsForGame: async ({ steamId, appid, language }) => ({
+            steamId,
+            appid,
+            language,
+            stats: [],
+          }),
         },
         {
           getWishlist: async ({ steamId }) => ({
@@ -41,6 +69,16 @@ describe('authorized user overview helpers', () => {
             steamId,
             count: 0,
           }),
+        },
+        {
+          includeSteamLevel: true,
+          includeBadges: true,
+          includeFriends: true,
+          includePlayerBans: true,
+          friendsRelationship: 'friend',
+          achievementAppids: [620],
+          statsAppids: [440],
+          gameLanguage: 'en',
         },
       ),
     ).resolves.toMatchObject({
@@ -59,6 +97,43 @@ describe('authorized user overview helpers', () => {
           ok: true,
           data: {
             count: 0,
+          },
+        },
+        steamLevel: {
+          ok: true,
+          data: {
+            level: 42,
+          },
+        },
+        friends: {
+          ok: true,
+          data: {
+            relationship: 'friend',
+          },
+        },
+        playerBans: {
+          ok: true,
+        },
+        achievementsByApp: {
+          ok: true,
+          data: {
+            '620': {
+              ok: true,
+              data: {
+                appid: 620,
+              },
+            },
+          },
+        },
+        statsByApp: {
+          ok: true,
+          data: {
+            '440': {
+              ok: true,
+              data: {
+                appid: 440,
+              },
+            },
           },
         },
       },

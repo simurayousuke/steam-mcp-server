@@ -131,6 +131,23 @@ Fetch the combined read-only overview:
 }
 ```
 
+Add optional authenticated-user sections when you need a richer snapshot:
+
+```json
+{
+  "name": "steam_get_authorized_user_overview",
+  "arguments": {
+    "includeSteamLevel": true,
+    "includeBadges": true,
+    "includeFriends": true,
+    "includePlayerBans": true,
+    "achievementAppids": [620],
+    "statsAppids": [440],
+    "gameLanguage": "en"
+  }
+}
+```
+
 MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, and `steam://me/recently-played`.
 
 ## Web API Key Flow
