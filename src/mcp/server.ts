@@ -242,6 +242,7 @@ export function createSteamMcpServer(): McpServer {
   registerWishlistTools(server, wishlistClient, authManager);
   registerWorkshopTools(server, workshopClient);
   registerSteamResources(server, {
+    authManager,
     playerClient,
     storeClient,
     webApiClient,

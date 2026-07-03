@@ -16,6 +16,7 @@ describe('Steam MCP server', () => {
     try {
       await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
       const tools = await client.listTools();
+      const resources = await client.listResources();
       const resourceTemplates = await client.listResourceTemplates();
 
       expect(tools.tools.map((tool) => tool.name)).toEqual(
@@ -153,6 +154,20 @@ describe('Steam MCP server', () => {
           'steam://players/{steamid}/badges/{badgeid}/progress',
           'steam://players/{steamid}/friends',
           'steam://profiles/{vanity}/wishlist',
+          'steam://me/apps/{appid}/playtime',
+          'steam://me/badges/{badgeid}/progress',
+        ]),
+      );
+      expect(resources.resources.map((resource) => resource.uri)).toEqual(
+        expect.arrayContaining([
+          'steam://me',
+          'steam://me/owned-games',
+          'steam://me/wishlist',
+          'steam://me/wishlist/count',
+          'steam://me/recently-played',
+          'steam://me/steam-level',
+          'steam://me/badges',
+          'steam://me/friends',
         ]),
       );
 

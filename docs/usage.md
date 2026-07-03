@@ -133,9 +133,21 @@ steam://players/{steamid}/badges
 steam://players/{steamid}/badges/{badgeid}/progress
 steam://players/{steamid}/friends
 steam://profiles/{vanity}/wishlist
+steam://me
+steam://me/owned-games
+steam://me/wishlist
+steam://me/wishlist/count
+steam://me/apps/{appid}/playtime
+steam://me/recently-played
+steam://me/steam-level
+steam://me/badges
+steam://me/badges/{badgeid}/progress
+steam://me/friends
 ```
 
 Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile.
+
+After Steam OpenID authentication, `steam://me` resources resolve the authenticated SteamID automatically.
 
 ## Allowlisted Web API Methods
 

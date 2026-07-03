@@ -12,6 +12,11 @@ describe('Steam MCP resources', () => {
       version: '0.0.0',
     });
     registerSteamResources(server, {
+      authManager: {
+        getStatus: () => ({
+          authenticatedSteamIds: ['76561197960434622'],
+        }),
+      },
       storeClient: {
         getAppDetails: async ({ appid }) => ({
           appid,
@@ -133,6 +138,20 @@ describe('Steam MCP resources', () => {
     try {
       await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 
+      const listedResources = await client.listResources();
+      expect(listedResources.resources.map((resource) => resource.uri)).toEqual(
+        expect.arrayContaining([
+          'steam://me',
+          'steam://me/owned-games',
+          'steam://me/wishlist',
+          'steam://me/wishlist/count',
+          'steam://me/recently-played',
+          'steam://me/steam-level',
+          'steam://me/badges',
+          'steam://me/friends',
+        ]),
+      );
+
       const app = await client.readResource({
         uri: 'steam://apps/620',
       });
@@ -179,10 +198,33 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const authorizedPlayer = await client.readResource({
+        uri: 'steam://me',
+      });
+      expect(JSON.parse(authorizedPlayer.contents[0]?.text ?? '{}')).toMatchObject({
+        response: {
+          players: [
+            {
+              steamid: '76561197960434622',
+            },
+          ],
+        },
+      });
+
       const ownedGames = await client.readResource({
         uri: 'steam://players/76561197960434622/owned-games',
       });
       expect(JSON.parse(ownedGames.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          game_count: 1,
+        },
+      });
+
+      const authorizedOwnedGames = await client.readResource({
+        uri: 'steam://me/owned-games',
+      });
+      expect(JSON.parse(authorizedOwnedGames.contents[0]?.text ?? '{}')).toMatchObject({
         steamId: '76561197960434622',
         response: {
           game_count: 1,
@@ -202,10 +244,26 @@ describe('Steam MCP resources', () => {
         ],
       });
 
+      const authorizedWishlist = await client.readResource({
+        uri: 'steam://me/wishlist',
+      });
+      expect(JSON.parse(authorizedWishlist.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        count: 1,
+      });
+
       const wishlistCount = await client.readResource({
         uri: 'steam://players/76561197960434622/wishlist/count',
       });
       expect(JSON.parse(wishlistCount.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        count: 1,
+      });
+
+      const authorizedWishlistCount = await client.readResource({
+        uri: 'steam://me/wishlist/count',
+      });
+      expect(JSON.parse(authorizedWishlistCount.contents[0]?.text ?? '{}')).toMatchObject({
         steamId: '76561197960434622',
         count: 1,
       });
@@ -231,10 +289,31 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const authorizedAppPlaytime = await client.readResource({
+        uri: 'steam://me/apps/620/playtime',
+      });
+      expect(JSON.parse(authorizedAppPlaytime.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        appid: 620,
+        response: {
+          playtime_forever: 120,
+        },
+      });
+
       const recentlyPlayed = await client.readResource({
         uri: 'steam://players/76561197960434622/recently-played',
       });
       expect(JSON.parse(recentlyPlayed.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          total_count: 1,
+        },
+      });
+
+      const authorizedRecentlyPlayed = await client.readResource({
+        uri: 'steam://me/recently-played',
+      });
+      expect(JSON.parse(authorizedRecentlyPlayed.contents[0]?.text ?? '{}')).toMatchObject({
         steamId: '76561197960434622',
         response: {
           total_count: 1,
@@ -251,10 +330,30 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const authorizedSteamLevel = await client.readResource({
+        uri: 'steam://me/steam-level',
+      });
+      expect(JSON.parse(authorizedSteamLevel.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          player_level: 42,
+        },
+      });
+
       const badges = await client.readResource({
         uri: 'steam://players/76561197960434622/badges',
       });
       expect(JSON.parse(badges.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          badges: [],
+        },
+      });
+
+      const authorizedBadges = await client.readResource({
+        uri: 'steam://me/badges',
+      });
+      expect(JSON.parse(authorizedBadges.contents[0]?.text ?? '{}')).toMatchObject({
         steamId: '76561197960434622',
         response: {
           badges: [],
@@ -272,10 +371,31 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const authorizedBadgeProgress = await client.readResource({
+        uri: 'steam://me/badges/2/progress',
+      });
+      expect(JSON.parse(authorizedBadgeProgress.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        badgeid: 2,
+        response: {
+          quests: [],
+        },
+      });
+
       const friends = await client.readResource({
         uri: 'steam://players/76561197960434622/friends',
       });
       expect(JSON.parse(friends.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        friendslist: {
+          friends: [],
+        },
+      });
+
+      const authorizedFriends = await client.readResource({
+        uri: 'steam://me/friends',
+      });
+      expect(JSON.parse(authorizedFriends.contents[0]?.text ?? '{}')).toMatchObject({
         steamId: '76561197960434622',
         friendslist: {
           friends: [],

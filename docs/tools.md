@@ -198,6 +198,16 @@
 - `steam://players/{steamid}/badges/{badgeid}/progress`
 - `steam://players/{steamid}/friends`
 - `steam://profiles/{vanity}/wishlist`
+- `steam://me`
+- `steam://me/owned-games`
+- `steam://me/wishlist`
+- `steam://me/wishlist/count`
+- `steam://me/apps/{appid}/playtime`
+- `steam://me/recently-played`
+- `steam://me/steam-level`
+- `steam://me/badges`
+- `steam://me/badges/{badgeid}/progress`
+- `steam://me/friends`
 
 ## Notes
 

@@ -66,6 +66,7 @@ async function main(): Promise<void> {
     await client.connect(transport);
 
     const tools = await client.listTools();
+    const resources = await client.listResources();
     const resourceTemplates = await client.listResourceTemplates();
     const healthCheck = await client.callTool({
       name: 'steam_health_check',
@@ -90,11 +91,17 @@ async function main(): Promise<void> {
       'tools',
     );
     assertIncludes(
+      resources.resources.map((resource) => resource.uri),
+      ['steam://me', 'steam://me/owned-games', 'steam://me/wishlist', 'steam://me/wishlist/count'],
+      'resources',
+    );
+    assertIncludes(
       resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate),
       [
         'steam://players/{steamid}/owned-games',
         'steam://players/{steamid}/wishlist',
         'steam://profiles/{vanity}/wishlist',
+        'steam://me/apps/{appid}/playtime',
       ],
       'resource templates',
     );
@@ -104,6 +111,7 @@ async function main(): Promise<void> {
         {
           status: 'ok',
           toolCount: tools.tools.length,
+          resourceCount: resources.resources.length,
           resourceTemplateCount: resourceTemplates.resourceTemplates.length,
         },
         null,
