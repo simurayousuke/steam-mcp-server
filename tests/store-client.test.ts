@@ -70,6 +70,64 @@ describe('SteamStoreClient', () => {
     });
   });
 
+  it('returns app review summaries and rows', async () => {
+    const client = createStoreClient(async () => ({
+      success: 1,
+      query_summary: {
+        review_score: 9,
+      },
+      reviews: [
+        {
+          recommendationid: '1',
+        },
+      ],
+      cursor: 'next',
+    }));
+
+    await expect(client.getAppReviews({ appid: 620, numPerPage: 1 })).resolves.toMatchObject({
+      appid: 620,
+      querySummary: {
+        review_score: 9,
+      },
+      reviews: [
+        {
+          recommendationid: '1',
+        },
+      ],
+      cursor: 'next',
+    });
+  });
+
+  it('returns package details for successful package responses', async () => {
+    const client = createStoreClient(async () => ({
+      '469': {
+        success: true,
+        data: {
+          name: 'The Orange Box',
+        },
+      },
+    }));
+
+    await expect(client.getStorePackage({ packageId: 469 })).resolves.toMatchObject({
+      packageId: 469,
+      data: {
+        name: 'The Orange Box',
+      },
+    });
+  });
+
+  it('returns not_found for unsuccessful package responses', async () => {
+    const client = createStoreClient(async () => ({
+      '999999999': {
+        success: false,
+      },
+    }));
+
+    await expect(client.getStorePackage({ packageId: 999999999 })).rejects.toMatchObject({
+      code: 'not_found',
+    });
+  });
+
   it('requires exactly one wishlist identity', async () => {
     const client = createStoreClient(async () => ({}));
 
