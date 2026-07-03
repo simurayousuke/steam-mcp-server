@@ -181,6 +181,7 @@ describe('Steam MCP server', () => {
       expect(result.structuredContent).toMatchObject({
         status: 'ok',
         capabilities: {
+          mcpTransport: expect.arrayContaining(['stdio', 'streamable-http']),
           implementedToolGroups: expect.arrayContaining([
             'steam-user-web-api-key-storage',
             'steam-oauth',

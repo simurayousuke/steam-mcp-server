@@ -2,7 +2,7 @@
 
 Steam MCP Server is a Model Context Protocol server for Steam public data, Steam Web API data, Steam Store metadata, and user-authorized read access where Steam officially supports it.
 
-Current status: runnable stdio MCP server with Steam Web API catalog discovery, safe read-only Web API calls, OpenID and OAuth support, user Web API key support, Store and Community public data, official wishlist reads, player library reads, and many publisher-only read endpoints.
+Current status: runnable stdio and Streamable HTTP MCP server with Steam Web API catalog discovery, safe read-only Web API calls, OpenID and OAuth support, user Web API key support, Store and Community public data, official wishlist reads, player library reads, and many publisher-only read endpoints.
 
 The default policy is read-only. Official Steam Web API methods will be discoverable through a catalog, but protected or state-changing methods will not be callable unless they are explicitly allowlisted.
 
@@ -152,8 +152,8 @@ Steam authentication uses Steam OpenID to prove ownership of a SteamID. OpenID d
 
 - Node.js 20+
 - TypeScript
-- MCP over stdio first
-- Optional HTTP transport after the stdio server is stable
+- MCP over stdio
+- MCP over Streamable HTTP at `/mcp`
 
 ## Initial Commands
 
@@ -162,6 +162,7 @@ npm install
 npm run typecheck
 npm run build
 npm run smoke:stdio
+npm run smoke:http
 npm run audit:steam-catalog
 ```
 

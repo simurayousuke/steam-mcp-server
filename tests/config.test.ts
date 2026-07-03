@@ -8,6 +8,8 @@ describe('loadConfig', () => {
 
     expect(config.STEAM_AUTH_CALLBACK_HOST).toBe('127.0.0.1');
     expect(config.STEAM_AUTH_CALLBACK_PORT).toBe(0);
+    expect(config.STEAM_HTTP_HOST).toBe('127.0.0.1');
+    expect(config.STEAM_HTTP_PORT).toBe(3000);
     expect(config.STEAM_DEFAULT_COUNTRY).toBe('US');
     expect(config.STEAM_DEFAULT_LANGUAGE).toBe('en');
     expect(config.STEAM_REQUEST_TIMEOUT_MS).toBe(10000);

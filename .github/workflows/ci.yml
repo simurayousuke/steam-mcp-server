@@ -32,6 +32,9 @@ jobs:
       - name: Smoke stdio server
         run: npm run smoke:stdio
 
+      - name: Smoke HTTP server
+        run: npm run smoke:http
+
       - name: Test
         run: npm test
 

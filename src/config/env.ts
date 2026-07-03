@@ -24,6 +24,8 @@ const envSchema = z.object({
   STEAM_AUTH_CALLBACK_HOST: z.string().trim().default('127.0.0.1'),
   STEAM_AUTH_CALLBACK_PORT: optionalIntegerString.default('0'),
   STEAM_AUTH_SESSION_DIR: optionalSecret,
+  STEAM_HTTP_HOST: z.string().trim().default('127.0.0.1'),
+  STEAM_HTTP_PORT: optionalIntegerString.default('3000'),
   STEAM_API_ALLOWLIST_FILE: optionalSecret,
   STEAM_DEFAULT_COUNTRY: z.string().trim().min(2).default('US'),
   STEAM_DEFAULT_LANGUAGE: z.string().trim().min(2).default('en'),

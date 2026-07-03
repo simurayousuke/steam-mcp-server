@@ -25,7 +25,7 @@ export function registerHealthTool(server: McpServer, metadata: ServerMetadata):
           config: {
             hasWebApiKey: Boolean(config.STEAM_WEB_API_KEY),
             hasPublisherKey: Boolean(config.STEAM_PUBLISHER_KEY),
-            hasOAuthClient: Boolean(config.STEAM_OAUTH_CLIENT_ID && config.STEAM_OAUTH_CLIENT_SECRET),
+            hasOAuthClient: Boolean(config.STEAM_OAUTH_CLIENT_ID),
             defaultCountry: config.STEAM_DEFAULT_COUNTRY,
             defaultLanguage: config.STEAM_DEFAULT_LANGUAGE,
             requestTimeoutMs: config.STEAM_REQUEST_TIMEOUT_MS,
@@ -33,7 +33,7 @@ export function registerHealthTool(server: McpServer, metadata: ServerMetadata):
             rateLimitRps: config.STEAM_RATE_LIMIT_RPS,
           },
           capabilities: {
-            mcpTransport: ['stdio'],
+            mcpTransport: ['stdio', 'streamable-http'],
             implementedToolGroups: [
               'health',
               'steam-authorized-user-overview',

@@ -13,7 +13,15 @@ Run the server over stdio:
 npm start
 ```
 
-The package also exposes a `steam-mcp-server` binary after build or package installation.
+The package exposes a `steam-mcp-server` binary for stdio after build or package installation.
+
+Run the server over Streamable HTTP:
+
+```bash
+npm run start:http
+```
+
+The HTTP endpoint defaults to `http://127.0.0.1:3000/mcp`. Override the bind address with `STEAM_HTTP_HOST` and `STEAM_HTTP_PORT`. The package also exposes a `steam-mcp-server-http` binary.
 
 ## MCP Client Configuration
 
@@ -32,6 +40,12 @@ Use the built entrypoint as a stdio MCP server:
     }
   }
 }
+```
+
+Use the built HTTP entrypoint when your MCP client supports Streamable HTTP:
+
+```text
+http://127.0.0.1:3000/mcp
 ```
 
 For player Web API tools, either set `STEAM_WEB_API_KEY` in the client environment or call `steam_auth_set_web_api_key` after the server starts.
