@@ -148,7 +148,7 @@ Add optional authenticated-user sections when you need a richer snapshot:
 }
 ```
 
-MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, `steam://me/recently-played`, `steam://me/bans`, `steam://me/apps/620/achievements`, and `steam://me/apps/620/stats`.
+MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, `steam://me/recently-played`, `steam://me/followed-games`, `steam://me/bans`, `steam://me/apps/620/achievements`, and `steam://me/apps/620/stats`.
 
 Catalog-aware clients can read Steam Web API discovery data through `steam://api/coverage`, `steam://api/interfaces`, `steam://api/interfaces/ISteamNews/methods`, and `steam://api/interfaces/ISteamNews/methods/GetNewsForApp/versions/2`.
 
@@ -221,6 +221,8 @@ steam://players/{steamid}
 steam://players/{steamid}/owned-games
 steam://players/{steamid}/wishlist
 steam://players/{steamid}/wishlist/count
+steam://players/{steamid}/followed-games
+steam://players/{steamid}/followed-games/count
 steam://players/{steamid}/apps/{appid}/playtime
 steam://players/{steamid}/apps/{appid}/achievements
 steam://players/{steamid}/apps/{appid}/stats
@@ -236,6 +238,8 @@ steam://me/overview
 steam://me/owned-games
 steam://me/wishlist
 steam://me/wishlist/count
+steam://me/followed-games
+steam://me/followed-games/count
 steam://me/apps/{appid}/playtime
 steam://me/apps/{appid}/achievements
 steam://me/apps/{appid}/stats

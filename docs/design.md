@@ -116,6 +116,8 @@ steam://players/{steamid}
 steam://players/{steamid}/owned-games
 steam://players/{steamid}/wishlist
 steam://players/{steamid}/wishlist/count
+steam://players/{steamid}/followed-games
+steam://players/{steamid}/followed-games/count
 steam://players/{steamid}/apps/{appid}/playtime
 steam://players/{steamid}/apps/{appid}/achievements
 steam://players/{steamid}/apps/{appid}/stats
@@ -131,6 +133,8 @@ steam://me/overview
 steam://me/owned-games
 steam://me/wishlist
 steam://me/wishlist/count
+steam://me/followed-games
+steam://me/followed-games/count
 steam://me/apps/{appid}/playtime
 steam://me/apps/{appid}/achievements
 steam://me/apps/{appid}/stats

@@ -29,7 +29,7 @@ export type SteamResourceClients = {
     | 'getUserStatsForGame'
   >;
   storeClient: Pick<SteamStoreClient, 'getAppDetails' | 'getPublicWishlist'>;
-  webApiClient: Pick<SteamWebApiClient, 'getNewsForApp' | 'getSchemaForGame'>;
+  webApiClient: Pick<SteamWebApiClient, 'getGamesFollowed' | 'getGamesFollowedCount' | 'getNewsForApp' | 'getSchemaForGame'>;
   wishlistClient: Pick<SteamWishlistClient, 'getWishlist' | 'getWishlistItemCount'>;
 };
 
@@ -241,6 +241,70 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri, variables) => {
       const vanityName = variableToString(variables.vanity);
       const data = await clients.storeClient.getPublicWishlist({ vanityName });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-followed-games',
+    new ResourceTemplate('steam://players/{steamid}/followed-games', { list: undefined }),
+    {
+      title: 'Steam player followed games',
+      description: 'Steam games followed by a player as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.webApiClient.getGamesFollowed({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-authorized-player-followed-games',
+    'steam://me/followed-games',
+    {
+      title: 'Authorized Steam player followed games',
+      description: 'Steam games followed by the authenticated OpenID SteamID as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri) => {
+      const steamId = resolveAuthorizedSteamId(clients.authManager);
+      const data = await clients.webApiClient.getGamesFollowed({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-followed-games-count',
+    new ResourceTemplate('steam://players/{steamid}/followed-games/count', { list: undefined }),
+    {
+      title: 'Steam player followed game count',
+      description: 'Steam followed game count for a player as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.webApiClient.getGamesFollowedCount({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-authorized-player-followed-games-count',
+    'steam://me/followed-games/count',
+    {
+      title: 'Authorized Steam player followed game count',
+      description: 'Steam followed game count for the authenticated OpenID SteamID as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri) => {
+      const steamId = resolveAuthorizedSteamId(clients.authManager);
+      const data = await clients.webApiClient.getGamesFollowedCount({ steamId });
 
       return jsonResource(uri, data);
     },

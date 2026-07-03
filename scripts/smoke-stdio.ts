@@ -101,6 +101,8 @@ async function main(): Promise<void> {
         'steam://me/owned-games',
         'steam://me/wishlist',
         'steam://me/wishlist/count',
+        'steam://me/followed-games',
+        'steam://me/followed-games/count',
       ],
       'resources',
     );
@@ -110,6 +112,7 @@ async function main(): Promise<void> {
         'steam://players/{steamid}/owned-games',
         'steam://api/interfaces/{interfaceName}/methods',
         'steam://players/{steamid}/wishlist',
+        'steam://players/{steamid}/followed-games',
         'steam://profiles/{vanity}/wishlist',
         'steam://me/apps/{appid}/playtime',
         'steam://me/apps/{appid}/achievements',

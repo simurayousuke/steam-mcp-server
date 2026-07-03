@@ -58,6 +58,18 @@ describe('Steam MCP resources', () => {
             },
           },
         }),
+        getGamesFollowed: async ({ steamId }) => ({
+          steamId,
+          response: {
+            appids: [620],
+          },
+        }),
+        getGamesFollowedCount: async ({ steamId }) => ({
+          steamId,
+          response: {
+            count: 1,
+          },
+        }),
       },
       playerClient: {
         getPlayerSummary: async ({ steamId }) => ({
@@ -169,6 +181,8 @@ describe('Steam MCP resources', () => {
           'steam://me/wishlist/count',
           'steam://me/bans',
           'steam://me/recently-played',
+          'steam://me/followed-games',
+          'steam://me/followed-games/count',
           'steam://me/steam-level',
           'steam://me/badges',
           'steam://me/friends',
@@ -317,6 +331,46 @@ describe('Steam MCP resources', () => {
           vanityName: 'valve',
         },
         count: 1,
+      });
+
+      const followedGames = await client.readResource({
+        uri: 'steam://players/76561197960434622/followed-games',
+      });
+      expect(JSON.parse(followedGames.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          appids: [620],
+        },
+      });
+
+      const authorizedFollowedGames = await client.readResource({
+        uri: 'steam://me/followed-games',
+      });
+      expect(JSON.parse(authorizedFollowedGames.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          appids: [620],
+        },
+      });
+
+      const followedGameCount = await client.readResource({
+        uri: 'steam://players/76561197960434622/followed-games/count',
+      });
+      expect(JSON.parse(followedGameCount.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          count: 1,
+        },
+      });
+
+      const authorizedFollowedGameCount = await client.readResource({
+        uri: 'steam://me/followed-games/count',
+      });
+      expect(JSON.parse(authorizedFollowedGameCount.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          count: 1,
+        },
       });
 
       const appPlaytime = await client.readResource({
