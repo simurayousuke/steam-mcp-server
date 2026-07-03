@@ -1,12 +1,12 @@
 # Steam MCP Server
 
-Steam MCP Server is a planned Model Context Protocol server for Steam public data, Steam Web API data, Steam Store metadata, and user-authorized read access where Steam officially supports it.
+Steam MCP Server is a Model Context Protocol server for Steam public data, Steam Web API data, Steam Store metadata, and user-authorized read access where Steam officially supports it.
 
-Current status: runnable stdio MCP server with health, Steam Web API catalog, safe read-only Web API calls, Steam Store search, app details, and public wishlist tools.
+Current status: runnable stdio MCP server with Steam Web API catalog discovery, safe read-only Web API calls, OpenID and OAuth support, user Web API key support, Store and Community public data, official wishlist reads, player library reads, and many publisher-only read endpoints.
 
 The default policy is read-only. Official Steam Web API methods will be discoverable through a catalog, but protected or state-changing methods will not be callable unless they are explicitly allowlisted.
 
-The server also exposes MCP resources for app details, app news, app stats schema, player summaries, owned games, playtime, recently played games, Steam levels, badges, badge progress, and friend lists.
+The server also exposes MCP resources for app details, app news, app stats schema, player summaries, owned games, wishlists, playtime, recently played games, Steam levels, badges, badge progress, friend lists, and vanity-profile public wishlists.
 
 ## Implemented Tools
 

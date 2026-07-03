@@ -19,6 +19,17 @@ describe('Steam MCP resources', () => {
             name: 'Portal 2',
           },
         }),
+        getPublicWishlist: async ({ vanityName }) => ({
+          query: {
+            vanityName,
+          },
+          apps: [
+            {
+              appid: 620,
+            },
+          ],
+          count: 1,
+        }),
       },
       webApiClient: {
         getNewsForApp: async ({ appid, count, maxLength }) => ({
@@ -97,6 +108,21 @@ describe('Steam MCP resources', () => {
           },
         }),
       },
+      wishlistClient: {
+        getWishlist: async ({ steamId }) => ({
+          steamId,
+          count: 1,
+          items: [
+            {
+              appid: 620,
+            },
+          ],
+        }),
+        getWishlistItemCount: async ({ steamId }) => ({
+          steamId,
+          count: 1,
+        }),
+      },
     });
     const client = new Client({
       name: 'steam-resource-test-client',
@@ -161,6 +187,37 @@ describe('Steam MCP resources', () => {
         response: {
           game_count: 1,
         },
+      });
+
+      const wishlist = await client.readResource({
+        uri: 'steam://players/76561197960434622/wishlist',
+      });
+      expect(JSON.parse(wishlist.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        count: 1,
+        items: [
+          {
+            appid: 620,
+          },
+        ],
+      });
+
+      const wishlistCount = await client.readResource({
+        uri: 'steam://players/76561197960434622/wishlist/count',
+      });
+      expect(JSON.parse(wishlistCount.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        count: 1,
+      });
+
+      const vanityWishlist = await client.readResource({
+        uri: 'steam://profiles/valve/wishlist',
+      });
+      expect(JSON.parse(vanityWishlist.contents[0]?.text ?? '{}')).toMatchObject({
+        query: {
+          vanityName: 'valve',
+        },
+        count: 1,
       });
 
       const appPlaytime = await client.readResource({

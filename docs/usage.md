@@ -110,15 +110,18 @@ steam://apps/{appid}/news
 steam://apps/{appid}/schema
 steam://players/{steamid}
 steam://players/{steamid}/owned-games
+steam://players/{steamid}/wishlist
+steam://players/{steamid}/wishlist/count
 steam://players/{steamid}/apps/{appid}/playtime
 steam://players/{steamid}/recently-played
 steam://players/{steamid}/steam-level
 steam://players/{steamid}/badges
 steam://players/{steamid}/badges/{badgeid}/progress
 steam://players/{steamid}/friends
+steam://profiles/{vanity}/wishlist
 ```
 
-Player resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`.
+Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile.
 
 ## Allowlisted Web API Methods
 

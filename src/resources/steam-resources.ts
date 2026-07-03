@@ -3,6 +3,7 @@ import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mc
 import type { SteamPlayerClient } from '../steam/player-client.js';
 import type { SteamStoreClient } from '../steam/store-client.js';
 import type { SteamWebApiClient } from '../steam/web-api-client.js';
+import type { SteamWishlistClient } from '../steam/wishlist-client.js';
 
 export type SteamResourceClients = {
   playerClient: Pick<
@@ -16,8 +17,9 @@ export type SteamResourceClients = {
     | 'getSingleGamePlaytime'
     | 'getSteamLevel'
   >;
-  storeClient: Pick<SteamStoreClient, 'getAppDetails'>;
+  storeClient: Pick<SteamStoreClient, 'getAppDetails' | 'getPublicWishlist'>;
   webApiClient: Pick<SteamWebApiClient, 'getNewsForApp' | 'getSchemaForGame'>;
+  wishlistClient: Pick<SteamWishlistClient, 'getWishlist' | 'getWishlistItemCount'>;
 };
 
 export function registerSteamResources(server: McpServer, clients: SteamResourceClients): void {
@@ -100,6 +102,54 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri, variables) => {
       const steamId = variableToString(variables.steamid);
       const data = await clients.playerClient.getOwnedGames({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-wishlist',
+    new ResourceTemplate('steam://players/{steamid}/wishlist', { list: undefined }),
+    {
+      title: 'Steam player wishlist',
+      description: 'Official Steam wishlist for a player as JSON, when Steam exposes it.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.wishlistClient.getWishlist({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-wishlist-count',
+    new ResourceTemplate('steam://players/{steamid}/wishlist/count', { list: undefined }),
+    {
+      title: 'Steam player wishlist item count',
+      description: 'Official Steam wishlist item count for a player as JSON, when Steam exposes it.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.wishlistClient.getWishlistItemCount({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-profile-public-wishlist',
+    new ResourceTemplate('steam://profiles/{vanity}/wishlist', { list: undefined }),
+    {
+      title: 'Steam profile public wishlist',
+      description: 'Public Steam Store wishlist JSON for a vanity profile name.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const vanityName = variableToString(variables.vanity);
+      const data = await clients.storeClient.getPublicWishlist({ vanityName });
 
       return jsonResource(uri, data);
     },

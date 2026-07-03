@@ -243,6 +243,7 @@ export function createSteamMcpServer(): McpServer {
     playerClient,
     storeClient,
     webApiClient,
+    wishlistClient,
   });
 
   return server;
