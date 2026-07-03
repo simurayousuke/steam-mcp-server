@@ -16,6 +16,7 @@
 - `steam_oauth_complete`
 - `steam_oauth_set_access_token`
 - `steam_oauth_clear_access_token`
+- `steam_oauth_get_token_details`
 
 ## Steam Web API Catalog
 
@@ -48,6 +49,7 @@
 - `steam_get_global_stats_for_game`
 - `steam_get_schema_for_game`
 - `steam_get_store_app_list`
+- `steam_get_recommended_tags_for_user`
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
 - `steam_get_trade_history`
@@ -170,6 +172,7 @@
 ## Steam Workshop
 
 - `steam_query_workshop_files`
+- `steam_get_published_file_user_vote_summary`
 - `steam_get_ugc_file_details`
 - `steam_get_workshop_file_details`
 - `steam_get_workshop_collection_details`

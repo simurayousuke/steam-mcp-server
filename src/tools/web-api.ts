@@ -253,6 +253,33 @@ export function registerWebApiTools(
   );
 
   server.registerTool(
+    'steam_get_recommended_tags_for_user',
+    {
+      title: 'Get recommended Steam tags for user',
+      description: 'Fetch IStoreService/GetRecommendedTagsForUser using a Steam Web API key.',
+      inputSchema: {
+        language: z.string().min(1),
+        countryCode: z.string().min(2),
+        favorRarerTags: z.boolean().optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getRecommendedTagsForUser(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_games_followed',
     {
       title: 'Get followed Steam games',

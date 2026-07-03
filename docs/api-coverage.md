@@ -15,14 +15,14 @@ For the per-interface audit of official Steam Web API coverage, see `docs/offici
 Implemented high-level tools cover:
 
 - Steam OpenID identity verification
-- Steam OAuth login URL generation, callback-fragment completion, in-memory OAuth access-token storage, and read-only Steam Cloud file enumeration with `read_cloud`
+- Steam OAuth login URL generation, callback-fragment completion, in-memory OAuth access-token storage, token-detail reads, and read-only Steam Cloud file enumeration with `read_cloud`
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
 - Anti-cheat report and ban-request reads through `ICheatReportingService/GetCheatingReports`; report creation, ban requests, ban removal, and secure-session mutation methods are not exposed as high-level tools
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Public Steam connection-manager, SteamPipe domain, SDR config, CDN, content-server, client-update-host, and depot-patch reads through `ISteamDirectory`, `IContentServerDirectoryService`, and `ISteamApps/GetSDRConfig`
-- Store app list pagination through `IStoreService/GetAppList`
+- Store app list pagination and recommended-tag reads through `IStoreService`
 - Official wishlist item and count reads through `IWishlistService`
 - Trade history, trade offers, individual trade offer, and trade offer summary reads through `IEconService`; cache flush and mutation endpoints are not exposed as high-level tools
 - Market eligibility, listing asset ID, and popular market item reads through `IEconMarketService`; listing cancellation is not exposed as a high-level tool
@@ -39,7 +39,7 @@ Implemented high-level tools cover:
 - Store search, app details, reviews, package details, and public wishlist JSON
 - Player profile summaries, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
 - Public Steam Community inventory
-- Workshop published file search, UGC file details, published file details, and collection details
+- Workshop published file search, user vote summaries, UGC file details, published file details, and collection details
 
 ## Known Boundaries
 

@@ -65,6 +65,31 @@ export function registerWorkshopTools(server: McpServer, workshopClient: SteamWo
   );
 
   server.registerTool(
+    'steam_get_published_file_user_vote_summary',
+    {
+      title: 'Get Steam published file user vote summary',
+      description: 'Fetch IPublishedFileService/GetUserVoteSummary for one or more published file ids using a Web API key.',
+      inputSchema: {
+        publishedFileIds: z.array(z.string().min(1)).min(1).max(100),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await workshopClient.getUserVoteSummary(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_ugc_file_details',
     {
       title: 'Get Steam UGC file details',

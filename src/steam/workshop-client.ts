@@ -34,6 +34,12 @@ const queryFilesResponseSchema = z
   })
   .passthrough();
 
+const userVoteSummaryResponseSchema = z
+  .object({
+    response: z.record(z.unknown()).default({}),
+  })
+  .passthrough();
+
 export type SteamWorkshopClientOptions = {
   http: Pick<HttpJsonClient, 'getJson' | 'postFormJson'>;
   webApiKey?: string | (() => string | undefined);
@@ -235,6 +241,37 @@ export class SteamWorkshopClient {
 
     return {
       query: request,
+      response: parsed.data.response,
+    };
+  }
+
+  async getUserVoteSummary(request: WorkshopFileDetailsRequest): Promise<Record<string, unknown>> {
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
+
+    if (!webApiKey) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: 'This Steam published file vote summary method requires STEAM_WEB_API_KEY.',
+      });
+    }
+
+    const ids = normalizePublishedFileIds(request.publishedFileIds);
+    const url = new URL('https://api.steampowered.com/IPublishedFileService/GetUserVoteSummary/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('key', webApiKey);
+    ids.forEach((id, index) => url.searchParams.set(`publishedfileids[${index}]`, id));
+
+    const raw = await this.getCachedJson(url);
+    const parsed = userVoteSummaryResponseSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWorkshopResponse('Steam published file vote summary response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      query: {
+        publishedFileIds: ids,
+      },
       response: parsed.data.response,
     };
   }

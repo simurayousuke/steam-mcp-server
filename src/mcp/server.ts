@@ -25,6 +25,7 @@ import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamPublisherClient } from '../steam/publisher-client.js';
 import { SteamSiteLicenseClient } from '../steam/site-license-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
+import { SteamUserOAuthClient } from '../steam/user-oauth-client.js';
 import { SteamWebApiClient } from '../steam/web-api-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { SteamWishlistClient } from '../steam/wishlist-client.js';
@@ -50,6 +51,7 @@ import { registerPlayerTools } from '../tools/player.js';
 import { registerPublisherTools } from '../tools/publisher.js';
 import { registerSiteLicenseTools } from '../tools/site-license.js';
 import { registerStoreTools } from '../tools/store.js';
+import { registerUserOAuthTools } from '../tools/user-oauth.js';
 import { registerWebApiTools } from '../tools/web-api.js';
 import { registerWishlistTools } from '../tools/wishlist.js';
 import { registerWorkshopTools } from '../tools/workshop.js';
@@ -111,6 +113,11 @@ export function createSteamMcpServer(): McpServer {
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
   const cloudClient = new SteamCloudClient({
+    http,
+    oauthAccessToken: () => credentialManager.getOAuthAccessToken(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
+  const userOAuthClient = new SteamUserOAuthClient({
     http,
     oauthAccessToken: () => credentialManager.getOAuthAccessToken(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
@@ -221,6 +228,7 @@ export function createSteamMcpServer(): McpServer {
   registerPublisherTools(server, publisherClient, authManager);
   registerSiteLicenseTools(server, siteLicenseClient);
   registerStoreTools(server, storeClient, authManager);
+  registerUserOAuthTools(server, userOAuthClient);
   registerWebApiTools(server, webApiClient, authManager);
   registerWishlistTools(server, wishlistClient, authManager);
   registerWorkshopTools(server, workshopClient);

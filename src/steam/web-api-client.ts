@@ -103,6 +103,12 @@ export type StoreSteamIdRequest = {
   steamId: string;
 };
 
+export type GetRecommendedTagsForUserRequest = {
+  language: string;
+  countryCode: string;
+  favorRarerTags?: boolean;
+};
+
 export class SteamWebApiClient {
   private readonly cache: TtlCache<unknown>;
 
@@ -375,6 +381,40 @@ export class SteamWebApiClient {
 
     return {
       steamId: request.steamId,
+      response: parsed.data.response,
+    };
+  }
+
+  async getRecommendedTagsForUser(request: GetRecommendedTagsForUserRequest): Promise<Record<string, unknown>> {
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
+
+    if (!webApiKey) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: 'This Steam Store recommended tags method requires STEAM_WEB_API_KEY.',
+      });
+    }
+
+    const url = new URL('https://api.steampowered.com/IStoreService/GetRecommendedTagsForUser/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('key', webApiKey);
+    url.searchParams.set('language', request.language);
+    url.searchParams.set('country_code', request.countryCode);
+    url.searchParams.set('favor_rarer_tags', String(request.favorRarerTags ?? false));
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam recommended tags response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      query: {
+        language: request.language,
+        countryCode: request.countryCode,
+        favorRarerTags: request.favorRarerTags ?? false,
+      },
       response: parsed.data.response,
     };
   }

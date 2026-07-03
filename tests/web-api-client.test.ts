@@ -349,4 +349,69 @@ describe('SteamWebApiClient', () => {
       },
     });
   });
+
+  it('fetches recommended tags for a user with a Web API key', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(
+      async (url) => {
+        requestedUrl = url;
+        return {
+          response: {
+            tags: [
+              {
+                tagid: 19,
+              },
+            ],
+          },
+        };
+      },
+      {
+        webApiKey: 'configured-key',
+      },
+    );
+
+    await expect(
+      client.getRecommendedTagsForUser({
+        language: 'english',
+        countryCode: 'US',
+        favorRarerTags: true,
+      }),
+    ).resolves.toMatchObject({
+      query: {
+        language: 'english',
+        countryCode: 'US',
+        favorRarerTags: true,
+      },
+      response: {
+        tags: [
+          {
+            tagid: 19,
+          },
+        ],
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/IStoreService/GetRecommendedTagsForUser/v1/');
+    expect(requestedUrl?.searchParams.get('key')).toBe('configured-key');
+    expect(requestedUrl?.searchParams.get('language')).toBe('english');
+    expect(requestedUrl?.searchParams.get('country_code')).toBe('US');
+    expect(requestedUrl?.searchParams.get('favor_rarer_tags')).toBe('true');
+  });
+
+  it('requires a Web API key before fetching recommended tags', async () => {
+    let requestCount = 0;
+    const client = createWebApiClient(async () => {
+      requestCount += 1;
+      return {};
+    });
+
+    await expect(
+      client.getRecommendedTagsForUser({
+        language: 'english',
+        countryCode: 'US',
+      }),
+    ).rejects.toMatchObject({
+      code: 'authentication_required',
+    });
+    expect(requestCount).toBe(0);
+  });
 });

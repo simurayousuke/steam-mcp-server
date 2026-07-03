@@ -219,6 +219,49 @@ describe('SteamWorkshopClient', () => {
     expect(requestedUrl?.searchParams.get('steamid')).toBe('76561197960434622');
   });
 
+  it('fetches published file user vote summaries with a Web API key', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamWorkshopClient({
+      webApiKey: 'configured-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {
+              votes: [
+                {
+                  publishedfileid: '848618186',
+                },
+              ],
+            },
+          };
+        },
+        postFormJson: async () => ({}),
+      },
+    });
+
+    await expect(
+      client.getUserVoteSummary({
+        publishedFileIds: ['848618186'],
+      }),
+    ).resolves.toMatchObject({
+      query: {
+        publishedFileIds: ['848618186'],
+      },
+      response: {
+        votes: [
+          {
+            publishedfileid: '848618186',
+          },
+        ],
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/IPublishedFileService/GetUserVoteSummary/v1/');
+    expect(requestedUrl?.searchParams.get('key')).toBe('configured-key');
+    expect(requestedUrl?.searchParams.get('publishedfileids[0]')).toBe('848618186');
+  });
+
   it('requires a Web API key before querying published files', async () => {
     let requestCount = 0;
     const client = new SteamWorkshopClient({
@@ -237,6 +280,29 @@ describe('SteamWorkshopClient', () => {
         queryType: 0,
         creatorAppid: 620,
         appid: 620,
+      }),
+    ).rejects.toMatchObject({
+      code: 'authentication_required',
+    });
+    expect(requestCount).toBe(0);
+  });
+
+  it('requires a Web API key before fetching published file user vote summaries', async () => {
+    let requestCount = 0;
+    const client = new SteamWorkshopClient({
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async () => {
+          requestCount += 1;
+          return {};
+        },
+        postFormJson: async () => ({}),
+      },
+    });
+
+    await expect(
+      client.getUserVoteSummary({
+        publishedFileIds: ['848618186'],
       }),
     ).rejects.toMatchObject({
       code: 'authentication_required',
