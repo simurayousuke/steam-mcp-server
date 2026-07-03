@@ -30,6 +30,15 @@
 
 - `steam_get_cheating_reports`
 - `steam_cloud_enumerate_user_files`
+- `steam_get_cm_list`
+- `steam_get_cm_list_for_connect`
+- `steam_get_steampipe_domains`
+- `steam_get_sdr_config`
+- `steam_get_cdn_for_video`
+- `steam_pick_content_server`
+- `steam_get_servers_for_steampipe`
+- `steam_get_client_update_hosts`
+- `steam_get_depot_patch_info`
 - `steam_get_news_for_app`
 - `steam_get_web_api_server_info`
 - `steam_get_number_of_current_players`

@@ -29,6 +29,15 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_api_call_readonly`
 - `steam_get_cheating_reports`
 - `steam_cloud_enumerate_user_files`
+- `steam_get_cm_list`
+- `steam_get_cm_list_for_connect`
+- `steam_get_steampipe_domains`
+- `steam_get_sdr_config`
+- `steam_get_cdn_for_video`
+- `steam_pick_content_server`
+- `steam_get_servers_for_steampipe`
+- `steam_get_client_update_hosts`
+- `steam_get_depot_patch_info`
 - `steam_resolve_vanity_url`
 - `steam_get_player_summary`
 - `steam_get_player_summaries`

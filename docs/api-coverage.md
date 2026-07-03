@@ -21,6 +21,7 @@ Implemented high-level tools cover:
 - Anti-cheat report and ban-request reads through `ICheatReportingService/GetCheatingReports`; report creation, ban requests, ban removal, and secure-session mutation methods are not exposed as high-level tools
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
+- Public Steam connection-manager, SteamPipe domain, SDR config, CDN, content-server, client-update-host, and depot-patch reads through `ISteamDirectory`, `IContentServerDirectoryService`, and `ISteamApps/GetSDRConfig`
 - Store app list pagination through `IStoreService/GetAppList`
 - Official wishlist item and count reads through `IWishlistService`
 - Trade history, trade offers, individual trade offer, and trade offer summary reads through `IEconService`; cache flush and mutation endpoints are not exposed as high-level tools

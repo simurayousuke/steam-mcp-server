@@ -10,6 +10,7 @@ import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCheatReportingClient } from '../steam/cheat-reporting-client.js';
 import { SteamCloudClient } from '../steam/cloud-client.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
+import { SteamDirectoryClient } from '../steam/directory-client.js';
 import { SteamEconMarketClient } from '../steam/econ-market-client.js';
 import { SteamEconServiceClient } from '../steam/econ-service-client.js';
 import { SteamEconomyClient } from '../steam/economy-client.js';
@@ -33,6 +34,7 @@ import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCheatReportingTools } from '../tools/cheat-reporting.js';
 import { registerCloudTools } from '../tools/cloud.js';
 import { registerCommunityTools } from '../tools/community.js';
+import { registerDirectoryTools } from '../tools/directory.js';
 import { registerEconMarketTools } from '../tools/econ-market.js';
 import { registerEconServiceTools } from '../tools/econ-service.js';
 import { registerEconomyTools } from '../tools/economy.js';
@@ -193,6 +195,10 @@ export function createSteamMcpServer(): McpServer {
     http,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const directoryClient = new SteamDirectoryClient({
+    http,
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
@@ -200,6 +206,7 @@ export function createSteamMcpServer(): McpServer {
   registerCheatReportingTools(server, cheatReportingClient);
   registerCloudTools(server, cloudClient);
   registerCommunityTools(server, communityClient, authManager);
+  registerDirectoryTools(server, directoryClient);
   registerEconMarketTools(server, econMarketClient, authManager);
   registerEconServiceTools(server, econServiceClient);
   registerEconomyTools(server, economyClient, authManager);

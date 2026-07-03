@@ -47,7 +47,7 @@ describe('official Steam Web API audit documentation', () => {
   });
 
   it('lists tracked public catalog interfaces without dedicated Steamworks doc pages', () => {
-    const publicCatalogInterfaces = ['IWishlistService'];
+    const publicCatalogInterfaces = ['IContentServerDirectoryService', 'ISteamDirectory', 'IWishlistService'];
 
     for (const interfaceName of publicCatalogInterfaces) {
       expect(auditDoc).toContain(`\`${interfaceName}\``);
