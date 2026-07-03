@@ -33,6 +33,13 @@
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
 
+## Publisher-Only Web API Tools
+
+- `steam_check_app_ownership`
+- `steam_get_publisher_app_ownership`
+- `steam_get_app_price_info`
+- `steam_get_deleted_steam_ids`
+
 ## Player Data
 
 - `steam_resolve_vanity_url`
@@ -81,4 +88,5 @@
 - Tools are read-only unless they explicitly manage local MCP server authentication state.
 - OpenID confirms SteamID ownership but does not grant broad private-data access.
 - Web API keys can be provided through `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`.
+- Publisher-only tools require `STEAM_PUBLISHER_KEY` and are separate from user Web API keys.
 - The generic `steam_api_call_readonly` tool covers additional official catalog methods that pass the safety policy.

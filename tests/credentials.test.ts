@@ -11,6 +11,7 @@ describe('SteamCredentialManager', () => {
       hasWebApiKey: true,
       hasEnvironmentWebApiKey: true,
       hasSessionWebApiKey: false,
+      hasPublisherKey: false,
       webApiKeySource: 'environment',
     });
   });
@@ -22,6 +23,7 @@ describe('SteamCredentialManager', () => {
       hasWebApiKey: true,
       hasEnvironmentWebApiKey: true,
       hasSessionWebApiKey: true,
+      hasPublisherKey: false,
       webApiKeySource: 'session',
     });
     expect(manager.getWebApiKey()).toBe('session-secret');
@@ -29,8 +31,22 @@ describe('SteamCredentialManager', () => {
     expect(manager.clearSessionWebApiKey()).toMatchObject({
       clearedSessionWebApiKey: true,
       hasWebApiKey: true,
+      hasPublisherKey: false,
       webApiKeySource: 'environment',
     });
     expect(manager.getWebApiKey()).toBe('environment-secret');
+  });
+
+  it('reports publisher keys without exposing the key', () => {
+    const manager = new SteamCredentialManager(undefined, 'publisher-secret');
+
+    expect(manager.getPublisherKey()).toBe('publisher-secret');
+    expect(manager.getStatus()).toEqual({
+      hasWebApiKey: false,
+      hasEnvironmentWebApiKey: false,
+      hasSessionWebApiKey: false,
+      hasPublisherKey: true,
+      webApiKeySource: 'none',
+    });
   });
 });

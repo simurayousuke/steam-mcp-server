@@ -9,6 +9,7 @@ import { loadConfig } from '../config/env.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
+import { SteamPublisherClient } from '../steam/publisher-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
 import { SteamWebApiClient } from '../steam/web-api-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
@@ -18,6 +19,7 @@ import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCommunityTools } from '../tools/community.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerPlayerTools } from '../tools/player.js';
+import { registerPublisherTools } from '../tools/publisher.js';
 import { registerStoreTools } from '../tools/store.js';
 import { registerWebApiTools } from '../tools/web-api.js';
 import { registerWorkshopTools } from '../tools/workshop.js';
@@ -34,7 +36,7 @@ export function createSteamMcpServer(): McpServer {
   const metadata = getServerMetadata();
   const config = loadConfig();
   const apiAllowlist = loadApiAllowlist(config.STEAM_API_ALLOWLIST_FILE);
-  const credentialManager = new SteamCredentialManager(config.STEAM_WEB_API_KEY);
+  const credentialManager = new SteamCredentialManager(config.STEAM_WEB_API_KEY, config.STEAM_PUBLISHER_KEY);
   const server = new McpServer(metadata);
   const http = new HttpJsonClient({
     rateLimitRps: config.STEAM_RATE_LIMIT_RPS,
@@ -82,12 +84,18 @@ export function createSteamMcpServer(): McpServer {
     webApiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const publisherClient = new SteamPublisherClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCommunityTools(server, communityClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
+  registerPublisherTools(server, publisherClient, authManager);
   registerStoreTools(server, storeClient, authManager);
   registerWebApiTools(server, webApiClient, authManager);
   registerWorkshopTools(server, workshopClient);

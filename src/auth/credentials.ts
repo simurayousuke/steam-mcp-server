@@ -4,16 +4,24 @@ export type CredentialStatus = {
   hasWebApiKey: boolean;
   hasEnvironmentWebApiKey: boolean;
   hasSessionWebApiKey: boolean;
+  hasPublisherKey: boolean;
   webApiKeySource: WebApiKeySource;
 };
 
 export class SteamCredentialManager {
   private sessionWebApiKey: string | undefined;
 
-  constructor(private readonly environmentWebApiKey: string | undefined) {}
+  constructor(
+    private readonly environmentWebApiKey: string | undefined,
+    private readonly environmentPublisherKey: string | undefined = undefined,
+  ) {}
 
   getWebApiKey(): string | undefined {
     return this.sessionWebApiKey ?? this.environmentWebApiKey;
+  }
+
+  getPublisherKey(): string | undefined {
+    return this.environmentPublisherKey;
   }
 
   setSessionWebApiKey(webApiKey: string): CredentialStatus {
@@ -44,6 +52,7 @@ export class SteamCredentialManager {
       hasWebApiKey: webApiKeySource !== 'none',
       hasEnvironmentWebApiKey,
       hasSessionWebApiKey,
+      hasPublisherKey: Boolean(this.environmentPublisherKey),
       webApiKeySource,
     };
   }

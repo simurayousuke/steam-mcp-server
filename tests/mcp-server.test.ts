@@ -38,6 +38,10 @@ describe('Steam MCP server', () => {
           'steam_get_schema_for_game',
           'steam_get_games_followed',
           'steam_get_games_followed_count',
+          'steam_check_app_ownership',
+          'steam_get_publisher_app_ownership',
+          'steam_get_app_price_info',
+          'steam_get_deleted_steam_ids',
           'steam_get_public_inventory',
           'steam_get_owned_games',
           'steam_get_single_game_playtime',
@@ -134,6 +138,22 @@ describe('Steam MCP server', () => {
         structuredContent: {
           error: {
             code: 'authentication_required',
+          },
+        },
+      });
+
+      const publisherToolWithoutPublisherKey = await client.callTool({
+        name: 'steam_check_app_ownership',
+        arguments: {
+          steamId: '76561197960434622',
+          appid: 620,
+        },
+      });
+      expect(publisherToolWithoutPublisherKey).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: {
+            code: 'authorization_required',
           },
         },
       });
