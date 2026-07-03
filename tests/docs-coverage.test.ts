@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const auditDoc = readFileSync(new URL('../docs/official-webapi-audit.md', import.meta.url), 'utf8');
+const usageDoc = readFileSync(new URL('../docs/usage.md', import.meta.url), 'utf8');
 
 describe('official Steam Web API audit documentation', () => {
   it('lists the currently tracked Steamworks-documented Web API interfaces', () => {
@@ -107,5 +108,22 @@ describe('official Steam Web API audit documentation', () => {
     expect(auditDoc).toContain('Steam OAuth is supported');
     expect(auditDoc).toContain('Official wishlist reads and public Store wishlist JSON only');
     expect(auditDoc).toContain('does not use Steam credentials, browser cookies, or private wishlist scraping');
+  });
+
+  it('documents authorized user library and wishlist query paths', () => {
+    const expectedUsageEntries = [
+      'Authorized User Query Examples',
+      'steam_get_owned_games',
+      'steam_get_official_wishlist',
+      'steam_get_official_wishlist_sorted_filtered',
+      'steam_get_authorized_user_overview',
+      'steam://me/owned-games',
+      'steam://me/wishlist',
+      'steam://me/recently-played',
+    ];
+
+    for (const entry of expectedUsageEntries) {
+      expect(usageDoc).toContain(entry);
+    }
   });
 });

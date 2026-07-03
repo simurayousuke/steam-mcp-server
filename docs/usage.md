@@ -61,6 +61,62 @@ By default the overview attempts to include:
 
 Profile, owned games, and recently played games require a Steam Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist sections only return data Steam exposes for that user. If one section is private, missing, or lacks required credentials, the overview returns an error for that section while preserving the other sections.
 
+## Authorized User Query Examples
+
+After `steam_auth_status` confirms an authenticated SteamID, tools that accept an optional `steamId` can target the authorized user by omitting `steamId`.
+
+Fetch the authorized user's visible game library:
+
+```json
+{
+  "name": "steam_get_owned_games",
+  "arguments": {
+    "includeAppInfo": true,
+    "includePlayedFreeGames": true
+  }
+}
+```
+
+Fetch the authorized user's official wishlist:
+
+```json
+{
+  "name": "steam_get_official_wishlist",
+  "arguments": {}
+}
+```
+
+Fetch a paginated official wishlist view:
+
+```json
+{
+  "name": "steam_get_official_wishlist_sorted_filtered",
+  "arguments": {
+    "startIndex": 0,
+    "pageSize": 25,
+    "context": {
+      "country_code": "US",
+      "language": "en"
+    },
+    "filters": {}
+  }
+}
+```
+
+Fetch the combined read-only overview:
+
+```json
+{
+  "name": "steam_get_authorized_user_overview",
+  "arguments": {
+    "ownedGamesIncludeAppInfo": true,
+    "ownedGamesIncludePlayedFreeGames": true
+  }
+}
+```
+
+MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/owned-games`, `steam://me/wishlist`, and `steam://me/recently-played`.
+
 ## Web API Key Flow
 
 Use `steam_auth_set_web_api_key` to store a key in memory for the running MCP server process:
