@@ -18,6 +18,7 @@ export type SteamIdRequest = {
 };
 
 export type OwnedGamesRequest = SteamIdRequest & {
+  appidsFilter?: number[];
   includeAppInfo?: boolean;
   includePlayedFreeGames?: boolean;
 };
@@ -72,6 +73,7 @@ export class SteamPlayerClient {
       steamid: request.steamId,
       include_appinfo: request.includeAppInfo ?? true,
       include_played_free_games: request.includePlayedFreeGames ?? true,
+      appids_filter: request.appidsFilter,
     });
   }
 
@@ -147,7 +149,7 @@ export class SteamPlayerClient {
     interfaceName: string,
     methodName: string,
     version: number,
-    params: Record<string, string | number | boolean | undefined>,
+    params: Record<string, string | number | boolean | number[] | undefined>,
   ): Promise<Record<string, unknown>> {
     const webApiKey = resolveWebApiKey(this.options.webApiKey);
 
@@ -163,7 +165,9 @@ export class SteamPlayerClient {
     url.searchParams.set('key', webApiKey);
 
     for (const [name, value] of Object.entries(params)) {
-      if (value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => url.searchParams.set(`${name}[${index}]`, String(item)));
+      } else if (value !== undefined) {
         url.searchParams.set(name, String(value));
       }
     }

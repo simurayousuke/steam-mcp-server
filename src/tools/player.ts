@@ -71,6 +71,7 @@ export function registerPlayerTools(
       description: 'Get a visible Steam game library. If steamId is omitted, use the authenticated OpenID SteamID.',
       inputSchema: {
         steamId: z.string().min(1).optional(),
+        appidsFilter: z.array(z.number().int().positive()).min(1).max(100).optional(),
         includeAppInfo: z.boolean().optional(),
         includePlayedFreeGames: z.boolean().optional(),
       },
@@ -85,6 +86,7 @@ export function registerPlayerTools(
         return toolSuccess({
           data: await playerClient.getOwnedGames({
             steamId: resolveSteamId(args.steamId, authManager),
+            appidsFilter: args.appidsFilter,
             includeAppInfo: args.includeAppInfo,
             includePlayedFreeGames: args.includePlayedFreeGames,
           }),

@@ -85,6 +85,37 @@ describe('SteamPlayerClient', () => {
     expect(requestCount).toBe(1);
   });
 
+  it('sends owned games app filters as indexed query parameters', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamPlayerClient({
+      webApiKey: 'configured-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {
+              games: [],
+            },
+          };
+        },
+      },
+    });
+
+    await client.getOwnedGames({
+      steamId: '76561197960434622',
+      appidsFilter: [620, 400],
+      includeAppInfo: false,
+      includePlayedFreeGames: false,
+    });
+
+    expect(requestedUrl?.pathname).toBe('/IPlayerService/GetOwnedGames/v1/');
+    expect(requestedUrl?.searchParams.get('appids_filter[0]')).toBe('620');
+    expect(requestedUrl?.searchParams.get('appids_filter[1]')).toBe('400');
+    expect(requestedUrl?.searchParams.get('include_appinfo')).toBe('false');
+    expect(requestedUrl?.searchParams.get('include_played_free_games')).toBe('false');
+  });
+
   it('calls Steam friend list with relationship filters', async () => {
     let requestedUrl: URL | undefined;
     const client = new SteamPlayerClient({
