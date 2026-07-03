@@ -38,4 +38,23 @@ describe('redactUrl', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it('maps non-success Steam x-eresult headers to upstream errors even when HTTP succeeded', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('{}', { status: 200, headers: { 'x-eresult': '15' } })),
+    );
+    const client = new HttpJsonClient({
+      timeoutMs: 1000,
+      userAgent: 'steam-mcp-server-test/0.0.0',
+    });
+
+    await expect(client.getJson(new URL('https://example.test/?access_token=secret-token'))).rejects.toMatchObject({
+      code: 'upstream_error',
+      details: {
+        url: 'https://example.test/?access_token=%5Bredacted%5D',
+        xEresult: '15',
+      },
+    });
+  });
 });

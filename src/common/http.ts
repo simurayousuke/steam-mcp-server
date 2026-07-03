@@ -96,6 +96,20 @@ export class HttpJsonClient {
         });
       }
 
+      const steamEResult = response.headers.get('x-eresult');
+
+      if (steamEResult !== null && steamEResult !== '1') {
+        throw new SteamMcpError({
+          code: 'upstream_error',
+          message: `Steam endpoint returned EResult ${steamEResult}.`,
+          status: response.status,
+          details: {
+            url: redactUrl(url),
+            xEresult: steamEResult,
+          },
+        });
+      }
+
       return response;
     } catch (error: unknown) {
       if (error instanceof SteamMcpError) {
