@@ -16,7 +16,7 @@ Implemented high-level tools cover:
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
 - Store search, app details, reviews, package details, and public wishlist JSON
-- Player profile summary, owned games, recently played games, achievements, and game stats
+- Player profile summary, owned games, recently played games, friend lists, ban status, group lists, achievements, and game stats
 - Public Steam Community inventory
 - Workshop published file details and collection details
 

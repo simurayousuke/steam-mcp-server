@@ -26,6 +26,14 @@ export type RecentlyPlayedGamesRequest = SteamIdRequest & {
   count?: number;
 };
 
+export type FriendListRequest = SteamIdRequest & {
+  relationship?: string;
+};
+
+export type PlayerBansRequest = {
+  steamIds: string[];
+};
+
 export type PlayerGameRequest = SteamIdRequest & {
   appid: number;
   language?: string;
@@ -63,6 +71,25 @@ export class SteamPlayerClient {
     return this.call('IPlayerService', 'GetRecentlyPlayedGames', 1, {
       steamid: request.steamId,
       count: request.count,
+    });
+  }
+
+  async getFriendList(request: FriendListRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamUser', 'GetFriendList', 1, {
+      steamid: request.steamId,
+      relationship: request.relationship,
+    });
+  }
+
+  async getPlayerBans(request: PlayerBansRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamUser', 'GetPlayerBans', 1, {
+      steamids: request.steamIds.join(','),
+    });
+  }
+
+  async getUserGroupList(request: SteamIdRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamUser', 'GetUserGroupList', 1, {
+      steamid: request.steamId,
     });
   }
 

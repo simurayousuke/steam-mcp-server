@@ -39,6 +39,9 @@ describe('Steam MCP server', () => {
           'steam_get_games_followed_count',
           'steam_get_public_inventory',
           'steam_get_owned_games',
+          'steam_get_friend_list',
+          'steam_get_player_bans',
+          'steam_get_user_group_list',
           'steam_get_workshop_file_details',
           'steam_get_workshop_collection_details',
         ]),
@@ -101,6 +104,19 @@ describe('Steam MCP server', () => {
         arguments: {},
       });
       expect(followedWithoutIdentity).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: {
+            code: 'authentication_required',
+          },
+        },
+      });
+
+      const bansWithoutIdentity = await client.callTool({
+        name: 'steam_get_player_bans',
+        arguments: {},
+      });
+      expect(bansWithoutIdentity).toMatchObject({
         isError: true,
         structuredContent: {
           error: {

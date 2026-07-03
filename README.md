@@ -27,6 +27,9 @@ The server also exposes MCP resources for `steam://apps/{appid}`, `steam://apps/
 - `steam_get_player_summary`
 - `steam_get_owned_games`
 - `steam_get_recently_played_games`
+- `steam_get_friend_list`
+- `steam_get_player_bans`
+- `steam_get_user_group_list`
 - `steam_get_player_achievements`
 - `steam_get_user_stats_for_game`
 - `steam_get_news_for_app`

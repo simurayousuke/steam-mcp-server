@@ -63,7 +63,7 @@ Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys ar
 
 ## Data Boundaries
 
-- `steam_get_owned_games`, `steam_get_recently_played_games`, achievements, and player summaries require a Web API key and are still limited by Steam privacy settings.
+- Player Web API tools, including summaries, owned games, recently played games, friend lists, ban status, group lists, achievements, and stats, require a Web API key and are still limited by Steam privacy settings.
 - `steam_get_user_wishlist` reads public wishlist JSON only. If no `steamId` or `vanityName` is provided, it uses the authenticated OpenID SteamID.
 - The server does not accept Steam passwords.
 - The server does not read browser cookies.

@@ -125,6 +125,89 @@ export function registerPlayerTools(
   );
 
   server.registerTool(
+    'steam_get_friend_list',
+    {
+      title: 'Get Steam friend list',
+      description: 'Get a visible Steam friend list. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+        relationship: z.string().min(1).max(32).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getFriendList({
+            steamId: resolveSteamId(args.steamId, authManager),
+            relationship: args.relationship,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_player_bans',
+    {
+      title: 'Get Steam player bans',
+      description: 'Get VAC, game, community, and economy ban status for one or more SteamIDs. If steamIds is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamIds: z.array(z.string().min(1)).min(1).max(100).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getPlayerBans({
+            steamIds: args.steamIds ?? [resolveSteamId(undefined, authManager)],
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_user_group_list',
+    {
+      title: 'Get Steam user group list',
+      description: 'Get visible Steam groups for a player. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getUserGroupList({
+            steamId: resolveSteamId(args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_player_achievements',
     {
       title: 'Get Steam player achievements',
