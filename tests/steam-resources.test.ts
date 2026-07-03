@@ -263,6 +263,12 @@ describe('Steam MCP resources', () => {
           wishlist: {
             ok: true,
           },
+          followedGames: {
+            ok: true,
+          },
+          followedGamesCount: {
+            ok: true,
+          },
         },
       });
 

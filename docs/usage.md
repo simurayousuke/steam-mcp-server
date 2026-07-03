@@ -74,8 +74,10 @@ By default the overview attempts to include:
 - recently played games
 - official wishlist
 - official wishlist item count
+- followed games
+- followed game count
 
-Profile, owned games, and recently played games require a Steam Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist sections only return data Steam exposes for that user. If one section is private, missing, or lacks required credentials, the overview returns an error for that section while preserving the other sections.
+Profile, owned games, and recently played games require a Steam Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist and followed-game sections only return data Steam exposes for that user. If one section is private, missing, or lacks required credentials, the overview returns an error for that section while preserving the other sections.
 
 ## Authorized User Query Examples
 
@@ -141,6 +143,8 @@ Add optional authenticated-user sections when you need a richer snapshot:
     "includeBadges": true,
     "includeFriends": true,
     "includePlayerBans": true,
+    "includeFollowedGames": true,
+    "includeFollowedGamesCount": true,
     "achievementAppids": [620],
     "statsAppids": [440],
     "gameLanguage": "en"

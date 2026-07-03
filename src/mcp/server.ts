@@ -220,7 +220,7 @@ export function createSteamMcpServer(): McpServer {
   registerHealthTool(server, metadata);
   registerAppSpecificTools(server, appSpecificClient);
   registerAuthTools(server, authManager, credentialManager);
-  registerAuthorizedUserTools(server, authManager, playerClient, wishlistClient);
+  registerAuthorizedUserTools(server, authManager, playerClient, wishlistClient, webApiClient);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCheatReportingTools(server, cheatReportingClient);
   registerCloudTools(server, cloudClient);

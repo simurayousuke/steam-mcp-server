@@ -5,6 +5,7 @@ import type { SteamOpenIdAuthManager } from '../auth/session.js';
 import { buildAuthorizedUserOverview } from '../auth/authorized-overview.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import type { SteamPlayerClient } from '../steam/player-client.js';
+import type { SteamWebApiClient } from '../steam/web-api-client.js';
 import type { SteamWishlistClient } from '../steam/wishlist-client.js';
 
 export function registerAuthorizedUserTools(
@@ -12,6 +13,7 @@ export function registerAuthorizedUserTools(
   authManager: SteamOpenIdAuthManager,
   playerClient: SteamPlayerClient,
   wishlistClient: SteamWishlistClient,
+  webApiClient: SteamWebApiClient,
 ): void {
   server.registerTool(
     'steam_get_authorized_user_overview',
@@ -25,6 +27,8 @@ export function registerAuthorizedUserTools(
         includeRecentlyPlayedGames: z.boolean().optional(),
         includeWishlist: z.boolean().optional(),
         includeWishlistItemCount: z.boolean().optional(),
+        includeFollowedGames: z.boolean().optional(),
+        includeFollowedGamesCount: z.boolean().optional(),
         includeSteamLevel: z.boolean().optional(),
         includeBadges: z.boolean().optional(),
         includeFriends: z.boolean().optional(),
@@ -47,7 +51,7 @@ export function registerAuthorizedUserTools(
     async (args) => {
       try {
         return toolSuccess({
-          data: await buildAuthorizedUserOverview(authManager, playerClient, wishlistClient, args),
+          data: await buildAuthorizedUserOverview(authManager, playerClient, wishlistClient, webApiClient, args),
         });
       } catch (error: unknown) {
         return toolFailure(error);

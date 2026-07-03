@@ -1,5 +1,6 @@
 import { SteamMcpError, toSteamMcpError } from '../common/errors.js';
 import type { SteamPlayerClient } from '../steam/player-client.js';
+import type { SteamWebApiClient } from '../steam/web-api-client.js';
 import type { SteamWishlistClient } from '../steam/wishlist-client.js';
 import type { AuthStatusResult, SteamOpenIdAuthManager } from './session.js';
 
@@ -18,12 +19,16 @@ type AuthorizedOverviewPlayerClient = Pick<
 
 type AuthorizedOverviewWishlistClient = Pick<SteamWishlistClient, 'getWishlist' | 'getWishlistItemCount'>;
 
+type AuthorizedOverviewWebApiClient = Pick<SteamWebApiClient, 'getGamesFollowed' | 'getGamesFollowedCount'>;
+
 export type AuthorizedUserOverviewOptions = {
   includeProfile?: boolean;
   includeOwnedGames?: boolean;
   includeRecentlyPlayedGames?: boolean;
   includeWishlist?: boolean;
   includeWishlistItemCount?: boolean;
+  includeFollowedGames?: boolean;
+  includeFollowedGamesCount?: boolean;
   includeSteamLevel?: boolean;
   includeBadges?: boolean;
   includeFriends?: boolean;
@@ -63,6 +68,7 @@ export async function buildAuthorizedUserOverview(
   authManager: Pick<SteamOpenIdAuthManager, 'getStatus'>,
   playerClient: AuthorizedOverviewPlayerClient,
   wishlistClient: AuthorizedOverviewWishlistClient,
+  webApiClient: AuthorizedOverviewWebApiClient,
   options: AuthorizedUserOverviewOptions = {},
 ): Promise<AuthorizedUserOverview> {
   const authStatus = authManager.getStatus();
@@ -99,6 +105,14 @@ export async function buildAuthorizedUserOverview(
 
   if (options.includeWishlistItemCount ?? true) {
     sections.wishlistItemCount = await readOverviewSection(() => wishlistClient.getWishlistItemCount({ steamId }));
+  }
+
+  if (options.includeFollowedGames ?? true) {
+    sections.followedGames = await readOverviewSection(() => webApiClient.getGamesFollowed({ steamId }));
+  }
+
+  if (options.includeFollowedGamesCount ?? true) {
+    sections.followedGamesCount = await readOverviewSection(() => webApiClient.getGamesFollowedCount({ steamId }));
   }
 
   if (options.includeSteamLevel ?? false) {

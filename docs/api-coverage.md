@@ -29,7 +29,7 @@ Shared Steam HTTP handling treats non-success `x-eresult` response headers as up
 Implemented high-level tools cover:
 
 - Steam OpenID identity verification
-- Authorized-user overview aggregation for the authenticated OpenID SteamID, with per-section partial errors and optional Steam level, badge, friend, ban, achievement, and stat sections
+- Authorized-user overview aggregation for the authenticated OpenID SteamID, with per-section partial errors, default followed-game sections, and optional Steam level, badge, friend, ban, achievement, and stat sections
 - Steam OAuth login URL generation, callback-fragment completion, in-memory OAuth access-token storage, token-detail reads, and read-only Steam Cloud file enumeration with `read_cloud`
 - Steam Web API catalog discovery
 - Safe read-only Web API calls

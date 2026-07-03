@@ -128,7 +128,12 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
       mimeType: 'application/json',
     },
     async (uri) => {
-      const data = await buildAuthorizedUserOverview(clients.authManager, clients.playerClient, clients.wishlistClient);
+      const data = await buildAuthorizedUserOverview(
+        clients.authManager,
+        clients.playerClient,
+        clients.wishlistClient,
+        clients.webApiClient,
+      );
 
       return jsonResource(uri, data);
     },

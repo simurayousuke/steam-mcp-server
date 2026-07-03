@@ -71,6 +71,16 @@ describe('authorized user overview helpers', () => {
           }),
         },
         {
+          getGamesFollowed: async ({ steamId }) => ({
+            steamId,
+            appids: [620],
+          }),
+          getGamesFollowedCount: async ({ steamId }) => ({
+            steamId,
+            count: 1,
+          }),
+        },
+        {
           includeSteamLevel: true,
           includeBadges: true,
           includeFriends: true,
@@ -97,6 +107,18 @@ describe('authorized user overview helpers', () => {
           ok: true,
           data: {
             count: 0,
+          },
+        },
+        followedGames: {
+          ok: true,
+          data: {
+            appids: [620],
+          },
+        },
+        followedGamesCount: {
+          ok: true,
+          data: {
+            count: 1,
           },
         },
         steamLevel: {
