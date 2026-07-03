@@ -1,5 +1,9 @@
 import { createServer, type Server, type ServerResponse } from 'node:http';
 import { randomUUID } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+
+import { z } from 'zod';
 
 import { SteamMcpError } from '../common/errors.js';
 import type { HttpJsonClient } from '../common/http.js';
@@ -35,6 +39,7 @@ export type SteamOpenIdAuthManagerOptions = {
   host: string;
   port: number;
   http: Pick<HttpJsonClient, 'postFormText'>;
+  sessionDir?: string;
   sessionTtlMs?: number;
 };
 
@@ -43,9 +48,17 @@ export class SteamOpenIdAuthManager {
   private server: Server | undefined;
   private actualPort: number | undefined;
   private readonly sessionTtlMs: number;
+  private readonly sessionStore: SteamOpenIdSessionStore | undefined;
 
   constructor(private readonly options: SteamOpenIdAuthManagerOptions) {
     this.sessionTtlMs = options.sessionTtlMs ?? 10 * 60 * 1000;
+    this.sessionStore = options.sessionDir ? new SteamOpenIdSessionStore(options.sessionDir) : undefined;
+
+    for (const session of this.sessionStore?.load() ?? []) {
+      this.sessions.set(session.state, session);
+    }
+
+    this.dropExpiredSessions();
   }
 
   async start(): Promise<AuthStartResult> {
@@ -70,6 +83,7 @@ export class SteamOpenIdAuthManager {
     };
 
     this.sessions.set(state, session);
+    this.saveSessions();
 
     return {
       state,
@@ -99,6 +113,7 @@ export class SteamOpenIdAuthManager {
   async logout(): Promise<{ clearedSessions: number }> {
     const clearedSessions = this.sessions.size;
     this.sessions.clear();
+    this.saveSessions();
 
     if (this.server) {
       await new Promise<void>((resolve, reject) => {
@@ -191,6 +206,7 @@ export class SteamOpenIdAuthManager {
       };
 
       this.sessions.set(state, authenticated);
+      this.saveSessions();
       return authenticated;
     } catch (error: unknown) {
       const failed: AuthSession = {
@@ -200,6 +216,7 @@ export class SteamOpenIdAuthManager {
       };
 
       this.sessions.set(state, failed);
+      this.saveSessions();
       throw error;
     }
   }
@@ -219,17 +236,90 @@ export class SteamOpenIdAuthManager {
 
   private dropExpiredSessions(): void {
     const now = Date.now();
+    let changed = false;
 
     for (const [state, session] of this.sessions) {
       if (Date.parse(session.expiresAt) <= now && session.status !== 'authenticated') {
         this.sessions.delete(state);
+        changed = true;
       }
+    }
+
+    if (changed) {
+      this.saveSessions();
     }
   }
 
   private getRealm(): string {
     const port = this.actualPort ?? this.options.port;
     return `http://${this.options.host}:${port}/`;
+  }
+
+  private saveSessions(): void {
+    this.sessionStore?.save([...this.sessions.values()]);
+  }
+}
+
+const authSessionSchema = z.object({
+  state: z.string(),
+  status: z.enum(['pending', 'authenticated', 'failed']),
+  loginUrl: z.string(),
+  returnTo: z.string(),
+  createdAt: z.string(),
+  expiresAt: z.string(),
+  steamId: z.string().optional(),
+  claimedId: z.string().optional(),
+  error: z.string().optional(),
+});
+
+class SteamOpenIdSessionStore {
+  private readonly directory: string;
+  private readonly filePath: string;
+
+  constructor(sessionDir: string) {
+    this.directory = resolve(sessionDir);
+    this.filePath = join(this.directory, 'openid-sessions.json');
+  }
+
+  load(): AuthSession[] {
+    if (!existsSync(this.filePath)) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(readFileSync(this.filePath, 'utf8')) as unknown;
+      return z.array(authSessionSchema).parse(parsed);
+    } catch (error: unknown) {
+      throw new SteamMcpError({
+        code: 'configuration_error',
+        message: `Steam OpenID session store is not readable: ${this.filePath}`,
+        details: {
+          reason: error instanceof Error ? error.message : String(error),
+        },
+      });
+    }
+  }
+
+  save(sessions: AuthSession[]): void {
+    try {
+      mkdirSync(this.directory, {
+        recursive: true,
+      });
+      const temporaryPath = `${this.filePath}.tmp`;
+      writeFileSync(temporaryPath, `${JSON.stringify(sessions, null, 2)}\n`, {
+        encoding: 'utf8',
+        mode: 0o600,
+      });
+      renameSync(temporaryPath, this.filePath);
+    } catch (error: unknown) {
+      throw new SteamMcpError({
+        code: 'configuration_error',
+        message: `Steam OpenID session store is not writable: ${this.filePath}`,
+        details: {
+          reason: error instanceof Error ? error.message : String(error),
+        },
+      });
+    }
   }
 }
 

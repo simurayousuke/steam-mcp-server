@@ -104,6 +104,7 @@ export function createSteamMcpServer(): McpServer {
     host: config.STEAM_AUTH_CALLBACK_HOST,
     port: config.STEAM_AUTH_CALLBACK_PORT,
     http,
+    sessionDir: config.STEAM_AUTH_SESSION_DIR,
   });
   const playerClient = new SteamPlayerClient({
     http,

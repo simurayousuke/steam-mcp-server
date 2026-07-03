@@ -61,6 +61,8 @@ If the browser cannot reach the local callback server, copy the final callback U
 
 OpenID proves SteamID ownership. It does not grant broad private-data access.
 
+By default OpenID session state is kept only in memory. Set `STEAM_AUTH_SESSION_DIR` to persist authenticated SteamID state across server restarts. The session file stores OpenID status and SteamID metadata only; it does not store Steam passwords, browser cookies, Web API keys, or OAuth tokens.
+
 ## Authorized User Overview
 
 After `steam_auth_status` shows an authenticated SteamID, call `steam_get_authorized_user_overview` to fetch a combined read-only snapshot for that user.
