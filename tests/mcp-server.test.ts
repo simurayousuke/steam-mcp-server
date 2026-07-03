@@ -26,6 +26,7 @@ describe('Steam MCP server', () => {
           'steam_search_apps',
           'steam_get_app_reviews',
           'steam_get_store_package',
+          'steam_get_public_inventory',
           'steam_get_owned_games',
         ]),
       );

@@ -39,6 +39,7 @@ export function registerHealthTool(server: McpServer, metadata: ServerMetadata):
               'steam-openid-auth',
               'steam-web-api-catalog',
               'steam-api-readonly-caller',
+              'steam-community',
               'steam-player',
               'steam-store',
             ],

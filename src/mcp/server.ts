@@ -4,11 +4,13 @@ import { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
 import { SteamOpenIdAuthManager } from '../auth/session.js';
 import { HttpJsonClient } from '../common/http.js';
 import { loadConfig } from '../config/env.js';
+import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
+import { registerCommunityTools } from '../tools/community.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerStoreTools } from '../tools/store.js';
@@ -55,10 +57,16 @@ export function createSteamMcpServer(): McpServer {
     webApiKey: config.STEAM_WEB_API_KEY,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const communityClient = new SteamCommunityClient({
+    http,
+    language: config.STEAM_DEFAULT_LANGUAGE,
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager);
   registerCatalogTools(server, catalogClient, readonlyCaller);
+  registerCommunityTools(server, communityClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
   registerStoreTools(server, storeClient);
 
