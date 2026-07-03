@@ -159,6 +159,7 @@ Steam authentication uses Steam OpenID to prove ownership of a SteamID. OpenID d
 npm install
 npm run typecheck
 npm run build
+npm run audit:steam-catalog
 ```
 
 ## Repository Layout

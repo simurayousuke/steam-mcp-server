@@ -22,4 +22,12 @@ npm.cmd test
 npm.cmd run build
 ```
 
+When changing Steam Web API coverage, also run:
+
+```bash
+npm.cmd run audit:steam-catalog
+```
+
+This live audit checks the current public `ISteamWebAPIUtil/GetSupportedAPIList` catalog against `docs/official-webapi-audit.md`.
+
 After each commit, push `main` immediately and confirm the GitHub Actions run for that commit.

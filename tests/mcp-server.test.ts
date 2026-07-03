@@ -162,7 +162,16 @@ describe('Steam MCP server', () => {
 
       expect(result.structuredContent).toMatchObject({
         status: 'ok',
+        capabilities: {
+          implementedToolGroups: expect.arrayContaining([
+            'steam-user-web-api-key-storage',
+            'steam-oauth',
+            'steam-wishlist',
+            'steam-resources',
+          ]),
+        },
       });
+      expect(JSON.stringify(result.structuredContent)).not.toContain('plannedToolGroups');
 
       const setKeyResult = await client.callTool({
         name: 'steam_auth_set_web_api_key',

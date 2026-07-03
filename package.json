@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "audit:steam-catalog": "tsx scripts/audit-steam-catalog.ts",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest run",
