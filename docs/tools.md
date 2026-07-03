@@ -58,6 +58,12 @@
 - `steam_get_workshop_file_details`
 - `steam_get_workshop_collection_details`
 
+## Resources
+
+- `steam://apps/{appid}`
+- `steam://apps/{appid}/news`
+- `steam://players/{steamid}`
+
 ## Notes
 
 - Tools are read-only unless they explicitly manage local MCP server authentication state.

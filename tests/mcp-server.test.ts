@@ -16,6 +16,7 @@ describe('Steam MCP server', () => {
     try {
       await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
       const tools = await client.listTools();
+      const resourceTemplates = await client.listResourceTemplates();
 
       expect(tools.tools.map((tool) => tool.name)).toEqual(
         expect.arrayContaining([
@@ -41,6 +42,9 @@ describe('Steam MCP server', () => {
           'steam_get_workshop_file_details',
           'steam_get_workshop_collection_details',
         ]),
+      );
+      expect(resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate)).toEqual(
+        expect.arrayContaining(['steam://apps/{appid}', 'steam://apps/{appid}/news', 'steam://players/{steamid}']),
       );
 
       const result = await client.callTool({

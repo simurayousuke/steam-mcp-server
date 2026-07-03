@@ -6,6 +6,7 @@ import { SteamOpenIdAuthManager } from '../auth/session.js';
 import { HttpJsonClient } from '../common/http.js';
 import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
+import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
@@ -88,6 +89,11 @@ export function createSteamMcpServer(): McpServer {
   registerStoreTools(server, storeClient, authManager);
   registerWebApiTools(server, webApiClient, authManager);
   registerWorkshopTools(server, workshopClient);
+  registerSteamResources(server, {
+    playerClient,
+    storeClient,
+    webApiClient,
+  });
 
   return server;
 }

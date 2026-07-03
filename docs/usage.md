@@ -69,6 +69,18 @@ Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys ar
 - The server does not read browser cookies.
 - Publisher-only or write-capable Steam APIs are not callable by default.
 
+## MCP Resources
+
+The server exposes dynamic JSON resources:
+
+```text
+steam://apps/{appid}
+steam://apps/{appid}/news
+steam://players/{steamid}
+```
+
+`steam://players/{steamid}` uses the official player summary Web API and requires a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`.
+
 ## Allowlisted Web API Methods
 
 `STEAM_API_ALLOWLIST_FILE` can point to a UTF-8 text file:
