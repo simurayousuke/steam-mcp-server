@@ -76,6 +76,7 @@ Use `steam_oauth_set_access_token` only when you already obtained a Steam OAuth 
 - `steam_get_store_app_list` requires a Web API key and uses the current `IStoreService/GetAppList` endpoint instead of the deprecated `ISteamApps/GetAppList`.
 - `steam_get_asset_class_info` and `steam_get_asset_prices` require a Web API key and expose read-only Steam Economy metadata and price data; transaction/trade endpoints are not exposed.
 - `steam_get_game_server_account_public_info`, `steam_get_server_steam_ids_by_ip`, and `steam_get_server_ips_by_steam_id` require a Web API key; game server account-list and login-token endpoints are not exposed because they can reveal or operate on server login credentials.
+- `steam_get_game_notification_sessions` and `steam_get_game_notification_session_details` require `STEAM_PUBLISHER_KEY`; game notification create, update, request, and delete APIs are not exposed because they change user-visible notification state.
 - `steam_get_inventory_service_inventory`, `steam_get_inventory_item_defs`, `steam_get_inventory_price_sheet`, and `steam_get_inventory_quantity` require `STEAM_PUBLISHER_KEY` with Economy permissions; inventory mutation methods such as add, consume, exchange, consolidate, and modify are not exposed.
 - `steam_query_workshop_files` and `steam_get_ugc_file_details` require a Web API key; Workshop delete/update/subscribe endpoints are not exposed.
 - `steam_get_owned_games` can use `appidsFilter` to restrict a library query to specific Steam appids.

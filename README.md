@@ -58,6 +58,8 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_game_server_account_public_info`
 - `steam_get_server_steam_ids_by_ip`
 - `steam_get_server_ips_by_steam_id`
+- `steam_get_game_notification_sessions`
+- `steam_get_game_notification_session_details`
 - `steam_get_inventory_service_inventory`
 - `steam_get_inventory_item_defs`
 - `steam_get_inventory_price_sheet`

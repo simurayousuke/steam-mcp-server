@@ -10,6 +10,7 @@ import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCloudClient } from '../steam/cloud-client.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamEconomyClient } from '../steam/economy-client.js';
+import { SteamGameNotificationsClient } from '../steam/game-notifications-client.js';
 import { SteamGameServersClient } from '../steam/game-servers-client.js';
 import { SteamInventoryClient } from '../steam/inventory-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
@@ -23,6 +24,7 @@ import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCloudTools } from '../tools/cloud.js';
 import { registerCommunityTools } from '../tools/community.js';
 import { registerEconomyTools } from '../tools/economy.js';
+import { registerGameNotificationsTools } from '../tools/game-notifications.js';
 import { registerGameServersTools } from '../tools/game-servers.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerInventoryTools } from '../tools/inventory.js';
@@ -112,6 +114,11 @@ export function createSteamMcpServer(): McpServer {
     webApiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const gameNotificationsClient = new SteamGameNotificationsClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const publisherClient = new SteamPublisherClient({
     http,
     publisherKey: () => credentialManager.getPublisherKey(),
@@ -129,6 +136,7 @@ export function createSteamMcpServer(): McpServer {
   registerCloudTools(server, cloudClient);
   registerCommunityTools(server, communityClient, authManager);
   registerEconomyTools(server, economyClient);
+  registerGameNotificationsTools(server, gameNotificationsClient, authManager);
   registerGameServersTools(server, gameServersClient);
   registerInventoryTools(server, inventoryClient, authManager);
   registerPlayerTools(server, playerClient, authManager);

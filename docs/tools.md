@@ -52,6 +52,11 @@
 - `steam_get_server_steam_ids_by_ip`
 - `steam_get_server_ips_by_steam_id`
 
+## Game Notifications
+
+- `steam_get_game_notification_sessions`
+- `steam_get_game_notification_session_details`
+
 ## Steam Inventory Service
 
 - `steam_get_inventory_service_inventory`
