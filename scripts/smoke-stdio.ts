@@ -103,6 +103,8 @@ async function main(): Promise<void> {
         'steam://players/{steamid}/wishlist',
         'steam://profiles/{vanity}/wishlist',
         'steam://me/apps/{appid}/playtime',
+        'steam://me/apps/{appid}/achievements',
+        'steam://me/apps/{appid}/stats',
       ],
       'resource templates',
     );

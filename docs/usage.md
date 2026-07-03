@@ -148,7 +148,7 @@ Add optional authenticated-user sections when you need a richer snapshot:
 }
 ```
 
-MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, and `steam://me/recently-played`.
+MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, `steam://me/recently-played`, `steam://me/bans`, `steam://me/apps/620/achievements`, and `steam://me/apps/620/stats`.
 
 ## Web API Key Flow
 
@@ -216,7 +216,10 @@ steam://players/{steamid}/owned-games
 steam://players/{steamid}/wishlist
 steam://players/{steamid}/wishlist/count
 steam://players/{steamid}/apps/{appid}/playtime
+steam://players/{steamid}/apps/{appid}/achievements
+steam://players/{steamid}/apps/{appid}/stats
 steam://players/{steamid}/recently-played
+steam://players/{steamid}/bans
 steam://players/{steamid}/steam-level
 steam://players/{steamid}/badges
 steam://players/{steamid}/badges/{badgeid}/progress
@@ -228,7 +231,10 @@ steam://me/owned-games
 steam://me/wishlist
 steam://me/wishlist/count
 steam://me/apps/{appid}/playtime
+steam://me/apps/{appid}/achievements
+steam://me/apps/{appid}/stats
 steam://me/recently-played
+steam://me/bans
 steam://me/steam-level
 steam://me/badges
 steam://me/badges/{badgeid}/progress

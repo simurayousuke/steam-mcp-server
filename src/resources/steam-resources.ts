@@ -281,6 +281,74 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
   );
 
   server.registerResource(
+    'steam-player-app-achievements',
+    new ResourceTemplate('steam://players/{steamid}/apps/{appid}/achievements', { list: undefined }),
+    {
+      title: 'Steam player app achievements',
+      description: 'Visible achievements for one Steam app and player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.playerClient.getPlayerAchievements({ steamId, appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-authorized-player-app-achievements',
+    new ResourceTemplate('steam://me/apps/{appid}/achievements', { list: undefined }),
+    {
+      title: 'Authorized Steam player app achievements',
+      description: 'Visible achievements for one Steam app and the authenticated OpenID SteamID as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = resolveAuthorizedSteamId(clients.authManager);
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.playerClient.getPlayerAchievements({ steamId, appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-app-stats',
+    new ResourceTemplate('steam://players/{steamid}/apps/{appid}/stats', { list: undefined }),
+    {
+      title: 'Steam player app stats',
+      description: 'Visible stats for one Steam app and player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.playerClient.getUserStatsForGame({ steamId, appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-authorized-player-app-stats',
+    new ResourceTemplate('steam://me/apps/{appid}/stats', { list: undefined }),
+    {
+      title: 'Authorized Steam player app stats',
+      description: 'Visible stats for one Steam app and the authenticated OpenID SteamID as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = resolveAuthorizedSteamId(clients.authManager);
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.playerClient.getUserStatsForGame({ steamId, appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
     'steam-player-recently-played',
     new ResourceTemplate('steam://players/{steamid}/recently-played', { list: undefined }),
     {
@@ -307,6 +375,39 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri) => {
       const steamId = resolveAuthorizedSteamId(clients.authManager);
       const data = await clients.playerClient.getRecentlyPlayedGames({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-bans',
+    new ResourceTemplate('steam://players/{steamid}/bans', { list: undefined }),
+    {
+      title: 'Steam player bans',
+      description: 'VAC, game, community, and economy ban status for one Steam player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.playerClient.getPlayerBans({ steamIds: [steamId] });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-authorized-player-bans',
+    'steam://me/bans',
+    {
+      title: 'Authorized Steam player bans',
+      description:
+        'VAC, game, community, and economy ban status for the authenticated OpenID SteamID as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri) => {
+      const steamId = resolveAuthorizedSteamId(clients.authManager);
+      const data = await clients.playerClient.getPlayerBans({ steamIds: [steamId] });
 
       return jsonResource(uri, data);
     },

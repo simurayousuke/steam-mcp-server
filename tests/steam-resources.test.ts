@@ -88,6 +88,26 @@ describe('Steam MCP resources', () => {
             playtime_forever: 120,
           },
         }),
+        getPlayerAchievements: async ({ steamId, appid }) => ({
+          steamId,
+          appid,
+          response: {
+            achievements: [],
+          },
+        }),
+        getUserStatsForGame: async ({ steamId, appid }) => ({
+          steamId,
+          appid,
+          response: {
+            stats: [],
+          },
+        }),
+        getPlayerBans: async ({ steamIds }) => ({
+          players: steamIds.map((steamid) => ({
+            SteamId: steamid,
+            VACBanned: false,
+          })),
+        }),
         getSteamLevel: async ({ steamId }) => ({
           steamId,
           response: {
@@ -147,6 +167,7 @@ describe('Steam MCP resources', () => {
           'steam://me/owned-games',
           'steam://me/wishlist',
           'steam://me/wishlist/count',
+          'steam://me/bans',
           'steam://me/recently-played',
           'steam://me/steam-level',
           'steam://me/badges',
@@ -320,6 +341,50 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const appAchievements = await client.readResource({
+        uri: 'steam://players/76561197960434622/apps/620/achievements',
+      });
+      expect(JSON.parse(appAchievements.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        appid: 620,
+        response: {
+          achievements: [],
+        },
+      });
+
+      const authorizedAppAchievements = await client.readResource({
+        uri: 'steam://me/apps/620/achievements',
+      });
+      expect(JSON.parse(authorizedAppAchievements.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        appid: 620,
+        response: {
+          achievements: [],
+        },
+      });
+
+      const appStats = await client.readResource({
+        uri: 'steam://players/76561197960434622/apps/620/stats',
+      });
+      expect(JSON.parse(appStats.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        appid: 620,
+        response: {
+          stats: [],
+        },
+      });
+
+      const authorizedAppStats = await client.readResource({
+        uri: 'steam://me/apps/620/stats',
+      });
+      expect(JSON.parse(authorizedAppStats.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        appid: 620,
+        response: {
+          stats: [],
+        },
+      });
+
       const recentlyPlayed = await client.readResource({
         uri: 'steam://players/76561197960434622/recently-played',
       });
@@ -338,6 +403,30 @@ describe('Steam MCP resources', () => {
         response: {
           total_count: 1,
         },
+      });
+
+      const bans = await client.readResource({
+        uri: 'steam://players/76561197960434622/bans',
+      });
+      expect(JSON.parse(bans.contents[0]?.text ?? '{}')).toMatchObject({
+        players: [
+          {
+            SteamId: '76561197960434622',
+            VACBanned: false,
+          },
+        ],
+      });
+
+      const authorizedBans = await client.readResource({
+        uri: 'steam://me/bans',
+      });
+      expect(JSON.parse(authorizedBans.contents[0]?.text ?? '{}')).toMatchObject({
+        players: [
+          {
+            SteamId: '76561197960434622',
+            VACBanned: false,
+          },
+        ],
       });
 
       const steamLevel = await client.readResource({
