@@ -48,9 +48,13 @@ describe('official Steam Web API audit documentation', () => {
 
   it('lists tracked public catalog interfaces without dedicated Steamworks doc pages', () => {
     const publicCatalogInterfaces = [
+      'IAuthenticationService',
+      'IClientStats_1046930',
       'IContentServerDirectoryService',
       'IGCVersion_<appid>',
+      'IHelpRequestLogsService',
       'IPortal2Leaderboards_620',
+      'ISteamBroadcast',
       'ISteamDirectory',
       'ISteamUserOAuth',
       'ITFSystem_440',
@@ -82,6 +86,15 @@ describe('official Steam Web API audit documentation', () => {
       'SetUserStatsForGame',
       'SetItemPaymentRules',
       'GetWishlistSortedFiltered',
+      'BeginAuthSessionViaCredentials',
+      'BeginAuthSessionViaQR',
+      'UpdateAuthSessionWithSteamGuardCode',
+      'PollAuthSessionStatus',
+      'ReportEvent',
+      'UploadUserApplicationLog',
+      'GetApplicationLogDemand',
+      'RecordOfflinePlaytime',
+      'ViewerHeartbeat',
     ];
 
     for (const methodName of excludedMethods) {
