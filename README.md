@@ -27,6 +27,7 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_api_list_methods`
 - `steam_api_get_method_schema`
 - `steam_api_call_readonly`
+- `steam_get_cheating_reports`
 - `steam_cloud_enumerate_user_files`
 - `steam_resolve_vanity_url`
 - `steam_get_player_summary`

@@ -7,6 +7,7 @@ import { HttpJsonClient } from '../common/http.js';
 import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
+import { SteamCheatReportingClient } from '../steam/cheat-reporting-client.js';
 import { SteamCloudClient } from '../steam/cloud-client.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamEconMarketClient } from '../steam/econ-market-client.js';
@@ -28,6 +29,7 @@ import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
+import { registerCheatReportingTools } from '../tools/cheat-reporting.js';
 import { registerCloudTools } from '../tools/cloud.js';
 import { registerCommunityTools } from '../tools/community.js';
 import { registerEconMarketTools } from '../tools/econ-market.js';
@@ -109,6 +111,11 @@ export function createSteamMcpServer(): McpServer {
     oauthAccessToken: () => credentialManager.getOAuthAccessToken(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const cheatReportingClient = new SteamCheatReportingClient({
+    http,
+    publisherKey: () => credentialManager.getPublisherKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const workshopClient = new SteamWorkshopClient({
     http,
     webApiKey: () => credentialManager.getWebApiKey(),
@@ -183,6 +190,7 @@ export function createSteamMcpServer(): McpServer {
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
+  registerCheatReportingTools(server, cheatReportingClient);
   registerCloudTools(server, cloudClient);
   registerCommunityTools(server, communityClient, authManager);
   registerEconMarketTools(server, econMarketClient, authManager);

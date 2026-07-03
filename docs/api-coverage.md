@@ -16,6 +16,7 @@ Implemented high-level tools cover:
 - Steam OAuth login URL generation, callback-fragment completion, in-memory OAuth access-token storage, and read-only Steam Cloud file enumeration with `read_cloud`
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
+- Anti-cheat report and ban-request reads through `ICheatReportingService/GetCheatingReports`; report creation, ban requests, ban removal, and secure-session mutation methods are not exposed as high-level tools
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Store app list pagination through `IStoreService/GetAppList`
@@ -51,4 +52,6 @@ Implemented high-level tools cover:
 - Inventory Service add, consume, exchange, consolidate, and modify methods are intentionally excluded from high-level tools because they change user inventory state.
 - Lobby creation and member-removal APIs are intentionally excluded from high-level tools because they mutate lobby state.
 - Microtransaction initialization, finalization, refund, agreement adjustment, agreement cancellation, and agreement processing APIs are intentionally excluded from high-level tools because they create charges, capture payments, refund money, or mutate billing state.
+- Cheat reporting write APIs are intentionally excluded from high-level tools because they submit cheating reports, request or remove bans, or mutate secure multiplayer session state.
+- Broadcast metadata posting and Steam Community abuse-report APIs are intentionally excluded from high-level tools because they write user-visible or moderation state.
 - `STEAM_API_ALLOWLIST_FILE` is intentionally explicit and reviewed line by line.

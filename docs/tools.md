@@ -28,6 +28,7 @@
 
 ## Official Web API High-Level Tools
 
+- `steam_get_cheating_reports`
 - `steam_cloud_enumerate_user_files`
 - `steam_get_news_for_app`
 - `steam_get_web_api_server_info`

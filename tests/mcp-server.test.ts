@@ -31,6 +31,7 @@ describe('Steam MCP server', () => {
           'steam_api_get_coverage_summary',
           'steam_api_list_interfaces',
           'steam_api_call_readonly',
+          'steam_get_cheating_reports',
           'steam_cloud_enumerate_user_files',
           'steam_search_apps',
           'steam_get_app_reviews',
