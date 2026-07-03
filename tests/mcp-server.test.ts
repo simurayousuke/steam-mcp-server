@@ -144,6 +144,8 @@ describe('Steam MCP server', () => {
           'steam://apps/{appid}',
           'steam://apps/{appid}/news',
           'steam://apps/{appid}/schema',
+          'steam://apps/{appid}/current-players',
+          'steam://apps/{appid}/achievements/global-percentages',
           'steam://api/interfaces/{interfaceName}/methods',
           'steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}',
           'steam://players/{steamid}',

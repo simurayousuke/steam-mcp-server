@@ -58,6 +58,20 @@ describe('Steam MCP resources', () => {
             },
           },
         }),
+        getNumberOfCurrentPlayers: async ({ appid }) => ({
+          appid,
+          playerCount: 12345,
+        }),
+        getGlobalAchievementPercentages: async ({ appid }) => ({
+          appid,
+          achievements: [
+            {
+              name: 'ACH_WIN_ONE_GAME',
+              percent: 75,
+            },
+          ],
+          count: 1,
+        }),
         getGamesFollowed: async ({ steamId }) => ({
           steamId,
           response: {
@@ -220,6 +234,28 @@ describe('Steam MCP resources', () => {
             gameName: 'Portal 2',
           },
         },
+      });
+
+      const currentPlayers = await client.readResource({
+        uri: 'steam://apps/620/current-players',
+      });
+      expect(JSON.parse(currentPlayers.contents[0]?.text ?? '{}')).toMatchObject({
+        appid: 620,
+        playerCount: 12345,
+      });
+
+      const globalAchievements = await client.readResource({
+        uri: 'steam://apps/620/achievements/global-percentages',
+      });
+      expect(JSON.parse(globalAchievements.contents[0]?.text ?? '{}')).toMatchObject({
+        appid: 620,
+        count: 1,
+        achievements: [
+          {
+            name: 'ACH_WIN_ONE_GAME',
+            percent: 75,
+          },
+        ],
       });
 
       const player = await client.readResource({

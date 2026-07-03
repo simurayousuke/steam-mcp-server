@@ -109,6 +109,8 @@ async function main(): Promise<void> {
     assertIncludes(
       resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate),
       [
+        'steam://apps/{appid}/current-players',
+        'steam://apps/{appid}/achievements/global-percentages',
         'steam://players/{steamid}/owned-games',
         'steam://api/interfaces/{interfaceName}/methods',
         'steam://players/{steamid}/wishlist',

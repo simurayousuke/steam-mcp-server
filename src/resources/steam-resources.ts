@@ -29,7 +29,15 @@ export type SteamResourceClients = {
     | 'getUserStatsForGame'
   >;
   storeClient: Pick<SteamStoreClient, 'getAppDetails' | 'getPublicWishlist'>;
-  webApiClient: Pick<SteamWebApiClient, 'getGamesFollowed' | 'getGamesFollowedCount' | 'getNewsForApp' | 'getSchemaForGame'>;
+  webApiClient: Pick<
+    SteamWebApiClient,
+    | 'getGamesFollowed'
+    | 'getGamesFollowedCount'
+    | 'getGlobalAchievementPercentages'
+    | 'getNewsForApp'
+    | 'getNumberOfCurrentPlayers'
+    | 'getSchemaForGame'
+  >;
   wishlistClient: Pick<SteamWishlistClient, 'getWishlist' | 'getWishlistItemCount'>;
 };
 
@@ -81,6 +89,38 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri, variables) => {
       const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
       const data = await clients.webApiClient.getSchemaForGame({ appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-app-current-players',
+    new ResourceTemplate('steam://apps/{appid}/current-players', { list: undefined }),
+    {
+      title: 'Steam app current players',
+      description: 'Current Steam player count for an app as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.webApiClient.getNumberOfCurrentPlayers({ appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-app-global-achievement-percentages',
+    new ResourceTemplate('steam://apps/{appid}/achievements/global-percentages', { list: undefined }),
+    {
+      title: 'Steam app global achievement percentages',
+      description: 'Global Steam achievement completion percentages for an app as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.webApiClient.getGlobalAchievementPercentages({ appid });
 
       return jsonResource(uri, data);
     },
