@@ -48,6 +48,12 @@ export type WorkshopCollectionDetailsRequest = {
   publishedFileIds: string[];
 };
 
+export type UgcFileDetailsRequest = {
+  ugcId: string;
+  appid: number;
+  steamId?: string;
+};
+
 export type WorkshopRequiredKvTag = {
   key: string;
   value: string;
@@ -142,6 +148,34 @@ export class SteamWorkshopClient {
       result: parsed.data.response.result,
       resultCount: parsed.data.response.resultcount,
       details: parsed.data.response.collectiondetails,
+    };
+  }
+
+  async getUgcFileDetails(request: UgcFileDetailsRequest): Promise<Record<string, unknown>> {
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
+
+    if (!webApiKey) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: 'This Steam UGC Web API method requires STEAM_WEB_API_KEY.',
+      });
+    }
+
+    const url = new URL('https://api.steampowered.com/ISteamRemoteStorage/GetUGCFileDetails/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('key', webApiKey);
+    url.searchParams.set('ugcid', request.ugcId);
+    url.searchParams.set('appid', String(request.appid));
+
+    if (request.steamId !== undefined) {
+      url.searchParams.set('steamid', request.steamId);
+    }
+
+    const response = await this.getCachedJson(url);
+
+    return {
+      query: request,
+      response,
     };
   }
 

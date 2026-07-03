@@ -35,6 +35,11 @@
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
 
+## Steam Economy
+
+- `steam_get_asset_class_info`
+- `steam_get_asset_prices`
+
 ## Publisher-Only Web API Tools
 
 - `steam_authenticate_user_ticket`
@@ -81,6 +86,7 @@
 ## Steam Workshop
 
 - `steam_query_workshop_files`
+- `steam_get_ugc_file_details`
 - `steam_get_workshop_file_details`
 - `steam_get_workshop_collection_details`
 

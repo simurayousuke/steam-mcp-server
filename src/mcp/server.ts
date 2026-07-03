@@ -8,6 +8,7 @@ import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
+import { SteamEconomyClient } from '../steam/economy-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamPublisherClient } from '../steam/publisher-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
@@ -17,6 +18,7 @@ import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCommunityTools } from '../tools/community.js';
+import { registerEconomyTools } from '../tools/economy.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerPublisherTools } from '../tools/publisher.js';
@@ -85,6 +87,11 @@ export function createSteamMcpServer(): McpServer {
     webApiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const economyClient = new SteamEconomyClient({
+    http,
+    webApiKey: () => credentialManager.getWebApiKey(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const publisherClient = new SteamPublisherClient({
     http,
     publisherKey: () => credentialManager.getPublisherKey(),
@@ -95,6 +102,7 @@ export function createSteamMcpServer(): McpServer {
   registerAuthTools(server, authManager, credentialManager);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCommunityTools(server, communityClient, authManager);
+  registerEconomyTools(server, economyClient);
   registerPlayerTools(server, playerClient, authManager);
   registerPublisherTools(server, publisherClient, authManager);
   registerStoreTools(server, storeClient, authManager);

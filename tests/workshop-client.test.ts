@@ -175,6 +175,50 @@ describe('SteamWorkshopClient', () => {
     });
   });
 
+  it('fetches UGC file details with a Web API key', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamWorkshopClient({
+      webApiKey: 'configured-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            data: {
+              filename: 'test.dat',
+            },
+          };
+        },
+        postFormJson: async () => ({}),
+      },
+    });
+
+    await expect(
+      client.getUgcFileDetails({
+        ugcId: '123456',
+        appid: 620,
+        steamId: '76561197960434622',
+      }),
+    ).resolves.toMatchObject({
+      query: {
+        ugcId: '123456',
+        appid: 620,
+        steamId: '76561197960434622',
+      },
+      response: {
+        data: {
+          filename: 'test.dat',
+        },
+      },
+    });
+
+    expect(requestedUrl?.pathname).toBe('/ISteamRemoteStorage/GetUGCFileDetails/v1/');
+    expect(requestedUrl?.searchParams.get('key')).toBe('configured-key');
+    expect(requestedUrl?.searchParams.get('ugcid')).toBe('123456');
+    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('steamid')).toBe('76561197960434622');
+  });
+
   it('requires a Web API key before querying published files', async () => {
     let requestCount = 0;
     const client = new SteamWorkshopClient({

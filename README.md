@@ -47,6 +47,8 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_store_app_list`
 - `steam_get_games_followed`
 - `steam_get_games_followed_count`
+- `steam_get_asset_class_info`
+- `steam_get_asset_prices`
 - `steam_authenticate_user_ticket`
 - `steam_get_app_betas`
 - `steam_get_app_builds`
@@ -65,6 +67,7 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_store_package`
 - `steam_get_user_wishlist`
 - `steam_query_workshop_files`
+- `steam_get_ugc_file_details`
 - `steam_get_workshop_file_details`
 - `steam_get_workshop_collection_details`
 

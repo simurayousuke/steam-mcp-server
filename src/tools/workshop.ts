@@ -65,6 +65,33 @@ export function registerWorkshopTools(server: McpServer, workshopClient: SteamWo
   );
 
   server.registerTool(
+    'steam_get_ugc_file_details',
+    {
+      title: 'Get Steam UGC file details',
+      description: 'Fetch Steam Remote Storage UGC file details using a Web API key.',
+      inputSchema: {
+        ugcId: z.string().regex(/^\d+$/),
+        appid: z.number().int().positive(),
+        steamId: z.string().regex(/^\d+$/).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await workshopClient.getUgcFileDetails(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_workshop_file_details',
     {
       title: 'Get Steam Workshop file details',
