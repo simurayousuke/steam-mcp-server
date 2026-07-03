@@ -9,6 +9,7 @@ import { loadConfig } from '../config/env.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
+import { SteamWebApiClient } from '../steam/web-api-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAuthTools } from '../tools/auth.js';
@@ -17,6 +18,7 @@ import { registerCommunityTools } from '../tools/community.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerStoreTools } from '../tools/store.js';
+import { registerWebApiTools } from '../tools/web-api.js';
 import { registerWorkshopTools } from '../tools/workshop.js';
 
 const SERVER_NAME = 'steam-mcp-server';
@@ -73,6 +75,10 @@ export function createSteamMcpServer(): McpServer {
     http,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const webApiClient = new SteamWebApiClient({
+    http,
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
@@ -80,6 +86,7 @@ export function createSteamMcpServer(): McpServer {
   registerCommunityTools(server, communityClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
   registerStoreTools(server, storeClient, authManager);
+  registerWebApiTools(server, webApiClient);
   registerWorkshopTools(server, workshopClient);
 
   return server;

@@ -27,6 +27,9 @@ The default policy is read-only. Official Steam Web API methods will be discover
 - `steam_get_recently_played_games`
 - `steam_get_player_achievements`
 - `steam_get_user_stats_for_game`
+- `steam_get_news_for_app`
+- `steam_get_number_of_current_players`
+- `steam_get_global_achievement_percentages`
 - `steam_get_public_inventory`
 - `steam_search_apps`
 - `steam_get_app_details`
