@@ -13,7 +13,7 @@ The scope of this audit is Valve's HTTP-based Steam Web API and related public S
 - User-private reads require an official authorization path such as OpenID identity proof, a user-provided Steam Web API key, or Steam OAuth scopes where Valve makes those scopes available.
 - Publisher, financial, economy, inventory, payment, and anti-cheat reads require dedicated keys and are exposed only as read tools.
 - Write, payment, moderation, entitlement mutation, inventory mutation, trade initiation, and publishing-state mutation endpoints are not exposed as high-level tools.
-- `steam_api_call_readonly` can call default-safe catalog methods. Risky methods require explicit review through `STEAM_API_ALLOWLIST_FILE`.
+- `steam_api_call_readonly` can call default-safe catalog methods. Risky methods, sensitive authentication flows, and GET endpoints with known side effects require explicit review through `STEAM_API_ALLOWLIST_FILE`.
 
 ## Interface Matrix
 

@@ -31,6 +31,10 @@ export const dangerousMethodNamePatterns = [
   /update/i,
 ] as const;
 
+export const sensitiveInterfaceNames = new Set(['iauthenticationservice']);
+
+export const sideEffectMethodIdentifiers = new Set(['isteambroadcast.viewerheartbeat.v1']);
+
 export type ApiSafetyDecision = {
   allowed: boolean;
   reasons: string[];
@@ -38,6 +42,16 @@ export type ApiSafetyDecision = {
 
 export function classifyReadonlySafety(method: SteamWebApiMethodSchema): ApiSafetyDecision {
   const reasons: string[] = [];
+  const interfaceName = method.interfaceName.toLowerCase();
+  const methodIdentifier = `${interfaceName}.${method.name.toLowerCase()}.v${method.version}`;
+
+  if (sensitiveInterfaceNames.has(interfaceName)) {
+    reasons.push(`Interface ${method.interfaceName} is blocked by the default policy because it handles Steam authentication flows.`);
+  }
+
+  if (sideEffectMethodIdentifiers.has(methodIdentifier)) {
+    reasons.push(`Method ${method.interfaceName}.${method.name}/v${method.version} is blocked because it has side effects despite using GET.`);
+  }
 
   if (method.httpMethod !== 'GET') {
     reasons.push(`HTTP method ${method.httpMethod} is not allowed by the default read-only policy.`);
