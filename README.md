@@ -30,6 +30,8 @@ The default policy is read-only. Official Steam Web API methods will be discover
 - `steam_get_app_reviews`
 - `steam_get_store_package`
 - `steam_get_user_wishlist`
+- `steam_get_workshop_file_details`
+- `steam_get_workshop_collection_details`
 
 `steam_get_user_wishlist` is limited to public wishlist JSON exposed by Steam Store endpoints. It does not read Steam cookies, passwords, or private wishlists.
 

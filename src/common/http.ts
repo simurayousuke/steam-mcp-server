@@ -41,6 +41,21 @@ export class HttpJsonClient {
     return response.text();
   }
 
+  async postFormJson<T>(url: URL, form: URLSearchParams, options: JsonRequestOptions = {}): Promise<T> {
+    const response = await this.request(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...options.headers,
+      },
+      body: form.toString(),
+      signal: options.signal,
+    });
+
+    return (await response.json()) as T;
+  }
+
   private async request(
     url: URL,
     options: {

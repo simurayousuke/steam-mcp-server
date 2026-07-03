@@ -28,6 +28,8 @@ describe('Steam MCP server', () => {
           'steam_get_store_package',
           'steam_get_public_inventory',
           'steam_get_owned_games',
+          'steam_get_workshop_file_details',
+          'steam_get_workshop_collection_details',
         ]),
       );
 

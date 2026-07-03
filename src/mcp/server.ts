@@ -8,12 +8,14 @@ import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
+import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerCommunityTools } from '../tools/community.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerPlayerTools } from '../tools/player.js';
 import { registerStoreTools } from '../tools/store.js';
+import { registerWorkshopTools } from '../tools/workshop.js';
 
 const SERVER_NAME = 'steam-mcp-server';
 const SERVER_VERSION = '0.1.0';
@@ -62,6 +64,10 @@ export function createSteamMcpServer(): McpServer {
     language: config.STEAM_DEFAULT_LANGUAGE,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const workshopClient = new SteamWorkshopClient({
+    http,
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager);
@@ -69,6 +75,7 @@ export function createSteamMcpServer(): McpServer {
   registerCommunityTools(server, communityClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
   registerStoreTools(server, storeClient);
+  registerWorkshopTools(server, workshopClient);
 
   return server;
 }
