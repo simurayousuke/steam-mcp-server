@@ -65,6 +65,33 @@ export function registerPlayerTools(
   );
 
   server.registerTool(
+    'steam_get_player_summaries',
+    {
+      title: 'Get Steam player summaries',
+      description: 'Get Steam player profile summaries for up to 100 SteamIDs.',
+      inputSchema: {
+        steamIds: z.array(z.string().min(1)).min(1).max(100),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getPlayerSummaries({
+            steamIds: args.steamIds,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_owned_games',
     {
       title: 'Get Steam owned games',

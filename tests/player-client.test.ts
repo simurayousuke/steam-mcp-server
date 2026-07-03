@@ -30,6 +30,31 @@ describe('SteamPlayerClient', () => {
     expect(requestedUrl?.searchParams.get('steamids')).toBe('76561197960434622');
   });
 
+  it('fetches player summaries for multiple SteamIDs', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamPlayerClient({
+      webApiKey: 'configured-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {
+              players: [],
+            },
+          };
+        },
+      },
+    });
+
+    await client.getPlayerSummaries({
+      steamIds: ['76561197960434622', '76561198000000000'],
+    });
+
+    expect(requestedUrl?.pathname).toBe('/ISteamUser/GetPlayerSummaries/v2/');
+    expect(requestedUrl?.searchParams.get('steamids')).toBe('76561197960434622,76561198000000000');
+  });
+
   it('requires STEAM_WEB_API_KEY before making requests', async () => {
     let requestCount = 0;
     const client = new SteamPlayerClient({

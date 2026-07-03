@@ -17,7 +17,7 @@ Implemented high-level tools cover:
 - Safe read-only Web API calls
 - Publisher-only user ticket authentication, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
 - Store search, app details, reviews, package details, and public wishlist JSON
-- Player profile summary, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
+- Player profile summaries, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
 - Public Steam Community inventory
 - Workshop published file details and collection details
 

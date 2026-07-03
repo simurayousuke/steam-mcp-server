@@ -25,6 +25,7 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_api_call_readonly`
 - `steam_resolve_vanity_url`
 - `steam_get_player_summary`
+- `steam_get_player_summaries`
 - `steam_get_owned_games`
 - `steam_get_recently_played_games`
 - `steam_get_single_game_playtime`

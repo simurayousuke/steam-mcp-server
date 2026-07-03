@@ -44,6 +44,7 @@ describe('Steam MCP server', () => {
           'steam_get_app_price_info',
           'steam_get_deleted_steam_ids',
           'steam_get_public_inventory',
+          'steam_get_player_summaries',
           'steam_get_owned_games',
           'steam_get_single_game_playtime',
           'steam_get_steam_level',

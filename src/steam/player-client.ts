@@ -17,6 +17,10 @@ export type SteamIdRequest = {
   steamId: string;
 };
 
+export type SteamIdsRequest = {
+  steamIds: string[];
+};
+
 export type OwnedGamesRequest = SteamIdRequest & {
   appidsFilter?: number[];
   includeAppInfo?: boolean;
@@ -63,8 +67,14 @@ export class SteamPlayerClient {
   }
 
   async getPlayerSummary(request: SteamIdRequest): Promise<Record<string, unknown>> {
+    return this.getPlayerSummaries({
+      steamIds: [request.steamId],
+    });
+  }
+
+  async getPlayerSummaries(request: SteamIdsRequest): Promise<Record<string, unknown>> {
     return this.call('ISteamUser', 'GetPlayerSummaries', 2, {
-      steamids: request.steamId,
+      steamids: request.steamIds.join(','),
     });
   }
 
