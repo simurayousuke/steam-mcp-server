@@ -39,6 +39,16 @@ export type PublisherWorkshopItemRequest = {
   gameItemId: number;
 };
 
+export type LeaderboardDataRequest = 'RequestGlobal' | 'RequestAroundUser' | 'RequestFriends';
+
+export type LeaderboardEntriesRequest = PublisherAppRequest & {
+  leaderboardId: number;
+  rangeStart: number;
+  rangeEnd: number;
+  dataRequest: LeaderboardDataRequest;
+  steamId?: string;
+};
+
 export type EnumerateUserSubscribedFilesRequest = PublisherSteamAppRequest & {
   listType: number;
 };
@@ -166,6 +176,23 @@ export class SteamPublisherClient {
     return this.call('IWorkshopService', 'GetFinalizedContributors', 1, {
       appid: request.appid,
       gameitemid: request.gameItemId,
+    });
+  }
+
+  async getLeaderboardsForGame(request: PublisherAppRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamLeaderboards', 'GetLeaderboardsForGame', 2, {
+      appid: request.appid,
+    });
+  }
+
+  async getLeaderboardEntries(request: LeaderboardEntriesRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamLeaderboards', 'GetLeaderboardEntries', 1, {
+      appid: request.appid,
+      leaderboardid: request.leaderboardId,
+      rangestart: request.rangeStart,
+      rangeend: request.rangeEnd,
+      datarequest: request.dataRequest,
+      steamid: request.steamId,
     });
   }
 

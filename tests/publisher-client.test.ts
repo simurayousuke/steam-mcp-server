@@ -262,6 +262,69 @@ describe('SteamPublisherClient', () => {
     expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
   });
 
+  it('fetches Steam leaderboards with publisher credentials', async () => {
+    const requestedPaths: string[] = [];
+    const requestedParams: Record<string, string | null>[] = [];
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedPaths.push(url.pathname);
+          requestedParams.push({
+            appid: url.searchParams.get('appid'),
+            datarequest: url.searchParams.get('datarequest'),
+            leaderboardid: url.searchParams.get('leaderboardid'),
+            rangeend: url.searchParams.get('rangeend'),
+            rangestart: url.searchParams.get('rangestart'),
+            steamid: url.searchParams.get('steamid'),
+            key: url.searchParams.get('key'),
+          });
+          return {
+            response: {},
+          };
+        },
+      },
+    });
+
+    await client.getLeaderboardsForGame({
+      appid: 620,
+    });
+    await client.getLeaderboardEntries({
+      appid: 620,
+      leaderboardId: 123,
+      rangeStart: 0,
+      rangeEnd: 10,
+      dataRequest: 'RequestAroundUser',
+      steamId: '76561197960434622',
+    });
+
+    expect(requestedPaths).toEqual([
+      '/ISteamLeaderboards/GetLeaderboardsForGame/v2/',
+      '/ISteamLeaderboards/GetLeaderboardEntries/v1/',
+    ]);
+    expect(requestedParams).toEqual([
+      {
+        appid: '620',
+        datarequest: null,
+        leaderboardid: null,
+        rangeend: null,
+        rangestart: null,
+        steamid: null,
+        key: 'publisher-key',
+      },
+      {
+        appid: '620',
+        datarequest: 'RequestAroundUser',
+        leaderboardid: '123',
+        rangeend: '10',
+        rangestart: '0',
+        steamid: '76561197960434622',
+        key: 'publisher-key',
+      },
+    ]);
+  });
+
   it('posts publisher Workshop query endpoints with expected form parameters', async () => {
     const requestedPaths: string[] = [];
     const submittedForms: URLSearchParams[] = [];

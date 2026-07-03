@@ -7,6 +7,7 @@ import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import type { SteamPublisherClient } from '../steam/publisher-client.js';
 
 const appTypeFilterSchema = z.enum(['game', 'application', 'tool', 'demo', 'dlc', 'music']);
+const leaderboardDataRequestSchema = z.enum(['RequestGlobal', 'RequestAroundUser', 'RequestFriends']);
 const publishedItemSearchTypeSchema = z.enum(['publicationOrder', 'trend', 'vote']);
 
 export function registerPublisherTools(
@@ -232,6 +233,71 @@ export function registerPublisherTools(
           data: await publisherClient.getWorkshopFinalizedContributors({
             appid: args.appid,
             gameItemId: args.gameItemId,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_leaderboards_for_game',
+    {
+      title: 'Get Steam leaderboards for game',
+      description: 'Get leaderboard definitions for one app using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getLeaderboardsForGame({
+            appid: args.appid,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_leaderboard_entries',
+    {
+      title: 'Get Steam leaderboard entries',
+      description:
+        'Get entries from one Steam leaderboard using a publisher Web API key. For RequestAroundUser or RequestFriends, steamId defaults to the authenticated OpenID SteamID.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        leaderboardId: z.number().int().positive(),
+        rangeStart: z.number().int(),
+        rangeEnd: z.number().int(),
+        dataRequest: leaderboardDataRequestSchema,
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getLeaderboardEntries({
+            appid: args.appid,
+            leaderboardId: args.leaderboardId,
+            rangeStart: args.rangeStart,
+            rangeEnd: args.rangeEnd,
+            dataRequest: args.dataRequest,
+            steamId: resolveLeaderboardSteamId(args.dataRequest, args.steamId, authManager),
           }),
         });
       } catch (error: unknown) {
@@ -577,4 +643,16 @@ function resolveSteamId(explicitSteamId: string | undefined, authManager: SteamO
   }
 
   return steamId;
+}
+
+function resolveLeaderboardSteamId(
+  dataRequest: 'RequestGlobal' | 'RequestAroundUser' | 'RequestFriends',
+  explicitSteamId: string | undefined,
+  authManager: SteamOpenIdAuthManager,
+): string | undefined {
+  if (explicitSteamId || dataRequest !== 'RequestGlobal') {
+    return resolveSteamId(explicitSteamId, authManager);
+  }
+
+  return undefined;
 }
