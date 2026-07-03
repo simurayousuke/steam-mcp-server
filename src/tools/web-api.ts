@@ -145,6 +145,32 @@ export function registerWebApiTools(
   );
 
   server.registerTool(
+    'steam_get_schema_for_game',
+    {
+      title: 'Get Steam stats schema for game',
+      description: 'Fetch the official Steam stats and achievement schema for one app.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        language: z.string().min(2).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getSchemaForGame(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_games_followed',
     {
       title: 'Get followed Steam games',

@@ -2,11 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import { SteamWebApiClient } from '../src/steam/web-api-client.js';
 
-function createWebApiClient(getJson: (url: URL) => Promise<unknown>): SteamWebApiClient {
+function createWebApiClient(
+  getJson: (url: URL) => Promise<unknown>,
+  options: {
+    webApiKey?: string | (() => string | undefined);
+  } = {},
+): SteamWebApiClient {
   return new SteamWebApiClient({
     http: {
       getJson,
     },
+    webApiKey: options.webApiKey,
     cacheTtlMs: 60_000,
   });
 }
@@ -151,6 +157,56 @@ describe('SteamWebApiClient', () => {
     expect(requestedUrl?.pathname).toBe('/ISteamUserStats/GetGlobalStatsForGame/v1/');
     expect(requestedUrl?.searchParams.get('count')).toBe('1');
     expect(requestedUrl?.searchParams.get('name[0]')).toBe('StatA');
+  });
+
+  it('fetches the stats schema for a game with a Web API key', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(
+      async (url) => {
+        requestedUrl = url;
+        return {
+          game: {
+            gameName: 'Portal 2',
+            availableGameStats: {
+              achievements: [],
+              stats: [],
+            },
+          },
+        };
+      },
+      {
+        webApiKey: 'configured-key',
+      },
+    );
+
+    await expect(client.getSchemaForGame({ appid: 620, language: 'en' })).resolves.toMatchObject({
+      query: {
+        appid: 620,
+        language: 'en',
+      },
+      response: {
+        game: {
+          gameName: 'Portal 2',
+        },
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/ISteamUserStats/GetSchemaForGame/v2/');
+    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('key')).toBe('configured-key');
+    expect(requestedUrl?.searchParams.get('l')).toBe('en');
+  });
+
+  it('requires a Web API key before fetching game schema', async () => {
+    let requestCount = 0;
+    const client = createWebApiClient(async () => {
+      requestCount += 1;
+      return {};
+    });
+
+    await expect(client.getSchemaForGame({ appid: 620 })).rejects.toMatchObject({
+      code: 'authentication_required',
+    });
+    expect(requestCount).toBe(0);
   });
 
   it('fetches games followed and followed game count', async () => {

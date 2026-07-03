@@ -35,6 +35,7 @@ describe('Steam MCP server', () => {
           'steam_get_global_achievement_percentages',
           'steam_get_servers_at_address',
           'steam_get_global_stats_for_game',
+          'steam_get_schema_for_game',
           'steam_get_games_followed',
           'steam_get_games_followed_count',
           'steam_get_public_inventory',

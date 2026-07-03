@@ -45,6 +45,7 @@ const genericResponseEnvelopeSchema = z
 
 export type SteamWebApiClientOptions = {
   http: Pick<HttpJsonClient, 'getJson'>;
+  webApiKey?: string | (() => string | undefined);
   cacheTtlMs: number;
 };
 
@@ -74,6 +75,11 @@ export type GetGlobalStatsForGameRequest = {
   statNames: string[];
   startDate?: number;
   endDate?: number;
+};
+
+export type GetSchemaForGameRequest = {
+  appid: number;
+  language?: string;
 };
 
 export type StoreSteamIdRequest = {
@@ -221,6 +227,33 @@ export class SteamWebApiClient {
     };
   }
 
+  async getSchemaForGame(request: GetSchemaForGameRequest): Promise<Record<string, unknown>> {
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
+
+    if (!webApiKey) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: 'This Steam Web API method requires STEAM_WEB_API_KEY.',
+      });
+    }
+
+    const url = new URL('https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('key', webApiKey);
+    url.searchParams.set('appid', String(request.appid));
+    setOptionalParam(url, 'l', request.language);
+
+    const raw = await this.getCachedJson(url);
+
+    return {
+      query: {
+        appid: request.appid,
+        language: request.language,
+      },
+      response: raw,
+    };
+  }
+
   async getGamesFollowed(request: StoreSteamIdRequest): Promise<Record<string, unknown>> {
     const url = new URL('https://api.steampowered.com/IStoreService/GetGamesFollowed/v1/');
     url.searchParams.set('format', 'json');
@@ -275,6 +308,10 @@ function setOptionalParam(url: URL, name: string, value: string | number | undef
   if (value !== undefined) {
     url.searchParams.set(name, String(value));
   }
+}
+
+function resolveWebApiKey(webApiKey: string | (() => string | undefined) | undefined): string | undefined {
+  return typeof webApiKey === 'function' ? webApiKey() : webApiKey;
 }
 
 function invalidWebApiResponse(message: string, error: z.ZodError): SteamMcpError {
