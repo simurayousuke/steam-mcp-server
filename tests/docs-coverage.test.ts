@@ -85,7 +85,6 @@ describe('official Steam Web API audit documentation', () => {
       'RequestPlayerGameBan',
       'SetUserStatsForGame',
       'SetItemPaymentRules',
-      'GetWishlistSortedFiltered',
       'BeginAuthSessionViaCredentials',
       'BeginAuthSessionViaQR',
       'UpdateAuthSessionWithSteamGuardCode',

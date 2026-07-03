@@ -86,6 +86,7 @@ async function main(): Promise<void> {
         'steam_get_authorized_user_overview',
         'steam_get_owned_games',
         'steam_get_official_wishlist',
+        'steam_get_official_wishlist_sorted_filtered',
         'steam_api_list_interfaces',
       ],
       'tools',

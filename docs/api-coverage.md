@@ -31,7 +31,7 @@ Implemented high-level tools cover:
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Public Steam connection-manager, SteamPipe domain, SDR config, CDN, content-server, client-update-host, and depot-patch reads through `ISteamDirectory`, `IContentServerDirectoryService`, and `ISteamApps/GetSDRConfig`
 - Store app list pagination and recommended-tag reads through `IStoreService`
-- Official wishlist item and count reads through `IWishlistService`
+- Official wishlist item, sorted/filtered wishlist, and count reads through `IWishlistService`
 - Trade history, trade offers, individual trade offer, and trade offer summary reads through `IEconService`; cache flush and mutation endpoints are not exposed as high-level tools
 - Market eligibility, listing asset ID, and popular market item reads through `IEconMarketService`; listing cancellation is not exposed as a high-level tool
 - Public Steam Economy asset class and asset price read endpoints, plus publisher-only `CanTrade`, exported-assets, and market-price reads through `ISteamEconomy`

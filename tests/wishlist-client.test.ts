@@ -61,6 +61,70 @@ describe('SteamWishlistClient', () => {
     expect(requestedUrl?.searchParams.get('steamid')).toBe('76561197960434622');
   });
 
+  it('fetches official sorted and filtered wishlist with input_json', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWishlistClient(async (url) => {
+      requestedUrl = url;
+      return {
+        response: {
+          total_count: 1,
+          items: [
+            {
+              appid: 620,
+            },
+          ],
+        },
+      };
+    });
+
+    await expect(
+      client.getWishlistSortedFiltered({
+        steamId: '76561197960434622',
+        context: {
+          country_code: 'US',
+          language: 'en',
+        },
+        dataRequest: {
+          include_basic_info: true,
+        },
+        sortOrder: 1,
+        filters: {
+          tagids: [492],
+        },
+        startIndex: 0,
+        pageSize: 25,
+        shareToken: 'share-token',
+      }),
+    ).resolves.toMatchObject({
+      query: {
+        steamId: '76561197960434622',
+        pageSize: 25,
+      },
+      response: {
+        total_count: 1,
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/IWishlistService/GetWishlistSortedFiltered/v1/');
+    expect(requestedUrl?.searchParams.get('format')).toBe('json');
+    expect(JSON.parse(requestedUrl?.searchParams.get('input_json') ?? '{}')).toEqual({
+      steamid: '76561197960434622',
+      context: {
+        country_code: 'US',
+        language: 'en',
+      },
+      data_request: {
+        include_basic_info: true,
+      },
+      sort_order: 1,
+      filters: {
+        tagids: [492],
+      },
+      start_index: 0,
+      page_size: 25,
+      share_token: 'share-token',
+    });
+  });
+
   it('normalizes an absent count to zero', async () => {
     const client = createWishlistClient(async () => ({
       response: {},

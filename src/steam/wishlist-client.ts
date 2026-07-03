@@ -24,6 +24,12 @@ const wishlistItemCountResponseSchema = z
   })
   .passthrough();
 
+const sortedFilteredWishlistResponseSchema = z
+  .object({
+    response: z.record(z.unknown()).default({}),
+  })
+  .passthrough();
+
 export type SteamWishlistClientOptions = {
   http: Pick<HttpJsonClient, 'getJson'>;
   cacheTtlMs: number;
@@ -31,6 +37,16 @@ export type SteamWishlistClientOptions = {
 
 export type WishlistSteamIdRequest = {
   steamId: string;
+};
+
+export type WishlistSortedFilteredRequest = WishlistSteamIdRequest & {
+  context?: Record<string, unknown>;
+  dataRequest?: Record<string, unknown>;
+  sortOrder?: number;
+  filters?: Record<string, unknown>;
+  startIndex?: number;
+  pageSize?: number;
+  shareToken?: string;
 };
 
 export class SteamWishlistClient {
@@ -79,6 +95,34 @@ export class SteamWishlistClient {
     };
   }
 
+  async getWishlistSortedFiltered(request: WishlistSortedFilteredRequest): Promise<Record<string, unknown>> {
+    const inputJson = removeUndefined({
+      steamid: request.steamId,
+      context: request.context ?? {},
+      data_request: request.dataRequest,
+      sort_order: request.sortOrder,
+      filters: request.filters ?? {},
+      start_index: request.startIndex,
+      page_size: request.pageSize,
+      share_token: request.shareToken,
+    });
+    const url = new URL('https://api.steampowered.com/IWishlistService/GetWishlistSortedFiltered/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('input_json', JSON.stringify(inputJson));
+
+    const raw = await this.getCachedJson(url);
+    const parsed = sortedFilteredWishlistResponseSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWishlistResponse('Steam sorted and filtered wishlist response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      query: request,
+      response: parsed.data.response,
+    };
+  }
+
   private async getCachedJson(url: URL): Promise<unknown> {
     const cacheKey = url.toString();
     const cached = this.cache.get(cacheKey);
@@ -91,6 +135,18 @@ export class SteamWishlistClient {
     this.cache.set(cacheKey, raw);
     return raw;
   }
+}
+
+function removeUndefined(params: Record<string, unknown | undefined>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  for (const [name, value] of Object.entries(params)) {
+    if (value !== undefined) {
+      result[name] = value;
+    }
+  }
+
+  return result;
 }
 
 function invalidWishlistResponse(message: string, error: z.ZodError): SteamMcpError {

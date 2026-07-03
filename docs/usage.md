@@ -109,7 +109,7 @@ Use `steam_oauth_set_access_token` only when you already obtained a Steam OAuth 
 - `steam_get_owned_games` can use `appidsFilter` to restrict a library query to specific Steam appids.
 - Publisher-only tools, including app beta/build/depot/server metadata, game server player stats, leaderboards, partner app lists, banned-player records, Workshop finalized contributors, Workshop item daily revenue, subscribed-file enumeration, published-item search and vote summaries, and user group list queries, require `STEAM_PUBLISHER_KEY`; they are read-only in this server and are kept separate from user Web API keys.
 - `steam_authenticate_user_ticket` is intended for secure server-side validation of Steam auth tickets; do not call it from untrusted clients.
-- `steam_get_user_wishlist` reads public wishlist JSON only. If no `steamId` or `vanityName` is provided, it uses the authenticated OpenID SteamID.
+- `steam_get_official_wishlist`, `steam_get_official_wishlist_sorted_filtered`, and `steam_get_user_wishlist` read wishlist data only when Steam exposes it. Official wishlist tools use the authenticated OpenID SteamID when `steamId` is omitted. `steam_get_user_wishlist` does the same when both `steamId` and `vanityName` are omitted.
 - The server does not accept Steam passwords.
 - The server does not read browser cookies.
 - Publisher-only or write-capable Steam APIs are not callable by default.
