@@ -14,4 +14,12 @@
 
 ## Implementation Gate
 
-This repository currently contains only the skeleton and design. Feature development should start after the design direction is approved.
+The repository is an active runnable TypeScript MCP server. New feature work should keep the existing read-only-first policy, update docs when public behavior changes, add focused tests for new clients/tools/resources, and verify with:
+
+```bash
+npm.cmd run typecheck
+npm.cmd test
+npm.cmd run build
+```
+
+After each commit, push `main` immediately and confirm the GitHub Actions run for that commit.
