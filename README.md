@@ -18,6 +18,12 @@ The default policy is read-only. Official Steam Web API methods will be discover
 - `steam_api_list_methods`
 - `steam_api_get_method_schema`
 - `steam_api_call_readonly`
+- `steam_resolve_vanity_url`
+- `steam_get_player_summary`
+- `steam_get_owned_games`
+- `steam_get_recently_played_games`
+- `steam_get_player_achievements`
+- `steam_get_user_stats_for_game`
 - `steam_search_apps`
 - `steam_get_app_details`
 - `steam_get_user_wishlist`
