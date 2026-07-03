@@ -64,6 +64,12 @@ export class SteamPublisherClient {
     });
   }
 
+  async getUserGroupList(request: PublisherSteamIdRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamUser', 'GetUserGroupList', 1, {
+      steamid: request.steamId,
+    });
+  }
+
   async authenticateUserTicket(request: AuthenticateUserTicketRequest): Promise<Record<string, unknown>> {
     return this.call('ISteamUserAuth', 'AuthenticateUserTicket', 1, {
       appid: request.appid,

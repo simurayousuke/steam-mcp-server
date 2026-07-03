@@ -232,31 +232,6 @@ describe('SteamPlayerClient', () => {
     expect(requestedUrl?.searchParams.get('steamids')).toBe('76561197960434622,76561198000000000');
   });
 
-  it('calls Steam user group list for a player', async () => {
-    let requestedUrl: URL | undefined;
-    const client = new SteamPlayerClient({
-      webApiKey: 'configured-key',
-      cacheTtlMs: 60_000,
-      http: {
-        getJson: async (url) => {
-          requestedUrl = url;
-          return {
-            response: {
-              groups: [],
-            },
-          };
-        },
-      },
-    });
-
-    await client.getUserGroupList({
-      steamId: '76561197960434622',
-    });
-
-    expect(requestedUrl?.pathname).toBe('/ISteamUser/GetUserGroupList/v1/');
-    expect(requestedUrl?.searchParams.get('steamid')).toBe('76561197960434622');
-  });
-
   it('uses a dynamic Web API key provider', async () => {
     let webApiKey: string | undefined;
     let requestedUrl: URL | undefined;

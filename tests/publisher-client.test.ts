@@ -61,11 +61,15 @@ describe('SteamPublisherClient', () => {
     await client.getDeletedSteamIds({
       rowVersion: '0',
     });
+    await client.getUserGroupList({
+      steamId: '76561197960434622',
+    });
 
     expect(requestedPaths).toEqual([
       '/ISteamUser/GetPublisherAppOwnership/v4/',
       '/ISteamUser/GetAppPriceInfo/v1/',
       '/ISteamUser/GetDeletedSteamIDs/v1/',
+      '/ISteamUser/GetUserGroupList/v1/',
     ]);
     expect(requestedParams).toEqual([
       {
@@ -82,6 +86,11 @@ describe('SteamPublisherClient', () => {
         appids: null,
         rowversion: '0',
         steamid: null,
+      },
+      {
+        appids: null,
+        rowversion: null,
+        steamid: '76561197960434622',
       },
     ]);
   });

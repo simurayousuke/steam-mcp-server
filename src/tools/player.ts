@@ -295,33 +295,6 @@ export function registerPlayerTools(
   );
 
   server.registerTool(
-    'steam_get_user_group_list',
-    {
-      title: 'Get Steam user group list',
-      description: 'Get visible Steam groups for a player. If steamId is omitted, use the authenticated OpenID SteamID.',
-      inputSchema: {
-        steamId: z.string().min(1).optional(),
-      },
-      annotations: {
-        readOnlyHint: true,
-        idempotentHint: true,
-        openWorldHint: true,
-      },
-    },
-    async (args) => {
-      try {
-        return toolSuccess({
-          data: await playerClient.getUserGroupList({
-            steamId: resolveSteamId(args.steamId, authManager),
-          }),
-        });
-      } catch (error: unknown) {
-        return toolFailure(error);
-      }
-    },
-  );
-
-  server.registerTool(
     'steam_get_player_achievements',
     {
       title: 'Get Steam player achievements',

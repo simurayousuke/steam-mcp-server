@@ -156,6 +156,34 @@ export function registerPublisherTools(
       }
     },
   );
+
+  server.registerTool(
+    'steam_get_user_group_list',
+    {
+      title: 'Get Steam user group list',
+      description:
+        'Get visible Steam groups for a player using a publisher Web API key. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getUserGroupList({
+            steamId: resolveSteamId(args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
 }
 
 function resolveSteamId(explicitSteamId: string | undefined, authManager: SteamOpenIdAuthManager): string {

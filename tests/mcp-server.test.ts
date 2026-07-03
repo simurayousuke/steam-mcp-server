@@ -162,6 +162,21 @@ describe('Steam MCP server', () => {
           },
         },
       });
+
+      const userGroupsWithoutPublisherKey = await client.callTool({
+        name: 'steam_get_user_group_list',
+        arguments: {
+          steamId: '76561197960434622',
+        },
+      });
+      expect(userGroupsWithoutPublisherKey).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: {
+            code: 'authorization_required',
+          },
+        },
+      });
     } finally {
       await client.close();
       await server.close();

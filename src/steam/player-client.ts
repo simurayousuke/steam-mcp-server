@@ -123,12 +123,6 @@ export class SteamPlayerClient {
     });
   }
 
-  async getUserGroupList(request: SteamIdRequest): Promise<Record<string, unknown>> {
-    return this.call('ISteamUser', 'GetUserGroupList', 1, {
-      steamid: request.steamId,
-    });
-  }
-
   async getPlayerAchievements(request: PlayerGameRequest): Promise<Record<string, unknown>> {
     return this.call('ISteamUserStats', 'GetPlayerAchievements', 1, {
       steamid: request.steamId,

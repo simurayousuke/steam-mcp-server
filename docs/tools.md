@@ -40,6 +40,7 @@
 - `steam_get_publisher_app_ownership`
 - `steam_get_app_price_info`
 - `steam_get_deleted_steam_ids`
+- `steam_get_user_group_list`
 
 ## Player Data
 
@@ -53,7 +54,6 @@
 - `steam_get_community_badge_progress`
 - `steam_get_friend_list`
 - `steam_get_player_bans`
-- `steam_get_user_group_list`
 - `steam_get_player_achievements`
 - `steam_get_user_stats_for_game`
 
