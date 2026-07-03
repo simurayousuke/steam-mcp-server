@@ -96,6 +96,7 @@ async function main(): Promise<void> {
       [
         'steam://api/coverage',
         'steam://api/interfaces',
+        'steam://api/server-info',
         'steam://me',
         'steam://me/overview',
         'steam://me/owned-games',

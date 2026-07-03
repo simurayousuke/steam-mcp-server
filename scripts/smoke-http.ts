@@ -124,6 +124,10 @@ async function main(): Promise<void> {
       throw new Error('Missing steam://api/coverage over HTTP.');
     }
 
+    if (!resources.resources.some((resource) => resource.uri === 'steam://api/server-info')) {
+      throw new Error('Missing steam://api/server-info over HTTP.');
+    }
+
     if (!resources.resources.some((resource) => resource.uri === 'steam://me/followed-games')) {
       throw new Error('Missing steam://me/followed-games over HTTP.');
     }

@@ -14,7 +14,7 @@ npm.cmd run audit:steam-catalog
 
 `steam_api_refresh_catalog`, `steam_api_list_interfaces`, `steam_api_list_methods`, `steam_api_get_method_schema`, and `steam_api_get_coverage_summary` use `ISteamWebAPIUtil/GetSupportedAPIList` as the source of truth for official Steam Web API metadata. Method listing and schema tools include access metadata that explains whether `steam_api_call_readonly` can call the method, whether it is allowlisted, which non-secret parameters the caller must provide, whether it requires `STEAM_WEB_API_KEY`, whether it requires the in-memory Steam OAuth access token, and which secret parameters must come from server configuration or session credentials.
 
-The same catalog data is available to MCP resource clients through `steam://api/coverage`, `steam://api/interfaces`, `steam://api/interfaces/{interfaceName}/methods`, and `steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}`.
+The same catalog data is available to MCP resource clients through `steam://api/coverage`, `steam://api/interfaces`, `steam://api/interfaces/{interfaceName}/methods`, and `steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}`. Anonymous Steam Web API server info is also available as `steam://api/server-info`.
 
 `steam_api_call_readonly` can call default-safe official methods. Methods that are POST, match risky operation names, belong to sensitive authentication flows, or are known GET endpoints with side effects are blocked unless explicitly listed in `STEAM_API_ALLOWLIST_FILE`.
 

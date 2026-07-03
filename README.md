@@ -6,7 +6,7 @@ Current status: runnable stdio and Streamable HTTP MCP server with Steam Web API
 
 The default policy is read-only. Official Steam Web API methods will be discoverable through a catalog, but protected or state-changing methods will not be callable unless they are explicitly allowlisted.
 
-The server also exposes MCP resources for Steam Web API catalog coverage, interface lists, method lists, method schemas, app details, app news, app stats schema, current players, global achievement percentages, player summaries, owned games, wishlists, followed games, playtime, app achievements, app stats, ban status, recently played games, Steam levels, badges, badge progress, friend lists, vanity-profile public wishlists, and `steam://me` authorized-user shortcuts including a combined overview.
+The server also exposes MCP resources for Steam Web API catalog coverage, server info, interface lists, method lists, method schemas, app details, app news, app stats schema, current players, global achievement percentages, player summaries, owned games, wishlists, followed games, playtime, app achievements, app stats, ban status, recently played games, Steam levels, badges, badge progress, friend lists, vanity-profile public wishlists, and `steam://me` authorized-user shortcuts including a combined overview.
 
 ## Implemented Tools
 

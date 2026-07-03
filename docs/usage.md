@@ -154,7 +154,7 @@ Add optional authenticated-user sections when you need a richer snapshot:
 
 MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, `steam://me/recently-played`, `steam://me/followed-games`, `steam://me/bans`, `steam://me/apps/620/achievements`, and `steam://me/apps/620/stats`.
 
-Catalog-aware clients can read Steam Web API discovery data through `steam://api/coverage`, `steam://api/interfaces`, `steam://api/interfaces/ISteamNews/methods`, and `steam://api/interfaces/ISteamNews/methods/GetNewsForApp/versions/2`.
+Catalog-aware clients can read Steam Web API discovery data through `steam://api/server-info`, `steam://api/coverage`, `steam://api/interfaces`, `steam://api/interfaces/ISteamNews/methods`, and `steam://api/interfaces/ISteamNews/methods/GetNewsForApp/versions/2`.
 
 ## Web API Key Flow
 
@@ -219,6 +219,7 @@ steam://apps/{appid}/news
 steam://apps/{appid}/schema
 steam://apps/{appid}/current-players
 steam://apps/{appid}/achievements/global-percentages
+steam://api/server-info
 steam://api/coverage
 steam://api/interfaces
 steam://api/interfaces/{interfaceName}/methods
@@ -257,7 +258,7 @@ steam://me/badges/{badgeid}/progress
 steam://me/friends
 ```
 
-Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile. Catalog resources use `ISteamWebAPIUtil/GetSupportedAPIList` and include the same generic read-only access metadata as the catalog tools.
+Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile. `steam://api/server-info` uses anonymous `ISteamWebAPIUtil/GetServerInfo`. Catalog resources use `ISteamWebAPIUtil/GetSupportedAPIList` and include the same generic read-only access metadata as the catalog tools.
 
 Generic catalog calls always set `format=json`; do not pass reserved server-managed parameters such as `format` in `steam_api_call_readonly.params`.
 

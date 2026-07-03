@@ -192,6 +192,7 @@
 - `steam://apps/{appid}/achievements/global-percentages`
 - `steam://api/coverage`
 - `steam://api/interfaces`
+- `steam://api/server-info`
 - `steam://api/interfaces/{interfaceName}/methods`
 - `steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}`
 - `steam://players/{steamid}`

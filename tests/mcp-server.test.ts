@@ -175,6 +175,7 @@ describe('Steam MCP server', () => {
           'steam://me',
           'steam://api/coverage',
           'steam://api/interfaces',
+          'steam://api/server-info',
           'steam://me/overview',
           'steam://me/owned-games',
           'steam://me/wishlist',

@@ -37,11 +37,27 @@ export type SteamResourceClients = {
     | 'getNewsForApp'
     | 'getNumberOfCurrentPlayers'
     | 'getSchemaForGame'
+    | 'getWebApiServerInfo'
   >;
   wishlistClient: Pick<SteamWishlistClient, 'getWishlist' | 'getWishlistItemCount'>;
 };
 
 export function registerSteamResources(server: McpServer, clients: SteamResourceClients): void {
+  server.registerResource(
+    'steam-api-server-info',
+    'steam://api/server-info',
+    {
+      title: 'Steam Web API server info',
+      description: 'Anonymous Steam Web API server information as JSON.',
+      mimeType: 'application/json',
+    },
+    async (uri) => {
+      const data = await clients.webApiClient.getWebApiServerInfo();
+
+      return jsonResource(uri, data);
+    },
+  );
+
   server.registerResource(
     'steam-app',
     new ResourceTemplate('steam://apps/{appid}', { list: undefined }),

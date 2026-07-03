@@ -72,6 +72,11 @@ describe('Steam MCP resources', () => {
           ],
           count: 1,
         }),
+        getWebApiServerInfo: async () => ({
+          response: {
+            servertime: 123,
+          },
+        }),
         getGamesFollowed: async ({ steamId }) => ({
           steamId,
           response: {
@@ -188,6 +193,7 @@ describe('Steam MCP resources', () => {
       const listedResources = await client.listResources();
       expect(listedResources.resources.map((resource) => resource.uri)).toEqual(
         expect.arrayContaining([
+          'steam://api/server-info',
           'steam://me',
           'steam://me/overview',
           'steam://me/owned-games',
@@ -202,6 +208,15 @@ describe('Steam MCP resources', () => {
           'steam://me/friends',
         ]),
       );
+
+      const serverInfo = await client.readResource({
+        uri: 'steam://api/server-info',
+      });
+      expect(JSON.parse(serverInfo.contents[0]?.text ?? '{}')).toMatchObject({
+        response: {
+          servertime: 123,
+        },
+      });
 
       const app = await client.readResource({
         uri: 'steam://apps/620',

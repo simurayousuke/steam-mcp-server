@@ -110,6 +110,7 @@ steam://apps/{appid}/news
 steam://apps/{appid}/schema
 steam://apps/{appid}/current-players
 steam://apps/{appid}/achievements/global-percentages
+steam://api/server-info
 steam://api/coverage
 steam://api/interfaces
 steam://api/interfaces/{interfaceName}/methods
