@@ -1,8 +1,10 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { getServerMetadata } from '../mcp/server.js';
+import { toolFailure, toolSuccess } from '../common/tool-result.js';
+import { loadConfig } from '../config/env.js';
+import type { ServerMetadata } from '../mcp/server.js';
 
-export function registerHealthTool(server: McpServer): void {
+export function registerHealthTool(server: McpServer, metadata: ServerMetadata): void {
   server.registerTool(
     'steam_health_check',
     {
@@ -15,26 +17,32 @@ export function registerHealthTool(server: McpServer): void {
       },
     },
     () => {
-      const metadata = getServerMetadata();
-      const status = {
-        status: 'ok',
-        server: metadata,
-        capabilities: {
-          mcpTransport: ['stdio'],
-          implementedToolGroups: ['health'],
-          plannedToolGroups: ['steam-web-api-catalog', 'steam-store', 'steam-user-auth'],
-        },
-      };
-
-      return {
-        structuredContent: status,
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(status, null, 2),
+      try {
+        const config = loadConfig();
+        const status = {
+          status: 'ok',
+          server: metadata,
+          config: {
+            hasWebApiKey: Boolean(config.STEAM_WEB_API_KEY),
+            hasPublisherKey: Boolean(config.STEAM_PUBLISHER_KEY),
+            hasOAuthClient: Boolean(config.STEAM_OAUTH_CLIENT_ID && config.STEAM_OAUTH_CLIENT_SECRET),
+            defaultCountry: config.STEAM_DEFAULT_COUNTRY,
+            defaultLanguage: config.STEAM_DEFAULT_LANGUAGE,
+            requestTimeoutMs: config.STEAM_REQUEST_TIMEOUT_MS,
+            cacheTtlSeconds: config.STEAM_CACHE_TTL_SECONDS,
+            rateLimitRps: config.STEAM_RATE_LIMIT_RPS,
           },
-        ],
-      };
+          capabilities: {
+            mcpTransport: ['stdio'],
+            implementedToolGroups: ['health'],
+            plannedToolGroups: ['steam-web-api-catalog', 'steam-store', 'steam-user-auth'],
+          },
+        };
+
+        return toolSuccess({ data: status });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
     },
   );
 }

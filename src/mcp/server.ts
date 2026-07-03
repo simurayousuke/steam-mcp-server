@@ -5,18 +5,21 @@ import { registerHealthTool } from '../tools/health.js';
 const SERVER_NAME = 'steam-mcp-server';
 const SERVER_VERSION = '0.1.0';
 
-export function createSteamMcpServer(): McpServer {
-  const server = new McpServer({
-    name: SERVER_NAME,
-    version: SERVER_VERSION,
-  });
+export type ServerMetadata = {
+  name: string;
+  version: string;
+};
 
-  registerHealthTool(server);
+export function createSteamMcpServer(): McpServer {
+  const metadata = getServerMetadata();
+  const server = new McpServer(metadata);
+
+  registerHealthTool(server, metadata);
 
   return server;
 }
 
-export function getServerMetadata(): { name: string; version: string } {
+export function getServerMetadata(): ServerMetadata {
   return {
     name: SERVER_NAME,
     version: SERVER_VERSION,
