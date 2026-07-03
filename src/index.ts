@@ -1,12 +1,21 @@
 import { pathToFileURL } from 'node:url';
 
-export const projectStatus = 'design-pending';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+
+import { createSteamMcpServer } from './mcp/server.js';
 
 async function main(): Promise<void> {
-  console.error('Steam MCP server implementation is pending design approval.');
-  process.exitCode = 1;
+  const server = createSteamMcpServer();
+  const transport = new StdioServerTransport();
+
+  await server.connect(transport);
+  console.error('Steam MCP server is running over stdio.');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  void main();
+  main().catch((error: unknown) => {
+    const message = error instanceof Error ? error.stack ?? error.message : String(error);
+    console.error(message);
+    process.exitCode = 1;
+  });
 }
