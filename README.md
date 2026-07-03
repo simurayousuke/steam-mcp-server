@@ -37,6 +37,8 @@ The default policy is read-only. Official Steam Web API methods will be discover
 
 Steam authentication uses Steam OpenID to prove ownership of a SteamID. OpenID does not grant broad private-data access by itself.
 
+`STEAM_API_ALLOWLIST_FILE` can point to a UTF-8 text file with one explicitly approved method per line, using `Interface.Method.vVersion` format. This is only for Steam Web API methods that the default read-only safety policy blocks.
+
 ## Planned Runtime
 
 - Node.js 20+

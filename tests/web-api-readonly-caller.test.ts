@@ -110,4 +110,58 @@ describe('SteamWebApiReadonlyCaller', () => {
       code: 'validation_error',
     });
   });
+
+  it('allows explicitly allowlisted POST methods', async () => {
+    let submittedForm: URLSearchParams | undefined;
+    const caller = new SteamWebApiReadonlyCaller({
+      catalogClient: {
+        getMethodSchema: async () => ({
+          interfaceName: 'ISteamRemoteStorage',
+          name: 'GetPublishedFileDetails',
+          version: 1,
+          httpMethod: 'POST',
+          parameters: [
+            {
+              name: 'itemcount',
+              optional: false,
+            },
+            {
+              name: 'publishedfileids[0]',
+              optional: false,
+            },
+          ],
+        }),
+      } as never,
+      allowlistedMethods: new Set(['isteamremotestorage.getpublishedfiledetails.v1']),
+      http: {
+        getJson: async () => {
+          throw new Error('GET should not be used for allowlisted POST methods.');
+        },
+        postFormJson: async (_url, form) => {
+          submittedForm = form;
+          return {
+            response: {
+              result: 1,
+            },
+          };
+        },
+      },
+    });
+
+    const result = await caller.call({
+      interfaceName: 'ISteamRemoteStorage',
+      methodName: 'GetPublishedFileDetails',
+      params: {
+        itemcount: 1,
+        'publishedfileids[0]': '848618186',
+      },
+    });
+
+    expect(result.request).toMatchObject({
+      httpMethod: 'POST',
+      allowlisted: true,
+    });
+    expect(submittedForm?.get('itemcount')).toBe('1');
+    expect(submittedForm?.get('publishedfileids[0]')).toBe('848618186');
+  });
 });

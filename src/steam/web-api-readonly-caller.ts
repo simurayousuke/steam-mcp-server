@@ -2,6 +2,7 @@ import type { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.
 import { classifyReadonlySafety } from '../catalog/safety.js';
 import { SteamMcpError } from '../common/errors.js';
 import type { HttpJsonClient } from '../common/http.js';
+import { methodIdentifier } from '../config/allowlist.js';
 
 export type ReadonlyApiParameterValue = string | number | boolean;
 
@@ -13,13 +14,14 @@ export type ReadonlyApiCallRequest = {
 };
 
 export type ReadonlyApiCallResponse = {
-  request: {
-    interfaceName: string;
-    methodName: string;
-    version: number;
-    httpMethod: string;
-    parameterNames: string[];
-  };
+      request: {
+        interfaceName: string;
+        methodName: string;
+        version: number;
+        httpMethod: string;
+        allowlisted: boolean;
+        parameterNames: string[];
+      };
   response: unknown;
 };
 
@@ -29,8 +31,9 @@ export class SteamWebApiReadonlyCaller {
   constructor(
     private readonly options: {
       catalogClient: SteamWebApiCatalogClient;
-      http: Pick<HttpJsonClient, 'getJson'>;
+      http: Pick<HttpJsonClient, 'getJson' | 'postFormJson'>;
       webApiKey?: string;
+      allowlistedMethods?: ReadonlySet<string>;
     },
   ) {}
 
@@ -42,13 +45,27 @@ export class SteamWebApiReadonlyCaller {
     });
     const safety = classifyReadonlySafety(method);
 
-    if (!safety.allowed) {
+    const identifier = methodIdentifier({
+      interfaceName: method.interfaceName,
+      methodName: method.name,
+      version: method.version,
+    });
+    const isAllowlisted = this.options.allowlistedMethods?.has(identifier) ?? false;
+
+    if (!safety.allowed && !isAllowlisted) {
       throw new SteamMcpError({
         code: 'unsafe_method_blocked',
         message: `Steam Web API method ${method.interfaceName}.${method.name}/v${method.version} is blocked by the read-only safety policy.`,
         details: {
           reasons: safety.reasons,
         },
+      });
+    }
+
+    if (method.httpMethod !== 'GET' && method.httpMethod !== 'POST') {
+      throw new SteamMcpError({
+        code: 'unsafe_method_blocked',
+        message: `Steam Web API method ${method.interfaceName}.${method.name}/v${method.version} uses unsupported HTTP method ${method.httpMethod}.`,
       });
     }
 
@@ -91,17 +108,21 @@ export class SteamWebApiReadonlyCaller {
     }
 
     const url = new URL(`https://api.steampowered.com/${method.interfaceName}/${method.name}/v${method.version}/`);
-    url.searchParams.set('format', 'json');
+    const requestParams = new URLSearchParams();
+    requestParams.set('format', 'json');
 
     for (const [name, value] of Object.entries(params)) {
-      url.searchParams.set(name, String(value));
+      requestParams.set(name, String(value));
     }
 
     if (this.options.webApiKey && method.parameters.some((parameter) => parameter.name.toLowerCase() === 'key')) {
-      url.searchParams.set('key', this.options.webApiKey);
+      requestParams.set('key', this.options.webApiKey);
     }
 
-    const response = await this.options.http.getJson<unknown>(url);
+    const response =
+      method.httpMethod === 'POST'
+        ? await this.options.http.postFormJson<unknown>(url, requestParams)
+        : await this.options.http.getJson<unknown>(withSearchParams(url, requestParams));
 
     return {
       request: {
@@ -109,9 +130,20 @@ export class SteamWebApiReadonlyCaller {
         methodName: method.name,
         version: method.version,
         httpMethod: method.httpMethod,
-        parameterNames: [...Object.keys(params), ...(url.searchParams.has('key') ? ['key'] : [])],
+        allowlisted: isAllowlisted,
+        parameterNames: [...Object.keys(params), ...(requestParams.has('key') ? ['key'] : [])],
       },
       response,
     };
   }
+}
+
+function withSearchParams(url: URL, params: URLSearchParams): URL {
+  const nextUrl = new URL(url);
+
+  for (const [name, value] of params) {
+    nextUrl.searchParams.set(name, value);
+  }
+
+  return nextUrl;
 }

@@ -3,6 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
 import { SteamOpenIdAuthManager } from '../auth/session.js';
 import { HttpJsonClient } from '../common/http.js';
+import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamPlayerClient } from '../steam/player-client.js';
@@ -28,6 +29,7 @@ export type ServerMetadata = {
 export function createSteamMcpServer(): McpServer {
   const metadata = getServerMetadata();
   const config = loadConfig();
+  const apiAllowlist = loadApiAllowlist(config.STEAM_API_ALLOWLIST_FILE);
   const server = new McpServer(metadata);
   const http = new HttpJsonClient({
     timeoutMs: config.STEAM_REQUEST_TIMEOUT_MS,
@@ -42,6 +44,7 @@ export function createSteamMcpServer(): McpServer {
     catalogClient,
     http,
     webApiKey: config.STEAM_WEB_API_KEY,
+    allowlistedMethods: apiAllowlist,
   });
   const storeClient = new SteamStoreClient({
     http,
