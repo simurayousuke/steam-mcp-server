@@ -3,6 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
 import { HttpJsonClient } from '../common/http.js';
 import { loadConfig } from '../config/env.js';
+import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerHealthTool } from '../tools/health.js';
 
@@ -27,9 +28,14 @@ export function createSteamMcpServer(): McpServer {
     apiKey: config.STEAM_WEB_API_KEY,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const readonlyCaller = new SteamWebApiReadonlyCaller({
+    catalogClient,
+    http,
+    webApiKey: config.STEAM_WEB_API_KEY,
+  });
 
   registerHealthTool(server, metadata);
-  registerCatalogTools(server, catalogClient);
+  registerCatalogTools(server, catalogClient, readonlyCaller);
 
   return server;
 }

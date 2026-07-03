@@ -3,8 +3,15 @@ import { z } from 'zod';
 
 import type { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
+import type { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 
-export function registerCatalogTools(server: McpServer, catalogClient: SteamWebApiCatalogClient): void {
+const readonlyApiParameterValueSchema = z.union([z.string(), z.number(), z.boolean()]);
+
+export function registerCatalogTools(
+  server: McpServer,
+  catalogClient: SteamWebApiCatalogClient,
+  readonlyCaller: SteamWebApiReadonlyCaller,
+): void {
   server.registerTool(
     'steam_api_refresh_catalog',
     {
@@ -126,6 +133,44 @@ export function registerCatalogTools(server: McpServer, catalogClient: SteamWebA
 
         return toolSuccess({
           data: method,
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_api_call_readonly',
+    {
+      title: 'Call a read-only Steam Web API method',
+      description: 'Call an official Steam Web API GET method when it passes the default read-only safety policy.',
+      inputSchema: {
+        interfaceName: z.string().min(1),
+        methodName: z.string().min(1),
+        version: z.number().int().positive().optional(),
+        params: z.record(readonlyApiParameterValueSchema).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        const result = await readonlyCaller.call({
+          interfaceName: args.interfaceName,
+          methodName: args.methodName,
+          version: args.version,
+          params: args.params,
+        });
+
+        return toolSuccess({
+          data: {
+            request: result.request,
+            response: result.response,
+          },
         });
       } catch (error: unknown) {
         return toolFailure(error);
