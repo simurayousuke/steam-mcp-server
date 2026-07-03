@@ -76,6 +76,7 @@ describe('Steam MCP server', () => {
           'steam_get_players_banned',
           'steam_get_server_list',
           'steam_get_workshop_finalized_contributors',
+          'steam_get_workshop_item_daily_revenue',
           'steam_get_leaderboards_for_game',
           'steam_get_leaderboard_entries',
           'steam_get_game_server_player_stats',

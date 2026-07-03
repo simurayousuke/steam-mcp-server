@@ -39,6 +39,13 @@ export type PublisherWorkshopItemRequest = {
   gameItemId: number;
 };
 
+export type WorkshopItemDailyRevenueRequest = {
+  appid: number;
+  itemId: number;
+  dateStart: number;
+  dateEnd: number;
+};
+
 export type LeaderboardDataRequest = 'RequestGlobal' | 'RequestAroundUser' | 'RequestFriends';
 
 export type LeaderboardEntriesRequest = PublisherAppRequest & {
@@ -183,6 +190,22 @@ export class SteamPublisherClient {
     return this.call('IWorkshopService', 'GetFinalizedContributors', 1, {
       appid: request.appid,
       gameitemid: request.gameItemId,
+    });
+  }
+
+  async getWorkshopItemDailyRevenue(request: WorkshopItemDailyRevenueRequest): Promise<Record<string, unknown>> {
+    if (request.dateEnd <= request.dateStart) {
+      throw new SteamMcpError({
+        code: 'validation_error',
+        message: 'dateEnd must be greater than dateStart for Steam Workshop item daily revenue.',
+      });
+    }
+
+    return this.call('IWorkshopService', 'GetItemDailyRevenue', 1, {
+      appid: request.appid,
+      item_id: request.itemId,
+      date_start: request.dateStart,
+      date_end: request.dateEnd,
     });
   }
 

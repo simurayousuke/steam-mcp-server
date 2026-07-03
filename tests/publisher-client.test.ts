@@ -234,13 +234,22 @@ describe('SteamPublisherClient', () => {
   });
 
   it('fetches finalized Workshop contributors with publisher credentials', async () => {
-    let requestedUrl: URL | undefined;
+    const requestedPaths: string[] = [];
+    const requestedParams: Record<string, string | null>[] = [];
     const client = new SteamPublisherClient({
       publisherKey: 'publisher-key',
       cacheTtlMs: 60_000,
       http: {
         getJson: async (url) => {
-          requestedUrl = url;
+          requestedPaths.push(url.pathname);
+          requestedParams.push({
+            appid: url.searchParams.get('appid'),
+            date_end: url.searchParams.get('date_end'),
+            date_start: url.searchParams.get('date_start'),
+            gameitemid: url.searchParams.get('gameitemid'),
+            item_id: url.searchParams.get('item_id'),
+            key: url.searchParams.get('key'),
+          });
           return {
             response: {
               contributors: [],
@@ -252,14 +261,63 @@ describe('SteamPublisherClient', () => {
 
     await client.getWorkshopFinalizedContributors({
       appid: 620,
-      gameItemId: 123,
+        gameItemId: 123,
+      });
+    await client.getWorkshopItemDailyRevenue({
+      appid: 620,
+      itemId: 456,
+      dateStart: 1_788_192_000,
+      dateEnd: 1_788_278_400,
     });
 
-    expect(requestedUrl?.origin).toBe('https://partner.steam-api.com');
-    expect(requestedUrl?.pathname).toBe('/IWorkshopService/GetFinalizedContributors/v1/');
-    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
-    expect(requestedUrl?.searchParams.get('gameitemid')).toBe('123');
-    expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
+    expect(requestedPaths).toEqual([
+      '/IWorkshopService/GetFinalizedContributors/v1/',
+      '/IWorkshopService/GetItemDailyRevenue/v1/',
+    ]);
+    expect(requestedParams).toEqual([
+      {
+        appid: '620',
+        date_end: null,
+        date_start: null,
+        gameitemid: '123',
+        item_id: null,
+        key: 'publisher-key',
+      },
+      {
+        appid: '620',
+        date_end: '1788278400',
+        date_start: '1788192000',
+        gameitemid: null,
+        item_id: '456',
+        key: 'publisher-key',
+      },
+    ]);
+  });
+
+  it('rejects invalid Workshop revenue date ranges before making requests', async () => {
+    let requestCount = 0;
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async () => {
+          requestCount += 1;
+          return {};
+        },
+      },
+    });
+
+    await expect(
+      client.getWorkshopItemDailyRevenue({
+        appid: 620,
+        itemId: 456,
+        dateStart: 10,
+        dateEnd: 10,
+      }),
+    ).rejects.toMatchObject({
+      code: 'validation_error',
+    });
+    expect(requestCount).toBe(0);
   });
 
   it('fetches Steam leaderboards with publisher credentials', async () => {

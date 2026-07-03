@@ -243,6 +243,40 @@ export function registerPublisherTools(
   );
 
   server.registerTool(
+    'steam_get_workshop_item_daily_revenue',
+    {
+      title: 'Get Steam Workshop item daily revenue',
+      description:
+        'Get daily revenue for one Steam Workshop item definition over a Unix-time date range using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        itemId: z.number().int().positive(),
+        dateStart: z.number().int().nonnegative(),
+        dateEnd: z.number().int().positive(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getWorkshopItemDailyRevenue({
+            appid: args.appid,
+            itemId: args.itemId,
+            dateStart: args.dateStart,
+            dateEnd: args.dateEnd,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_leaderboards_for_game',
     {
       title: 'Get Steam leaderboards for game',
