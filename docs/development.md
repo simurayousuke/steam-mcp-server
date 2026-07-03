@@ -20,6 +20,7 @@ The repository is an active runnable TypeScript MCP server. New feature work sho
 npm.cmd run typecheck
 npm.cmd test
 npm.cmd run build
+npm.cmd run smoke:stdio
 ```
 
 When changing Steam Web API coverage, also run:

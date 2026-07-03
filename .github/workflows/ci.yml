@@ -29,6 +29,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Smoke stdio server
+        run: npm run smoke:stdio
+
       - name: Test
         run: npm test
 
