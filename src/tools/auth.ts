@@ -1,10 +1,15 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
+import type { SteamCredentialManager } from '../auth/credentials.js';
 import type { SteamOpenIdAuthManager } from '../auth/session.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
 
-export function registerAuthTools(server: McpServer, authManager: SteamOpenIdAuthManager): void {
+export function registerAuthTools(
+  server: McpServer,
+  authManager: SteamOpenIdAuthManager,
+  credentialManager: SteamCredentialManager,
+): void {
   server.registerTool(
     'steam_auth_start',
     {
@@ -44,7 +49,61 @@ export function registerAuthTools(server: McpServer, authManager: SteamOpenIdAut
     async (args) => {
       try {
         return toolSuccess({
-          data: authManager.getStatus(args.state),
+          data: {
+            ...authManager.getStatus(args.state),
+            credentials: credentialManager.getStatus(),
+          },
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_auth_set_web_api_key',
+    {
+      title: 'Set session Steam Web API key',
+      description: 'Store a Steam Web API key in memory for this MCP server process. The key is never returned in tool output.',
+      inputSchema: {
+        webApiKey: z.string().min(1),
+      },
+      annotations: {
+        readOnlyHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: {
+            credentials: credentialManager.setSessionWebApiKey(args.webApiKey),
+          },
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_auth_clear_web_api_key',
+    {
+      title: 'Clear session Steam Web API key',
+      description: 'Clear the in-memory Steam Web API key set through this MCP session.',
+      annotations: {
+        readOnlyHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    async () => {
+      try {
+        return toolSuccess({
+          data: {
+            credentials: credentialManager.clearSessionWebApiKey(),
+          },
         });
       } catch (error: unknown) {
         return toolFailure(error);

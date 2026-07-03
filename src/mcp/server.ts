@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
+import { SteamCredentialManager } from '../auth/credentials.js';
 import { SteamOpenIdAuthManager } from '../auth/session.js';
 import { HttpJsonClient } from '../common/http.js';
 import { loadApiAllowlist } from '../config/allowlist.js';
@@ -30,6 +31,7 @@ export function createSteamMcpServer(): McpServer {
   const metadata = getServerMetadata();
   const config = loadConfig();
   const apiAllowlist = loadApiAllowlist(config.STEAM_API_ALLOWLIST_FILE);
+  const credentialManager = new SteamCredentialManager(config.STEAM_WEB_API_KEY);
   const server = new McpServer(metadata);
   const http = new HttpJsonClient({
     timeoutMs: config.STEAM_REQUEST_TIMEOUT_MS,
@@ -37,13 +39,13 @@ export function createSteamMcpServer(): McpServer {
   });
   const catalogClient = new SteamWebApiCatalogClient({
     http,
-    apiKey: config.STEAM_WEB_API_KEY,
+    apiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
   const readonlyCaller = new SteamWebApiReadonlyCaller({
     catalogClient,
     http,
-    webApiKey: config.STEAM_WEB_API_KEY,
+    webApiKey: () => credentialManager.getWebApiKey(),
     allowlistedMethods: apiAllowlist,
   });
   const storeClient = new SteamStoreClient({
@@ -59,7 +61,7 @@ export function createSteamMcpServer(): McpServer {
   });
   const playerClient = new SteamPlayerClient({
     http,
-    webApiKey: config.STEAM_WEB_API_KEY,
+    webApiKey: () => credentialManager.getWebApiKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
   const communityClient = new SteamCommunityClient({
@@ -73,11 +75,11 @@ export function createSteamMcpServer(): McpServer {
   });
 
   registerHealthTool(server, metadata);
-  registerAuthTools(server, authManager);
+  registerAuthTools(server, authManager, credentialManager);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
   registerCommunityTools(server, communityClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
-  registerStoreTools(server, storeClient);
+  registerStoreTools(server, storeClient, authManager);
   registerWorkshopTools(server, workshopClient);
 
   return server;

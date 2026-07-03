@@ -84,4 +84,38 @@ describe('SteamPlayerClient', () => {
     });
     expect(requestCount).toBe(1);
   });
+
+  it('uses a dynamic Web API key provider', async () => {
+    let webApiKey: string | undefined;
+    let requestedUrl: URL | undefined;
+    const client = new SteamPlayerClient({
+      webApiKey: () => webApiKey,
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {
+              players: [],
+            },
+          };
+        },
+      },
+    });
+
+    await expect(
+      client.getPlayerSummary({
+        steamId: '76561197960434622',
+      }),
+    ).rejects.toMatchObject({
+      code: 'authentication_required',
+    });
+
+    webApiKey = 'session-key';
+    await client.getPlayerSummary({
+      steamId: '76561197960434622',
+    });
+
+    expect(requestedUrl?.searchParams.get('key')).toBe('session-key');
+  });
 });

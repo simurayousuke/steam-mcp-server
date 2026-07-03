@@ -32,7 +32,7 @@ export class SteamWebApiReadonlyCaller {
     private readonly options: {
       catalogClient: SteamWebApiCatalogClient;
       http: Pick<HttpJsonClient, 'getJson' | 'postFormJson'>;
-      webApiKey?: string;
+      webApiKey?: string | (() => string | undefined);
       allowlistedMethods?: ReadonlySet<string>;
     },
   ) {}
@@ -99,8 +99,9 @@ export class SteamWebApiReadonlyCaller {
     }
 
     const requiresKey = method.parameters.some((parameter) => parameter.name.toLowerCase() === 'key' && !parameter.optional);
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
 
-    if (requiresKey && !this.options.webApiKey) {
+    if (requiresKey && !webApiKey) {
       throw new SteamMcpError({
         code: 'authentication_required',
         message: `Steam Web API method ${method.interfaceName}.${method.name}/v${method.version} requires STEAM_WEB_API_KEY.`,
@@ -115,8 +116,8 @@ export class SteamWebApiReadonlyCaller {
       requestParams.set(name, String(value));
     }
 
-    if (this.options.webApiKey && method.parameters.some((parameter) => parameter.name.toLowerCase() === 'key')) {
-      requestParams.set('key', this.options.webApiKey);
+    if (webApiKey && method.parameters.some((parameter) => parameter.name.toLowerCase() === 'key')) {
+      requestParams.set('key', webApiKey);
     }
 
     const response =
@@ -146,4 +147,8 @@ function withSearchParams(url: URL, params: URLSearchParams): URL {
   }
 
   return nextUrl;
+}
+
+function resolveWebApiKey(webApiKey: string | (() => string | undefined) | undefined): string | undefined {
+  return typeof webApiKey === 'function' ? webApiKey() : webApiKey;
 }

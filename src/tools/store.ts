@@ -1,10 +1,16 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
+import type { SteamOpenIdAuthManager } from '../auth/session.js';
+import { SteamMcpError } from '../common/errors.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import type { SteamStoreClient } from '../steam/store-client.js';
 
-export function registerStoreTools(server: McpServer, storeClient: SteamStoreClient): void {
+export function registerStoreTools(
+  server: McpServer,
+  storeClient: SteamStoreClient,
+  authManager: SteamOpenIdAuthManager,
+): void {
   server.registerTool(
     'steam_search_apps',
     {
@@ -123,7 +129,8 @@ export function registerStoreTools(server: McpServer, storeClient: SteamStoreCli
     'steam_get_user_wishlist',
     {
       title: 'Get public Steam wishlist',
-      description: 'Fetch public Steam wishlist JSON when the target profile exposes it.',
+      description:
+        'Fetch public Steam wishlist JSON when the target profile exposes it. If steamId and vanityName are omitted, use the authenticated OpenID SteamID.',
       inputSchema: {
         steamId: z.string().min(1).optional(),
         vanityName: z.string().min(1).optional(),
@@ -138,11 +145,35 @@ export function registerStoreTools(server: McpServer, storeClient: SteamStoreCli
     async (args) => {
       try {
         return toolSuccess({
-          data: await storeClient.getPublicWishlist(args),
+          data: await storeClient.getPublicWishlist({
+            ...args,
+            steamId: resolveWishlistSteamId(args.steamId, args.vanityName, authManager),
+          }),
         });
       } catch (error: unknown) {
         return toolFailure(error);
       }
     },
   );
+}
+
+function resolveWishlistSteamId(
+  explicitSteamId: string | undefined,
+  vanityName: string | undefined,
+  authManager: SteamOpenIdAuthManager,
+): string | undefined {
+  if (explicitSteamId || vanityName) {
+    return explicitSteamId;
+  }
+
+  const [steamId] = authManager.getStatus().authenticatedSteamIds;
+
+  if (!steamId) {
+    throw new SteamMcpError({
+      code: 'authentication_required',
+      message: 'steamId or vanityName is required when no Steam OpenID session is authenticated.',
+    });
+  }
+
+  return steamId;
 }

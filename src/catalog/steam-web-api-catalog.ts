@@ -55,7 +55,7 @@ export type SteamWebApiCatalog = {
 
 export type SteamWebApiCatalogClientOptions = {
   http: Pick<HttpJsonClient, 'getJson'>;
-  apiKey?: string;
+  apiKey?: string | (() => string | undefined);
   cacheTtlMs: number;
 };
 
@@ -67,7 +67,8 @@ export class SteamWebApiCatalogClient {
   }
 
   async getCatalog(options: { refresh?: boolean } = {}): Promise<SteamWebApiCatalog> {
-    const cacheKey = this.options.apiKey ? 'catalog:with-key' : 'catalog:anonymous';
+    const apiKey = resolveApiKey(this.options.apiKey);
+    const cacheKey = apiKey ? 'catalog:with-key' : 'catalog:anonymous';
     const cached = options.refresh ? undefined : this.cache.get(cacheKey);
 
     if (cached) {
@@ -77,8 +78,8 @@ export class SteamWebApiCatalogClient {
     const url = new URL('https://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v1/');
     url.searchParams.set('format', 'json');
 
-    if (this.options.apiKey) {
-      url.searchParams.set('key', this.options.apiKey);
+    if (apiKey) {
+      url.searchParams.set('key', apiKey);
     }
 
     const rawCatalog = await this.options.http.getJson<unknown>(url);
@@ -172,6 +173,10 @@ export class SteamWebApiCatalogClient {
 
     return apiInterface;
   }
+}
+
+function resolveApiKey(apiKey: string | (() => string | undefined) | undefined): string | undefined {
+  return typeof apiKey === 'function' ? apiKey() : apiKey;
 }
 
 export type CatalogInterfaceFilter = {

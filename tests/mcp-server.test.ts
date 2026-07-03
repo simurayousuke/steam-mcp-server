@@ -21,6 +21,8 @@ describe('Steam MCP server', () => {
         expect.arrayContaining([
           'steam_health_check',
           'steam_auth_start',
+          'steam_auth_set_web_api_key',
+          'steam_auth_clear_web_api_key',
           'steam_api_get_coverage_summary',
           'steam_api_list_interfaces',
           'steam_api_call_readonly',
@@ -41,6 +43,46 @@ describe('Steam MCP server', () => {
 
       expect(result.structuredContent).toMatchObject({
         status: 'ok',
+      });
+
+      const setKeyResult = await client.callTool({
+        name: 'steam_auth_set_web_api_key',
+        arguments: {
+          webApiKey: 'fake-session-key',
+        },
+      });
+      expect(setKeyResult.structuredContent).toMatchObject({
+        credentials: {
+          hasWebApiKey: true,
+          hasSessionWebApiKey: true,
+          webApiKeySource: 'session',
+        },
+      });
+      expect(JSON.stringify(setKeyResult.structuredContent)).not.toContain('fake-session-key');
+
+      const authStatus = await client.callTool({
+        name: 'steam_auth_status',
+        arguments: {},
+      });
+      expect(authStatus.structuredContent).toMatchObject({
+        credentials: {
+          hasWebApiKey: true,
+          webApiKeySource: 'session',
+        },
+      });
+      expect(JSON.stringify(authStatus.structuredContent)).not.toContain('fake-session-key');
+
+      const wishlistWithoutIdentity = await client.callTool({
+        name: 'steam_get_user_wishlist',
+        arguments: {},
+      });
+      expect(wishlistWithoutIdentity).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: {
+            code: 'authentication_required',
+          },
+        },
       });
     } finally {
       await client.close();

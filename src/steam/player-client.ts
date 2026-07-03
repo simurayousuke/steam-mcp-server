@@ -4,7 +4,7 @@ import type { HttpJsonClient } from '../common/http.js';
 
 export type SteamPlayerClientOptions = {
   http: Pick<HttpJsonClient, 'getJson'>;
-  webApiKey?: string;
+  webApiKey?: string | (() => string | undefined);
   cacheTtlMs: number;
 };
 
@@ -88,7 +88,9 @@ export class SteamPlayerClient {
     version: number,
     params: Record<string, string | number | boolean | undefined>,
   ): Promise<Record<string, unknown>> {
-    if (!this.options.webApiKey) {
+    const webApiKey = resolveWebApiKey(this.options.webApiKey);
+
+    if (!webApiKey) {
       throw new SteamMcpError({
         code: 'authentication_required',
         message: 'This Steam Web API method requires STEAM_WEB_API_KEY.',
@@ -97,7 +99,7 @@ export class SteamPlayerClient {
 
     const url = new URL(`https://api.steampowered.com/${interfaceName}/${methodName}/v${version}/`);
     url.searchParams.set('format', 'json');
-    url.searchParams.set('key', this.options.webApiKey);
+    url.searchParams.set('key', webApiKey);
 
     for (const [name, value] of Object.entries(params)) {
       if (value !== undefined) {
@@ -133,4 +135,8 @@ export class SteamPlayerClient {
       response,
     };
   }
+}
+
+function resolveWebApiKey(webApiKey: string | (() => string | undefined) | undefined): string | undefined {
+  return typeof webApiKey === 'function' ? webApiKey() : webApiKey;
 }

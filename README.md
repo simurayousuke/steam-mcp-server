@@ -13,6 +13,8 @@ The default policy is read-only. Official Steam Web API methods will be discover
 - `steam_auth_status`
 - `steam_auth_complete`
 - `steam_auth_logout`
+- `steam_auth_set_web_api_key`
+- `steam_auth_clear_web_api_key`
 - `steam_api_get_coverage_summary`
 - `steam_api_refresh_catalog`
 - `steam_api_list_interfaces`
@@ -37,6 +39,8 @@ The default policy is read-only. Official Steam Web API methods will be discover
 `steam_get_user_wishlist` is limited to public wishlist JSON exposed by Steam Store endpoints. It does not read Steam cookies, passwords, or private wishlists.
 
 Steam authentication uses Steam OpenID to prove ownership of a SteamID. OpenID does not grant broad private-data access by itself.
+
+`steam_auth_set_web_api_key` stores a Steam Web API key only in memory for the running MCP server process. The key is used for Web API calls such as owned games, recently played games, achievements, and player summaries, but the key is never returned in tool output. If `steam_get_user_wishlist` is called without `steamId` or `vanityName`, the server uses the authenticated OpenID SteamID.
 
 `STEAM_API_ALLOWLIST_FILE` can point to a UTF-8 text file with one explicitly approved method per line, using `Interface.Method.vVersion` format. This is only for Steam Web API methods that the default read-only safety policy blocks.
 
