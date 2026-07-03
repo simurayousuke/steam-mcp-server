@@ -48,7 +48,15 @@ describe('Steam MCP server', () => {
         ]),
       );
       expect(resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate)).toEqual(
-        expect.arrayContaining(['steam://apps/{appid}', 'steam://apps/{appid}/news', 'steam://players/{steamid}']),
+        expect.arrayContaining([
+          'steam://apps/{appid}',
+          'steam://apps/{appid}/news',
+          'steam://apps/{appid}/schema',
+          'steam://players/{steamid}',
+          'steam://players/{steamid}/owned-games',
+          'steam://players/{steamid}/recently-played',
+          'steam://players/{steamid}/friends',
+        ]),
       );
 
       const result = await client.callTool({

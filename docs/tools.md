@@ -66,7 +66,11 @@
 
 - `steam://apps/{appid}`
 - `steam://apps/{appid}/news`
+- `steam://apps/{appid}/schema`
 - `steam://players/{steamid}`
+- `steam://players/{steamid}/owned-games`
+- `steam://players/{steamid}/recently-played`
+- `steam://players/{steamid}/friends`
 
 ## Notes
 

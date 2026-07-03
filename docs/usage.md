@@ -76,10 +76,14 @@ The server exposes dynamic JSON resources:
 ```text
 steam://apps/{appid}
 steam://apps/{appid}/news
+steam://apps/{appid}/schema
 steam://players/{steamid}
+steam://players/{steamid}/owned-games
+steam://players/{steamid}/recently-played
+steam://players/{steamid}/friends
 ```
 
-`steam://players/{steamid}` uses the official player summary Web API and requires a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`.
+Player resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`.
 
 ## Allowlisted Web API Methods
 

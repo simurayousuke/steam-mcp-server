@@ -6,7 +6,7 @@ Current status: runnable stdio MCP server with health, Steam Web API catalog, sa
 
 The default policy is read-only. Official Steam Web API methods will be discoverable through a catalog, but protected or state-changing methods will not be callable unless they are explicitly allowlisted.
 
-The server also exposes MCP resources for `steam://apps/{appid}`, `steam://apps/{appid}/news`, and `steam://players/{steamid}`.
+The server also exposes MCP resources for app details, app news, app stats schema, player summaries, owned games, recently played games, and friend lists.
 
 ## Implemented Tools
 

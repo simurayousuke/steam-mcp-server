@@ -5,9 +5,12 @@ import type { SteamStoreClient } from '../steam/store-client.js';
 import type { SteamWebApiClient } from '../steam/web-api-client.js';
 
 export type SteamResourceClients = {
-  playerClient: Pick<SteamPlayerClient, 'getPlayerSummary'>;
+  playerClient: Pick<
+    SteamPlayerClient,
+    'getFriendList' | 'getOwnedGames' | 'getPlayerSummary' | 'getRecentlyPlayedGames'
+  >;
   storeClient: Pick<SteamStoreClient, 'getAppDetails'>;
-  webApiClient: Pick<SteamWebApiClient, 'getNewsForApp'>;
+  webApiClient: Pick<SteamWebApiClient, 'getNewsForApp' | 'getSchemaForGame'>;
 };
 
 export function registerSteamResources(server: McpServer, clients: SteamResourceClients): void {
@@ -48,6 +51,22 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
   );
 
   server.registerResource(
+    'steam-app-schema',
+    new ResourceTemplate('steam://apps/{appid}/schema', { list: undefined }),
+    {
+      title: 'Steam app stats schema',
+      description: 'Steam stats and achievement schema for an app as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const appid = parsePositiveInteger(variableToString(variables.appid), 'appid');
+      const data = await clients.webApiClient.getSchemaForGame({ appid });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
     'steam-player',
     new ResourceTemplate('steam://players/{steamid}', { list: undefined }),
     {
@@ -58,6 +77,54 @@ export function registerSteamResources(server: McpServer, clients: SteamResource
     async (uri, variables) => {
       const steamId = variableToString(variables.steamid);
       const data = await clients.playerClient.getPlayerSummary({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-owned-games',
+    new ResourceTemplate('steam://players/{steamid}/owned-games', { list: undefined }),
+    {
+      title: 'Steam player owned games',
+      description: 'Visible Steam game library for a player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.playerClient.getOwnedGames({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-recently-played',
+    new ResourceTemplate('steam://players/{steamid}/recently-played', { list: undefined }),
+    {
+      title: 'Steam player recently played games',
+      description: 'Recently played Steam games for a player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.playerClient.getRecentlyPlayedGames({ steamId });
+
+      return jsonResource(uri, data);
+    },
+  );
+
+  server.registerResource(
+    'steam-player-friends',
+    new ResourceTemplate('steam://players/{steamid}/friends', { list: undefined }),
+    {
+      title: 'Steam player friends',
+      description: 'Visible Steam friend list for a player as JSON. Requires a Steam Web API key.',
+      mimeType: 'application/json',
+    },
+    async (uri, variables) => {
+      const steamId = variableToString(variables.steamid);
+      const data = await clients.playerClient.getFriendList({ steamId });
 
       return jsonResource(uri, data);
     },

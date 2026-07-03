@@ -33,6 +33,14 @@ describe('Steam MCP resources', () => {
             },
           ],
         }),
+        getSchemaForGame: async ({ appid }) => ({
+          appid,
+          response: {
+            game: {
+              gameName: 'Portal 2',
+            },
+          },
+        }),
       },
       playerClient: {
         getPlayerSummary: async ({ steamId }) => ({
@@ -42,6 +50,24 @@ describe('Steam MCP resources', () => {
                 steamid: steamId,
               },
             ],
+          },
+        }),
+        getOwnedGames: async ({ steamId }) => ({
+          steamId,
+          response: {
+            game_count: 1,
+          },
+        }),
+        getRecentlyPlayedGames: async ({ steamId }) => ({
+          steamId,
+          response: {
+            total_count: 1,
+          },
+        }),
+        getFriendList: async ({ steamId }) => ({
+          steamId,
+          friendslist: {
+            friends: [],
           },
         }),
       },
@@ -76,6 +102,18 @@ describe('Steam MCP resources', () => {
         },
       });
 
+      const schema = await client.readResource({
+        uri: 'steam://apps/620/schema',
+      });
+      expect(JSON.parse(schema.contents[0]?.text ?? '{}')).toMatchObject({
+        appid: 620,
+        response: {
+          game: {
+            gameName: 'Portal 2',
+          },
+        },
+      });
+
       const player = await client.readResource({
         uri: 'steam://players/76561197960434622',
       });
@@ -86,6 +124,36 @@ describe('Steam MCP resources', () => {
               steamid: '76561197960434622',
             },
           ],
+        },
+      });
+
+      const ownedGames = await client.readResource({
+        uri: 'steam://players/76561197960434622/owned-games',
+      });
+      expect(JSON.parse(ownedGames.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          game_count: 1,
+        },
+      });
+
+      const recentlyPlayed = await client.readResource({
+        uri: 'steam://players/76561197960434622/recently-played',
+      });
+      expect(JSON.parse(recentlyPlayed.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        response: {
+          total_count: 1,
+        },
+      });
+
+      const friends = await client.readResource({
+        uri: 'steam://players/76561197960434622/friends',
+      });
+      expect(JSON.parse(friends.contents[0]?.text ?? '{}')).toMatchObject({
+        steamId: '76561197960434622',
+        friendslist: {
+          friends: [],
         },
       });
     } finally {
