@@ -49,6 +49,13 @@ export type LeaderboardEntriesRequest = PublisherAppRequest & {
   steamId?: string;
 };
 
+export type GameServerPlayerStatsRequest = PublisherAppRequest & {
+  gameId: string;
+  rangeStart: string;
+  rangeEnd: string;
+  maxResults?: number;
+};
+
 export type EnumerateUserSubscribedFilesRequest = PublisherSteamAppRequest & {
   listType: number;
 };
@@ -193,6 +200,16 @@ export class SteamPublisherClient {
       rangeend: request.rangeEnd,
       datarequest: request.dataRequest,
       steamid: request.steamId,
+    });
+  }
+
+  async getGameServerPlayerStats(request: GameServerPlayerStatsRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamGameServerStats', 'GetGameServerPlayerStatsForGame', 1, {
+      gameid: request.gameId,
+      appid: request.appid,
+      rangestart: request.rangeStart,
+      rangeend: request.rangeEnd,
+      maxresults: request.maxResults,
     });
   }
 

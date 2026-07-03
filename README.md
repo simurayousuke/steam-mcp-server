@@ -60,6 +60,7 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_workshop_finalized_contributors`
 - `steam_get_leaderboards_for_game`
 - `steam_get_leaderboard_entries`
+- `steam_get_game_server_player_stats`
 - `steam_enumerate_user_subscribed_files`
 - `steam_search_published_items`
 - `steam_get_published_item_search_summary`

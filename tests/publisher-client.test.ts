@@ -325,6 +325,39 @@ describe('SteamPublisherClient', () => {
     ]);
   });
 
+  it('fetches game server player stats with publisher credentials', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {},
+          };
+        },
+      },
+    });
+
+    await client.getGameServerPlayerStats({
+      appid: 620,
+      gameId: '620',
+      rangeStart: '2026-07-01 00:00:00',
+      rangeEnd: '2026-07-02 00:00:00',
+      maxResults: 1000,
+    });
+
+    expect(requestedUrl?.origin).toBe('https://partner.steam-api.com');
+    expect(requestedUrl?.pathname).toBe('/ISteamGameServerStats/GetGameServerPlayerStatsForGame/v1/');
+    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('gameid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('rangestart')).toBe('2026-07-01 00:00:00');
+    expect(requestedUrl?.searchParams.get('rangeend')).toBe('2026-07-02 00:00:00');
+    expect(requestedUrl?.searchParams.get('maxresults')).toBe('1000');
+    expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
+  });
+
   it('posts publisher Workshop query endpoints with expected form parameters', async () => {
     const requestedPaths: string[] = [];
     const submittedForms: URLSearchParams[] = [];

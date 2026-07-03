@@ -19,7 +19,7 @@ Implemented high-level tools cover:
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Store app list pagination through `IStoreService/GetAppList`
 - Public Steam Economy asset class and asset price read endpoints
-- Publisher-only user ticket authentication, app beta/build/depot/server metadata, leaderboards, partner app lists, banned-player records, Workshop finalized contributors, subscribed-file enumeration, published-item search and vote summaries, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
+- Publisher-only user ticket authentication, app beta/build/depot/server metadata, game server player stats, leaderboards, partner app lists, banned-player records, Workshop finalized contributors, subscribed-file enumeration, published-item search and vote summaries, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
 - Store search, app details, reviews, package details, and public wishlist JSON
 - Player profile summaries, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
 - Public Steam Community inventory

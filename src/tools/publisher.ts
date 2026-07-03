@@ -9,6 +9,7 @@ import type { SteamPublisherClient } from '../steam/publisher-client.js';
 const appTypeFilterSchema = z.enum(['game', 'application', 'tool', 'demo', 'dlc', 'music']);
 const leaderboardDataRequestSchema = z.enum(['RequestGlobal', 'RequestAroundUser', 'RequestFriends']);
 const publishedItemSearchTypeSchema = z.enum(['publicationOrder', 'trend', 'vote']);
+const seattleDateTimeSchema = z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
 
 export function registerPublisherTools(
   server: McpServer,
@@ -298,6 +299,42 @@ export function registerPublisherTools(
             rangeEnd: args.rangeEnd,
             dataRequest: args.dataRequest,
             steamId: resolveLeaderboardSteamId(args.dataRequest, args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_game_server_player_stats',
+    {
+      title: 'Get Steam game server player stats',
+      description:
+        'Get game server player stats for one app and time range using a publisher Web API key. rangeStart and rangeEnd must use Steam documented Seattle local time format: YYYY-MM-DD HH:MM:SS.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        gameId: z.string().regex(/^\d+$/),
+        rangeStart: seattleDateTimeSchema,
+        rangeEnd: seattleDateTimeSchema,
+        maxResults: z.number().int().positive().max(1000).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getGameServerPlayerStats({
+            appid: args.appid,
+            gameId: args.gameId,
+            rangeStart: args.rangeStart,
+            rangeEnd: args.rangeEnd,
+            maxResults: args.maxResults,
           }),
         });
       } catch (error: unknown) {
