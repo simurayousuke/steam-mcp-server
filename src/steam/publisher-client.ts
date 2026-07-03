@@ -34,6 +34,11 @@ export type PublisherServerListRequest = {
   limit?: number;
 };
 
+export type PublisherWorkshopItemRequest = {
+  appid: number;
+  gameItemId: number;
+};
+
 export type AppPriceInfoRequest = PublisherSteamIdRequest & {
   appids: number[];
 };
@@ -122,6 +127,13 @@ export class SteamPublisherClient {
     return this.call('ISteamApps', 'GetServerList', 1, {
       filter: request.filter,
       limit: request.limit,
+    });
+  }
+
+  async getWorkshopFinalizedContributors(request: PublisherWorkshopItemRequest): Promise<Record<string, unknown>> {
+    return this.call('IWorkshopService', 'GetFinalizedContributors', 1, {
+      appid: request.appid,
+      gameitemid: request.gameItemId,
     });
   }
 

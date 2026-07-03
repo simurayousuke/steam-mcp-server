@@ -233,6 +233,35 @@ describe('SteamPublisherClient', () => {
     expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
   });
 
+  it('fetches finalized Workshop contributors with publisher credentials', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {
+              contributors: [],
+            },
+          };
+        },
+      },
+    });
+
+    await client.getWorkshopFinalizedContributors({
+      appid: 620,
+      gameItemId: 123,
+    });
+
+    expect(requestedUrl?.origin).toBe('https://partner.steam-api.com');
+    expect(requestedUrl?.pathname).toBe('/IWorkshopService/GetFinalizedContributors/v1/');
+    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('gameitemid')).toBe('123');
+    expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
+  });
+
   it('requires STEAM_PUBLISHER_KEY before making requests', async () => {
     let requestCount = 0;
     const client = new SteamPublisherClient({

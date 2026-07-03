@@ -211,6 +211,35 @@ export function registerPublisherTools(
   );
 
   server.registerTool(
+    'steam_get_workshop_finalized_contributors',
+    {
+      title: 'Get Steam Workshop finalized contributors',
+      description: 'Get finalized contributor records for one app workshop item using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        gameItemId: z.number().int().positive(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getWorkshopFinalizedContributors({
+            appid: args.appid,
+            gameItemId: args.gameItemId,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_check_app_ownership',
     {
       title: 'Check Steam app ownership',

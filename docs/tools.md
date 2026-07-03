@@ -49,6 +49,7 @@
 - `steam_get_partner_app_list`
 - `steam_get_players_banned`
 - `steam_get_server_list`
+- `steam_get_workshop_finalized_contributors`
 - `steam_check_app_ownership`
 - `steam_get_publisher_app_ownership`
 - `steam_get_app_price_info`
