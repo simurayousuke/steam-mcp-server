@@ -76,6 +76,8 @@ docs/       design and development notes
 
 ## References
 
+- Usage guide: docs/usage.md
+- API coverage notes: docs/api-coverage.md
 - Official TypeScript SDK repository: https://github.com/modelcontextprotocol/typescript-sdk
 - MCP documentation: https://modelcontextprotocol.io/
 - Steam Web API documentation: https://steamcommunity.com/dev

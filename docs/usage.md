@@ -1,0 +1,81 @@
+# Usage
+
+## Install
+
+```bash
+npm install
+npm run build
+```
+
+Run the server over stdio:
+
+```bash
+npm start
+```
+
+The package also exposes a `steam-mcp-server` binary after build or package installation.
+
+## MCP Client Configuration
+
+Use the built entrypoint as a stdio MCP server:
+
+```json
+{
+  "mcpServers": {
+    "steam": {
+      "command": "node",
+      "args": ["D:/projects/steam-mcp-server/dist/index.js"],
+      "env": {
+        "STEAM_DEFAULT_COUNTRY": "US",
+        "STEAM_DEFAULT_LANGUAGE": "en"
+      }
+    }
+  }
+}
+```
+
+For player Web API tools, either set `STEAM_WEB_API_KEY` in the client environment or call `steam_auth_set_web_api_key` after the server starts.
+
+## Authentication Flow
+
+1. Call `steam_auth_start`.
+2. Open the returned `loginUrl` in a browser.
+3. Steam redirects to the local callback URL.
+4. Call `steam_auth_status` to confirm the authenticated SteamID.
+
+If the browser cannot reach the local callback server, copy the final callback URL and pass it to `steam_auth_complete`.
+
+OpenID proves SteamID ownership. It does not grant broad private-data access.
+
+## Web API Key Flow
+
+Use `steam_auth_set_web_api_key` to store a key in memory for the running MCP server process:
+
+```json
+{
+  "webApiKey": "..."
+}
+```
+
+The key is not returned in tool output. `steam_auth_status` only reports whether a key is available and whether the source is `environment`, `session`, or `none`.
+
+Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys are not modified.
+
+## Data Boundaries
+
+- `steam_get_owned_games`, `steam_get_recently_played_games`, achievements, and player summaries require a Web API key and are still limited by Steam privacy settings.
+- `steam_get_user_wishlist` reads public wishlist JSON only. If no `steamId` or `vanityName` is provided, it uses the authenticated OpenID SteamID.
+- The server does not accept Steam passwords.
+- The server does not read browser cookies.
+- Publisher-only or write-capable Steam APIs are not callable by default.
+
+## Allowlisted Web API Methods
+
+`STEAM_API_ALLOWLIST_FILE` can point to a UTF-8 text file:
+
+```text
+# one method per line
+ISteamRemoteStorage.GetPublishedFileDetails.v1
+```
+
+Allowlisting is intended for official methods that are read-only in practice but blocked by the default conservative safety policy, such as specific POST query endpoints.
