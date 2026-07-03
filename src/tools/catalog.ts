@@ -355,6 +355,9 @@ function describeMethodAccess(method: SteamWebApiMethodSchema, allowlistedMethod
     requiresWebApiKey: method.parameters.some(
       (parameter) => parameter.name.toLowerCase() === 'key' && !parameter.optional,
     ),
+    requiresOAuthAccessToken: method.parameters.some(
+      (parameter) => parameter.name.toLowerCase() === 'access_token' && !parameter.optional,
+    ),
     secretParameters,
     requiredUserParameters,
   };

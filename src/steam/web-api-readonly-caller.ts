@@ -33,6 +33,7 @@ export class SteamWebApiReadonlyCaller {
       catalogClient: SteamWebApiCatalogClient;
       http: Pick<HttpJsonClient, 'getJson' | 'postFormJson'>;
       webApiKey?: string | (() => string | undefined);
+      oauthAccessToken?: string | (() => string | undefined);
       allowlistedMethods?: ReadonlySet<string>;
     },
   ) {}
@@ -100,11 +101,40 @@ export class SteamWebApiReadonlyCaller {
 
     const requiresKey = method.parameters.some((parameter) => parameter.name.toLowerCase() === 'key' && !parameter.optional);
     const webApiKey = resolveWebApiKey(this.options.webApiKey);
+    const requiresOAuthAccessToken = method.parameters.some(
+      (parameter) => parameter.name.toLowerCase() === 'access_token' && !parameter.optional,
+    );
+    const oauthAccessToken = resolveOAuthAccessToken(this.options.oauthAccessToken);
+    const unsupportedRequiredSecretParameters = method.parameters
+      .filter((parameter) => !parameter.optional)
+      .map((parameter) => parameter.name)
+      .filter((name) => secretParameterNames.has(name.toLowerCase()))
+      .filter((name) => {
+        const normalized = name.toLowerCase();
+        return normalized !== 'key' && normalized !== 'access_token';
+      });
 
     if (requiresKey && !webApiKey) {
       throw new SteamMcpError({
         code: 'authentication_required',
         message: `Steam Web API method ${method.interfaceName}.${method.name}/v${method.version} requires STEAM_WEB_API_KEY.`,
+      });
+    }
+
+    if (requiresOAuthAccessToken && !oauthAccessToken) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: `Steam Web API method ${method.interfaceName}.${method.name}/v${method.version} requires a session Steam OAuth access token.`,
+      });
+    }
+
+    if (unsupportedRequiredSecretParameters.length > 0) {
+      throw new SteamMcpError({
+        code: 'authentication_required',
+        message: `Steam Web API method ${method.interfaceName}.${method.name}/v${method.version} requires unsupported secret parameters.`,
+        details: {
+          parameters: unsupportedRequiredSecretParameters,
+        },
       });
     }
 
@@ -120,6 +150,10 @@ export class SteamWebApiReadonlyCaller {
       requestParams.set('key', webApiKey);
     }
 
+    if (oauthAccessToken && method.parameters.some((parameter) => parameter.name.toLowerCase() === 'access_token')) {
+      requestParams.set('access_token', oauthAccessToken);
+    }
+
     const response =
       method.httpMethod === 'POST'
         ? await this.options.http.postFormJson<unknown>(url, requestParams)
@@ -132,7 +166,11 @@ export class SteamWebApiReadonlyCaller {
         version: method.version,
         httpMethod: method.httpMethod,
         allowlisted: isAllowlisted,
-        parameterNames: [...Object.keys(params), ...(requestParams.has('key') ? ['key'] : [])],
+        parameterNames: [
+          ...Object.keys(params),
+          ...(requestParams.has('key') ? ['key'] : []),
+          ...(requestParams.has('access_token') ? ['access_token'] : []),
+        ],
       },
       response,
     };
@@ -151,4 +189,8 @@ function withSearchParams(url: URL, params: URLSearchParams): URL {
 
 function resolveWebApiKey(webApiKey: string | (() => string | undefined) | undefined): string | undefined {
   return typeof webApiKey === 'function' ? webApiKey() : webApiKey;
+}
+
+function resolveOAuthAccessToken(oauthAccessToken: string | (() => string | undefined) | undefined): string | undefined {
+  return typeof oauthAccessToken === 'function' ? oauthAccessToken() : oauthAccessToken;
 }

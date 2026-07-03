@@ -51,6 +51,19 @@ const methodSchemas: SteamWebApiMethodSchema[] = [
       },
     ],
   },
+  {
+    interfaceName: 'ISteamUserOAuth',
+    name: 'GetTokenDetails',
+    version: 1,
+    httpMethod: 'GET',
+    parameters: [
+      {
+        name: 'access_token',
+        type: 'string',
+        optional: false,
+      },
+    ],
+  },
 ];
 
 describe('Steam Web API catalog tools', () => {
@@ -250,6 +263,14 @@ describe('Steam Web API catalog tools', () => {
               requiredUserParameters: ['appid'],
             },
           },
+          {
+            name: 'GetTokenDetails',
+            access: {
+              requiresOAuthAccessToken: true,
+              secretParameters: ['access_token'],
+              requiredUserParameters: [],
+            },
+          },
         ],
       });
 
@@ -266,6 +287,7 @@ describe('Steam Web API catalog tools', () => {
         access: {
           methodIdentifier: 'isteamuserstats.getschemaforgame.v2',
           requiresWebApiKey: true,
+          requiresOAuthAccessToken: false,
           secretParameters: ['key'],
           requiredUserParameters: ['appid'],
         },

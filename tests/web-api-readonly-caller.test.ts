@@ -111,6 +111,77 @@ describe('SteamWebApiReadonlyCaller', () => {
     });
   });
 
+  it('injects the session OAuth token for access_token catalog parameters', async () => {
+    let requestedUrl: URL | undefined;
+    const caller = new SteamWebApiReadonlyCaller({
+      catalogClient: {
+        getMethodSchema: async () => ({
+          interfaceName: 'ISteamUserOAuth',
+          name: 'GetTokenDetails',
+          version: 1,
+          httpMethod: 'GET',
+          parameters: [
+            {
+              name: 'access_token',
+              optional: false,
+            },
+          ],
+        }),
+      } as never,
+      oauthAccessToken: () => 'oauth-token',
+      http: {
+        getJson: async (url: URL) => {
+          requestedUrl = url;
+          return {
+            response: {
+              steamid: '76561197960434622',
+            },
+          };
+        },
+      },
+    });
+
+    const result = await caller.call({
+      interfaceName: 'ISteamUserOAuth',
+      methodName: 'GetTokenDetails',
+    });
+
+    expect(result.request.parameterNames).toContain('access_token');
+    expect(requestedUrl?.pathname).toBe('/ISteamUserOAuth/GetTokenDetails/v1/');
+    expect(requestedUrl?.searchParams.get('access_token')).toBe('oauth-token');
+  });
+
+  it('requires a session OAuth token for required access_token parameters', async () => {
+    const caller = new SteamWebApiReadonlyCaller({
+      catalogClient: {
+        getMethodSchema: async () => ({
+          interfaceName: 'ISteamUserOAuth',
+          name: 'GetTokenDetails',
+          version: 1,
+          httpMethod: 'GET',
+          parameters: [
+            {
+              name: 'access_token',
+              optional: false,
+            },
+          ],
+        }),
+      } as never,
+      http: {
+        getJson: async () => ({}),
+      },
+    });
+
+    await expect(
+      caller.call({
+        interfaceName: 'ISteamUserOAuth',
+        methodName: 'GetTokenDetails',
+      }),
+    ).rejects.toMatchObject({
+      code: 'authentication_required',
+    });
+  });
+
   it('allows explicitly allowlisted POST methods', async () => {
     let submittedForm: URLSearchParams | undefined;
     const caller = new SteamWebApiReadonlyCaller({

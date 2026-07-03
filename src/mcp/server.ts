@@ -92,6 +92,7 @@ export function createSteamMcpServer(): McpServer {
     catalogClient,
     http,
     webApiKey: () => credentialManager.getWebApiKey(),
+    oauthAccessToken: () => credentialManager.getOAuthAccessToken(),
     allowlistedMethods: apiAllowlist,
   });
   const storeClient = new SteamStoreClient({
