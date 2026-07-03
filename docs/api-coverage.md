@@ -22,6 +22,7 @@ Implemented high-level tools cover:
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Store app list pagination through `IStoreService/GetAppList`
+- Official wishlist item and count reads through `IWishlistService`
 - Trade history, trade offers, individual trade offer, and trade offer summary reads through `IEconService`; cache flush and mutation endpoints are not exposed as high-level tools
 - Market eligibility, listing asset ID, and popular market item reads through `IEconMarketService`; listing cancellation is not exposed as a high-level tool
 - Public Steam Economy asset class and asset price read endpoints, plus publisher-only `CanTrade`, exported-assets, and market-price reads through `ISteamEconomy`
@@ -44,6 +45,7 @@ Implemented high-level tools cover:
 - Steam OpenID proves SteamID ownership but does not grant broad private-data access.
 - Steam OAuth access tokens are only stored in memory and are never returned in tool output.
 - Private wishlists are not read through cookies or passwords.
+- Official `IWishlistService` tools and Store wishlist tools still only return data Steam exposes for the target user; they do not bypass Steam privacy settings.
 - Steam trade tools are read-only and require the user's Web API key; trade mutations are not exposed.
 - Steam Market partner tools are read-only and require `STEAM_PUBLISHER_KEY`; listing cancellation is not exposed.
 - Steam Economy publisher tools are read-only and require `STEAM_PUBLISHER_KEY`; asset transactions and trade initiation are not exposed.

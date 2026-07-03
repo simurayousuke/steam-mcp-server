@@ -26,6 +26,7 @@ import { SteamSiteLicenseClient } from '../steam/site-license-client.js';
 import { SteamStoreClient } from '../steam/store-client.js';
 import { SteamWebApiClient } from '../steam/web-api-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
+import { SteamWishlistClient } from '../steam/wishlist-client.js';
 import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
@@ -48,6 +49,7 @@ import { registerPublisherTools } from '../tools/publisher.js';
 import { registerSiteLicenseTools } from '../tools/site-license.js';
 import { registerStoreTools } from '../tools/store.js';
 import { registerWebApiTools } from '../tools/web-api.js';
+import { registerWishlistTools } from '../tools/wishlist.js';
 import { registerWorkshopTools } from '../tools/workshop.js';
 
 const SERVER_NAME = 'steam-mcp-server';
@@ -187,6 +189,10 @@ export function createSteamMcpServer(): McpServer {
     publisherKey: () => credentialManager.getPublisherKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const wishlistClient = new SteamWishlistClient({
+    http,
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
 
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
@@ -209,6 +215,7 @@ export function createSteamMcpServer(): McpServer {
   registerSiteLicenseTools(server, siteLicenseClient);
   registerStoreTools(server, storeClient, authManager);
   registerWebApiTools(server, webApiClient, authManager);
+  registerWishlistTools(server, wishlistClient, authManager);
   registerWorkshopTools(server, workshopClient);
   registerSteamResources(server, {
     playerClient,

@@ -36,6 +36,8 @@ describe('Steam MCP server', () => {
           'steam_search_apps',
           'steam_get_app_reviews',
           'steam_get_store_package',
+          'steam_get_official_wishlist',
+          'steam_get_official_wishlist_item_count',
           'steam_get_news_for_app',
           'steam_get_web_api_server_info',
           'steam_get_number_of_current_players',
@@ -193,6 +195,19 @@ describe('Steam MCP server', () => {
         arguments: {},
       });
       expect(wishlistWithoutIdentity).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: {
+            code: 'authentication_required',
+          },
+        },
+      });
+
+      const officialWishlistWithoutIdentity = await client.callTool({
+        name: 'steam_get_official_wishlist',
+        arguments: {},
+      });
+      expect(officialWishlistWithoutIdentity).toMatchObject({
         isError: true,
         structuredContent: {
           error: {

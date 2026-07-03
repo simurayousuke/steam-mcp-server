@@ -49,6 +49,7 @@ The scope of this audit is Valve's HTTP-based Steam Web API and related public S
 | `ISteamUserStats` | Global achievement percentages, player achievements, user game stats, global stats, schema, current-player count, and leaderboard tools. | `SetUserStatsForGame` and any score/stat mutation methods. | https://partner.steamgames.com/doc/webapi/ISteamUserStats |
 | `ISteamWebAPIUtil` | `steam_get_web_api_server_info`, `steam_api_refresh_catalog`, `steam_api_list_interfaces`, `steam_api_list_methods`, `steam_api_get_method_schema`, and `steam_api_get_coverage_summary`. | None. This interface is the catalog and health source. | https://partner.steamgames.com/doc/webapi/ISteamWebAPIUtil |
 | `IStoreService` | `steam_get_store_app_list`. | No write methods are exposed as high-level tools. | https://partner.steamgames.com/doc/webapi/IStoreService |
+| `IWishlistService` | `steam_get_official_wishlist` and `steam_get_official_wishlist_item_count` cover `GetWishlist` and `GetWishlistItemCount`. | `GetWishlistSortedFiltered` is available through catalog discovery, but its complex message parameters need a dedicated schema pass before becoming a high-level tool. | https://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v1/?format=json |
 | `IWorkshopService` | `steam_get_workshop_finalized_contributors` and `steam_get_workshop_item_daily_revenue`. | `SetItemPaymentRules` and `PopulateItemDescriptions`. | https://partner.steamgames.com/doc/webapi/IWorkshopService |
 
 ## Public Store and Community Endpoints
@@ -58,7 +59,7 @@ These are not part of `GetSupportedAPIList`, but they are important for the user
 | Area | High-level coverage | Boundary |
 | --- | --- | --- |
 | Steam Store search and app metadata | `steam_search_apps`, `steam_get_app_details`, `steam_get_app_reviews`, and `steam_get_store_package`. | Public Store endpoint stability is lower than documented Web API interfaces, so handlers normalize errors and avoid authenticated scraping. |
-| Public wishlists | `steam_get_user_wishlist`. | Public wishlist JSON only. The server does not use Steam credentials, browser cookies, or private wishlist scraping. |
+| Public wishlists | `steam_get_official_wishlist`, `steam_get_official_wishlist_item_count`, and `steam_get_user_wishlist`. | Official wishlist reads and public Store wishlist JSON only. The server does not use Steam credentials, browser cookies, or private wishlist scraping. |
 | Public community inventory | `steam_get_public_inventory`. | Public inventory only, subject to the user's Steam privacy settings. |
 
 ## Authorization Notes

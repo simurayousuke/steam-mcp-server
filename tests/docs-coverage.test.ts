@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest';
 const auditDoc = readFileSync(new URL('../docs/official-webapi-audit.md', import.meta.url), 'utf8');
 
 describe('official Steam Web API audit documentation', () => {
-  it('lists the currently tracked official Web API interfaces', () => {
-    const interfaces = [
+  it('lists the currently tracked Steamworks-documented Web API interfaces', () => {
+    const steamworksDocInterfaces = [
       'IBroadcastService',
       'ICheatReportingService',
       'ICloudService',
@@ -40,9 +40,18 @@ describe('official Steam Web API audit documentation', () => {
       'IWorkshopService',
     ];
 
-    for (const interfaceName of interfaces) {
+    for (const interfaceName of steamworksDocInterfaces) {
       expect(auditDoc).toContain(`\`${interfaceName}\``);
       expect(auditDoc).toContain(`https://partner.steamgames.com/doc/webapi/${interfaceName}`);
+    }
+  });
+
+  it('lists tracked public catalog interfaces without dedicated Steamworks doc pages', () => {
+    const publicCatalogInterfaces = ['IWishlistService'];
+
+    for (const interfaceName of publicCatalogInterfaces) {
+      expect(auditDoc).toContain(`\`${interfaceName}\``);
+      expect(auditDoc).toContain('https://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v1/?format=json');
     }
   });
 
@@ -64,6 +73,7 @@ describe('official Steam Web API audit documentation', () => {
       'RequestPlayerGameBan',
       'SetUserStatsForGame',
       'SetItemPaymentRules',
+      'GetWishlistSortedFiltered',
     ];
 
     for (const methodName of excludedMethods) {
@@ -75,7 +85,7 @@ describe('official Steam Web API audit documentation', () => {
     expect(auditDoc).toContain('Steam OpenID proves control of a SteamID');
     expect(auditDoc).toContain('A user-provided Steam Web API key');
     expect(auditDoc).toContain('Steam OAuth is supported');
-    expect(auditDoc).toContain('Public wishlist JSON only');
+    expect(auditDoc).toContain('Official wishlist reads and public Store wishlist JSON only');
     expect(auditDoc).toContain('does not use Steam credentials, browser cookies, or private wishlist scraping');
   });
 });
