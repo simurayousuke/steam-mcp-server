@@ -25,6 +25,7 @@
 ## Official Web API High-Level Tools
 
 - `steam_get_news_for_app`
+- `steam_get_web_api_server_info`
 - `steam_get_number_of_current_players`
 - `steam_get_global_achievement_percentages`
 - `steam_get_servers_at_address`

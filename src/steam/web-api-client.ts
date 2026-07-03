@@ -143,6 +143,17 @@ export class SteamWebApiClient {
     };
   }
 
+  async getWebApiServerInfo(): Promise<Record<string, unknown>> {
+    const url = new URL('https://api.steampowered.com/ISteamWebAPIUtil/GetServerInfo/v1/');
+    url.searchParams.set('format', 'json');
+
+    const response = await this.getCachedJson(url);
+
+    return {
+      response,
+    };
+  }
+
   async getNumberOfCurrentPlayers(request: GetCurrentPlayersRequest): Promise<Record<string, unknown>> {
     const url = new URL('https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/');
     url.searchParams.set('format', 'json');

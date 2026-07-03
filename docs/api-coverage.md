@@ -15,6 +15,7 @@ Implemented high-level tools cover:
 - Steam OpenID identity verification
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
+- Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
 - Public app version checks through `ISteamApps/UpToDateCheck`
 - Store app list pagination through `IStoreService/GetAppList`
 - Public Steam Economy asset class and asset price read endpoints

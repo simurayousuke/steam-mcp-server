@@ -65,6 +65,24 @@ describe('SteamWebApiClient', () => {
     });
   });
 
+  it('fetches Web API server info', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(async (url) => {
+      requestedUrl = url;
+      return {
+        servertime: 123,
+      };
+    });
+
+    await expect(client.getWebApiServerInfo()).resolves.toMatchObject({
+      response: {
+        servertime: 123,
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/ISteamWebAPIUtil/GetServerInfo/v1/');
+    expect(requestedUrl?.searchParams.get('format')).toBe('json');
+  });
+
   it('maps unsuccessful current player responses to not_found', async () => {
     const client = createWebApiClient(async () => ({
       response: {

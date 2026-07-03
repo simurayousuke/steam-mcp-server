@@ -42,6 +42,29 @@ export function registerWebApiTools(
   );
 
   server.registerTool(
+    'steam_get_web_api_server_info',
+    {
+      title: 'Get Steam Web API server info',
+      description: 'Fetch anonymous Steam Web API server information from ISteamWebAPIUtil/GetServerInfo.',
+      inputSchema: {},
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async () => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getWebApiServerInfo(),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_number_of_current_players',
     {
       title: 'Get current Steam player count',
