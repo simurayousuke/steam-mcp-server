@@ -31,3 +31,6 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Audit Steam catalog coverage
+        run: npm run audit:steam-catalog
