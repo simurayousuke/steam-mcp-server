@@ -35,6 +35,7 @@
 
 ## Publisher-Only Web API Tools
 
+- `steam_authenticate_user_ticket`
 - `steam_check_app_ownership`
 - `steam_get_publisher_app_ownership`
 - `steam_get_app_price_info`

@@ -38,6 +38,7 @@ describe('Steam MCP server', () => {
           'steam_get_schema_for_game',
           'steam_get_games_followed',
           'steam_get_games_followed_count',
+          'steam_authenticate_user_ticket',
           'steam_check_app_ownership',
           'steam_get_publisher_app_ownership',
           'steam_get_app_price_info',

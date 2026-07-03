@@ -25,6 +25,12 @@ export type DeletedSteamIdsRequest = {
   rowVersion: string;
 };
 
+export type AuthenticateUserTicketRequest = {
+  appid: number;
+  ticket: string;
+  identity?: string;
+};
+
 export class SteamPublisherClient {
   private readonly cache: TtlCache<unknown>;
 
@@ -58,6 +64,14 @@ export class SteamPublisherClient {
     });
   }
 
+  async authenticateUserTicket(request: AuthenticateUserTicketRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamUserAuth', 'AuthenticateUserTicket', 1, {
+      appid: request.appid,
+      ticket: request.ticket,
+      identity: request.identity,
+    });
+  }
+
   private async call(
     interfaceName: string,
     methodName: string,
@@ -73,7 +87,7 @@ export class SteamPublisherClient {
       });
     }
 
-    const url = new URL(`https://api.steampowered.com/${interfaceName}/${methodName}/v${version}/`);
+    const url = new URL(`https://partner.steam-api.com/${interfaceName}/${methodName}/v${version}/`);
     url.searchParams.set('format', 'json');
     url.searchParams.set('key', publisherKey);
 

@@ -12,6 +12,37 @@ export function registerPublisherTools(
   authManager: SteamOpenIdAuthManager,
 ): void {
   server.registerTool(
+    'steam_authenticate_user_ticket',
+    {
+      title: 'Authenticate Steam user ticket',
+      description: 'Validate a Steam auth ticket for one app using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        ticket: z.string().regex(/^(?:[0-9a-fA-F]{2})+$/),
+        identity: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.authenticateUserTicket({
+            appid: args.appid,
+            ticket: args.ticket,
+            identity: args.identity,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_check_app_ownership',
     {
       title: 'Check Steam app ownership',

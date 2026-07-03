@@ -66,6 +66,7 @@ Use `steam_auth_clear_web_api_key` to clear the session key. Environment keys ar
 - Player Web API tools, including summaries, owned games, recently played games, friend lists, ban status, group lists, achievements, and stats, require a Web API key and are still limited by Steam privacy settings.
 - `steam_get_owned_games` can use `appidsFilter` to restrict a library query to specific Steam appids.
 - Publisher-only tools require `STEAM_PUBLISHER_KEY`; they are read-only in this server and are kept separate from user Web API keys.
+- `steam_authenticate_user_ticket` is intended for secure server-side validation of Steam auth tickets; do not call it from untrusted clients.
 - `steam_get_user_wishlist` reads public wishlist JSON only. If no `steamId` or `vanityName` is provided, it uses the authenticated OpenID SteamID.
 - The server does not accept Steam passwords.
 - The server does not read browser cookies.

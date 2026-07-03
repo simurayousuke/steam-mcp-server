@@ -23,7 +23,7 @@ describe('SteamPublisherClient', () => {
       appid: 620,
     });
 
-    expect(requestedUrl?.origin).toBe('https://api.steampowered.com');
+    expect(requestedUrl?.origin).toBe('https://partner.steam-api.com');
     expect(requestedUrl?.pathname).toBe('/ISteamUser/CheckAppOwnership/v4/');
     expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
     expect(requestedUrl?.searchParams.get('steamid')).toBe('76561197960434622');
@@ -84,6 +84,39 @@ describe('SteamPublisherClient', () => {
         steamid: null,
       },
     ]);
+  });
+
+  it('authenticates Steam user tickets with publisher credentials', async () => {
+    let requestedUrl: URL | undefined;
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedUrl = url;
+          return {
+            response: {
+              params: {
+                steamid: '76561197960434622',
+              },
+            },
+          };
+        },
+      },
+    });
+
+    await client.authenticateUserTicket({
+      appid: 620,
+      ticket: '00ff',
+      identity: 'mcp-server',
+    });
+
+    expect(requestedUrl?.origin).toBe('https://partner.steam-api.com');
+    expect(requestedUrl?.pathname).toBe('/ISteamUserAuth/AuthenticateUserTicket/v1/');
+    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('ticket')).toBe('00ff');
+    expect(requestedUrl?.searchParams.get('identity')).toBe('mcp-server');
+    expect(requestedUrl?.searchParams.get('key')).toBe('publisher-key');
   });
 
   it('requires STEAM_PUBLISHER_KEY before making requests', async () => {
