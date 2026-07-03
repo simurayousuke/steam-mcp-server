@@ -2,6 +2,8 @@
 
 Steam MCP Server is a Model Context Protocol server for Steam public data, Steam Web API data, Steam Store metadata, and user-authorized read access where Steam officially supports it.
 
+中文用户请从 [完整中文使用指南](docs/usage.zh-CN.md) 开始，里面包含从 GitHub 下载、本地配置、Steam 登录授权到查询愿望单和游戏库的完整流程。
+
 Current status: runnable stdio and Streamable HTTP MCP server with Steam Web API catalog discovery, safe read-only Web API calls, OpenID and OAuth support, user Web API key support, Store and Community public data, official wishlist reads, player library reads, and many publisher-only read endpoints.
 
 The default policy is read-only. Official Steam Web API methods will be discoverable through a catalog, but protected or state-changing methods will not be callable unless they are explicitly allowlisted.
