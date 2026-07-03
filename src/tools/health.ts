@@ -34,8 +34,14 @@ export function registerHealthTool(server: McpServer, metadata: ServerMetadata):
           },
           capabilities: {
             mcpTransport: ['stdio'],
-            implementedToolGroups: ['health', 'steam-web-api-catalog', 'steam-api-readonly-caller', 'steam-store'],
-            plannedToolGroups: ['steam-user-auth'],
+            implementedToolGroups: [
+              'health',
+              'steam-openid-auth',
+              'steam-web-api-catalog',
+              'steam-api-readonly-caller',
+              'steam-store',
+            ],
+            plannedToolGroups: ['steam-user-web-api-key-storage', 'steam-oauth'],
           },
         };
 

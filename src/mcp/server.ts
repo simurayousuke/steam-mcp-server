@@ -1,10 +1,12 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { SteamWebApiCatalogClient } from '../catalog/steam-web-api-catalog.js';
+import { SteamOpenIdAuthManager } from '../auth/session.js';
 import { HttpJsonClient } from '../common/http.js';
 import { loadConfig } from '../config/env.js';
 import { SteamStoreClient } from '../steam/store-client.js';
 import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
+import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
 import { registerHealthTool } from '../tools/health.js';
 import { registerStoreTools } from '../tools/store.js';
@@ -41,8 +43,14 @@ export function createSteamMcpServer(): McpServer {
     language: config.STEAM_DEFAULT_LANGUAGE,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const authManager = new SteamOpenIdAuthManager({
+    host: config.STEAM_AUTH_CALLBACK_HOST,
+    port: config.STEAM_AUTH_CALLBACK_PORT,
+    http,
+  });
 
   registerHealthTool(server, metadata);
+  registerAuthTools(server, authManager);
   registerCatalogTools(server, catalogClient, readonlyCaller);
   registerStoreTools(server, storeClient);
 

@@ -14,18 +14,54 @@ export class HttpJsonClient {
   constructor(private readonly options: HttpJsonClientOptions) {}
 
   async getJson<T>(url: URL, options: JsonRequestOptions = {}): Promise<T> {
+    const response = await this.request(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        ...options.headers,
+      },
+      signal: options.signal,
+    });
+
+    return (await response.json()) as T;
+  }
+
+  async postFormText(url: URL, form: URLSearchParams, options: JsonRequestOptions = {}): Promise<string> {
+    const response = await this.request(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'text/plain',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...options.headers,
+      },
+      body: form.toString(),
+      signal: options.signal,
+    });
+
+    return response.text();
+  }
+
+  private async request(
+    url: URL,
+    options: {
+      method: 'GET' | 'POST';
+      headers?: HeadersInit;
+      body?: BodyInit;
+      signal?: AbortSignal;
+    },
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.options.timeoutMs);
     const signal = mergeAbortSignals(controller.signal, options.signal);
 
     try {
       const response = await fetch(url, {
-        method: 'GET',
+        method: options.method,
         headers: {
-          Accept: 'application/json',
           'User-Agent': this.options.userAgent,
           ...options.headers,
         },
+        body: options.body,
         signal,
       });
 
@@ -40,7 +76,7 @@ export class HttpJsonClient {
         });
       }
 
-      return (await response.json()) as T;
+      return response;
     } catch (error: unknown) {
       if (error instanceof SteamMcpError) {
         throw error;

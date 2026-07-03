@@ -9,6 +9,10 @@ The default policy is read-only. Official Steam Web API methods will be discover
 ## Implemented Tools
 
 - `steam_health_check`
+- `steam_auth_start`
+- `steam_auth_status`
+- `steam_auth_complete`
+- `steam_auth_logout`
 - `steam_api_refresh_catalog`
 - `steam_api_list_interfaces`
 - `steam_api_list_methods`
@@ -19,6 +23,8 @@ The default policy is read-only. Official Steam Web API methods will be discover
 - `steam_get_user_wishlist`
 
 `steam_get_user_wishlist` is limited to public wishlist JSON exposed by Steam Store endpoints. It does not read Steam cookies, passwords, or private wishlists.
+
+Steam authentication uses Steam OpenID to prove ownership of a SteamID. OpenID does not grant broad private-data access by itself.
 
 ## Planned Runtime
 
