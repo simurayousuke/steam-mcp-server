@@ -2,9 +2,23 @@
 
 Steam MCP Server is a planned Model Context Protocol server for Steam public data, Steam Web API data, Steam Store metadata, and user-authorized read access where Steam officially supports it.
 
-Current status: repository skeleton and design only. Steam API clients and MCP tools will be implemented after design approval.
+Current status: runnable stdio MCP server with health, Steam Web API catalog, safe read-only Web API calls, Steam Store search, app details, and public wishlist tools.
 
 The default policy is read-only. Official Steam Web API methods will be discoverable through a catalog, but protected or state-changing methods will not be callable unless they are explicitly allowlisted.
+
+## Implemented Tools
+
+- `steam_health_check`
+- `steam_api_refresh_catalog`
+- `steam_api_list_interfaces`
+- `steam_api_list_methods`
+- `steam_api_get_method_schema`
+- `steam_api_call_readonly`
+- `steam_search_apps`
+- `steam_get_app_details`
+- `steam_get_user_wishlist`
+
+`steam_get_user_wishlist` is limited to public wishlist JSON exposed by Steam Store endpoints. It does not read Steam cookies, passwords, or private wishlists.
 
 ## Planned Runtime
 
