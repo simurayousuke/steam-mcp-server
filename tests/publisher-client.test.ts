@@ -95,6 +95,111 @@ describe('SteamPublisherClient', () => {
     ]);
   });
 
+  it('calls publisher app endpoints with expected parameters', async () => {
+    const requestedPaths: string[] = [];
+    const requestedParams: Record<string, string | null>[] = [];
+    const client = new SteamPublisherClient({
+      publisherKey: 'publisher-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedPaths.push(url.pathname);
+          requestedParams.push({
+            appid: url.searchParams.get('appid'),
+            count: url.searchParams.get('count'),
+            filter: url.searchParams.get('filter'),
+            key: url.searchParams.get('key'),
+            limit: url.searchParams.get('limit'),
+            type_filter: url.searchParams.get('type_filter'),
+          });
+          return {
+            response: {},
+          };
+        },
+      },
+    });
+
+    await client.getAppBetas({
+      appid: 620,
+    });
+    await client.getAppBuilds({
+      appid: 620,
+      count: 20,
+    });
+    await client.getAppDepotVersions({
+      appid: 620,
+    });
+    await client.getPartnerAppList({
+      typeFilter: ['game', 'dlc'],
+    });
+    await client.getPlayersBanned({
+      appid: 620,
+    });
+    await client.getServerList({
+      filter: '\\appid\\620',
+      limit: 50,
+    });
+
+    expect(requestedPaths).toEqual([
+      '/ISteamApps/GetAppBetas/v1/',
+      '/ISteamApps/GetAppBuilds/v1/',
+      '/ISteamApps/GetAppDepotVersions/v1/',
+      '/ISteamApps/GetPartnerAppListForWebAPIKey/v2/',
+      '/ISteamApps/GetPlayersBanned/v1/',
+      '/ISteamApps/GetServerList/v1/',
+    ]);
+    expect(requestedParams).toEqual([
+      {
+        appid: '620',
+        count: null,
+        filter: null,
+        key: 'publisher-key',
+        limit: null,
+        type_filter: null,
+      },
+      {
+        appid: '620',
+        count: '20',
+        filter: null,
+        key: 'publisher-key',
+        limit: null,
+        type_filter: null,
+      },
+      {
+        appid: '620',
+        count: null,
+        filter: null,
+        key: 'publisher-key',
+        limit: null,
+        type_filter: null,
+      },
+      {
+        appid: null,
+        count: null,
+        filter: null,
+        key: 'publisher-key',
+        limit: null,
+        type_filter: 'game,dlc',
+      },
+      {
+        appid: '620',
+        count: null,
+        filter: null,
+        key: 'publisher-key',
+        limit: null,
+        type_filter: null,
+      },
+      {
+        appid: null,
+        count: null,
+        filter: '\\appid\\620',
+        key: 'publisher-key',
+        limit: '50',
+        type_filter: null,
+      },
+    ]);
+  });
+
   it('authenticates Steam user tickets with publisher credentials', async () => {
     let requestedUrl: URL | undefined;
     const client = new SteamPublisherClient({

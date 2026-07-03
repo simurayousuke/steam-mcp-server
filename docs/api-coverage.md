@@ -15,7 +15,8 @@ Implemented high-level tools cover:
 - Steam OpenID identity verification
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
-- Publisher-only user ticket authentication, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
+- Public app version checks through `ISteamApps/UpToDateCheck`
+- Publisher-only user ticket authentication, app beta/build/depot/server metadata, partner app lists, banned-player records, ownership, price, user group list, and deleted-SteamID read endpoints when `STEAM_PUBLISHER_KEY` is configured
 - Store search, app details, reviews, package details, and public wishlist JSON
 - Player profile summaries, owned games, recently played games, single-game playtime, Steam level, badges, community badge progress, friend lists, ban status, achievements, game stats, and app stats schema
 - Public Steam Community inventory

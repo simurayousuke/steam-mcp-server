@@ -70,6 +70,11 @@ export type GetServersAtAddressRequest = {
   address: string;
 };
 
+export type UpToDateCheckRequest = {
+  appid: number;
+  version: number;
+};
+
 export type GetGlobalStatsForGameRequest = {
   appid: number;
   statNames: string[];
@@ -187,6 +192,28 @@ export class SteamWebApiClient {
 
     return {
       address: request.address,
+      response: parsed.data.response,
+    };
+  }
+
+  async checkAppUpToDate(request: UpToDateCheckRequest): Promise<Record<string, unknown>> {
+    const url = new URL('https://api.steampowered.com/ISteamApps/UpToDateCheck/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('appid', String(request.appid));
+    url.searchParams.set('version', String(request.version));
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam app version response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      query: {
+        appid: request.appid,
+        version: request.version,
+      },
       response: parsed.data.response,
     };
   }

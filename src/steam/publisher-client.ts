@@ -17,6 +17,23 @@ export type PublisherSteamIdRequest = {
   steamId: string;
 };
 
+export type PublisherAppRequest = {
+  appid: number;
+};
+
+export type PublisherAppBuildsRequest = PublisherAppRequest & {
+  count?: number;
+};
+
+export type PartnerAppListRequest = {
+  typeFilter?: string[];
+};
+
+export type PublisherServerListRequest = {
+  filter?: string;
+  limit?: number;
+};
+
 export type AppPriceInfoRequest = PublisherSteamIdRequest & {
   appids: number[];
 };
@@ -67,6 +84,44 @@ export class SteamPublisherClient {
   async getUserGroupList(request: PublisherSteamIdRequest): Promise<Record<string, unknown>> {
     return this.call('ISteamUser', 'GetUserGroupList', 1, {
       steamid: request.steamId,
+    });
+  }
+
+  async getAppBetas(request: PublisherAppRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamApps', 'GetAppBetas', 1, {
+      appid: request.appid,
+    });
+  }
+
+  async getAppBuilds(request: PublisherAppBuildsRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamApps', 'GetAppBuilds', 1, {
+      appid: request.appid,
+      count: request.count,
+    });
+  }
+
+  async getAppDepotVersions(request: PublisherAppRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamApps', 'GetAppDepotVersions', 1, {
+      appid: request.appid,
+    });
+  }
+
+  async getPartnerAppList(request: PartnerAppListRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamApps', 'GetPartnerAppListForWebAPIKey', 2, {
+      type_filter: request.typeFilter?.join(','),
+    });
+  }
+
+  async getPlayersBanned(request: PublisherAppRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamApps', 'GetPlayersBanned', 1, {
+      appid: request.appid,
+    });
+  }
+
+  async getServerList(request: PublisherServerListRequest): Promise<Record<string, unknown>> {
+    return this.call('ISteamApps', 'GetServerList', 1, {
+      filter: request.filter,
+      limit: request.limit,
     });
   }
 

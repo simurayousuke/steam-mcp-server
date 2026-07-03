@@ -117,6 +117,32 @@ export function registerWebApiTools(
   );
 
   server.registerTool(
+    'steam_check_app_up_to_date',
+    {
+      title: 'Check Steam app version',
+      description: 'Check whether a specific installed app build version is up to date.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        version: z.number().int().nonnegative(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.checkAppUpToDate(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_global_stats_for_game',
     {
       title: 'Get Steam global stats for game',

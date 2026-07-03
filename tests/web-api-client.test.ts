@@ -124,6 +124,33 @@ describe('SteamWebApiClient', () => {
     expect(requestedUrl?.searchParams.get('addr')).toBe('127.0.0.1');
   });
 
+  it('checks whether an app version is up to date', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(async (url) => {
+      requestedUrl = url;
+      return {
+        response: {
+          success: true,
+          up_to_date: true,
+        },
+      };
+    });
+
+    await expect(client.checkAppUpToDate({ appid: 620, version: 123 })).resolves.toMatchObject({
+      query: {
+        appid: 620,
+        version: 123,
+      },
+      response: {
+        success: true,
+        up_to_date: true,
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/ISteamApps/UpToDateCheck/v1/');
+    expect(requestedUrl?.searchParams.get('appid')).toBe('620');
+    expect(requestedUrl?.searchParams.get('version')).toBe('123');
+  });
+
   it('fetches named global stats for a game', async () => {
     let requestedUrl: URL | undefined;
     const client = createWebApiClient(async (url) => {

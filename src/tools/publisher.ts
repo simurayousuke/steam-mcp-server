@@ -6,6 +6,8 @@ import { SteamMcpError } from '../common/errors.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import type { SteamPublisherClient } from '../steam/publisher-client.js';
 
+const appTypeFilterSchema = z.enum(['game', 'application', 'tool', 'demo', 'dlc', 'music']);
+
 export function registerPublisherTools(
   server: McpServer,
   publisherClient: SteamPublisherClient,
@@ -34,6 +36,172 @@ export function registerPublisherTools(
             appid: args.appid,
             ticket: args.ticket,
             identity: args.identity,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_app_betas',
+    {
+      title: 'Get Steam app betas',
+      description: 'Get beta branch metadata for one app using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getAppBetas({
+            appid: args.appid,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_app_builds',
+    {
+      title: 'Get Steam app builds',
+      description: 'Get build history for one app using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        count: z.number().int().positive().max(1000).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getAppBuilds({
+            appid: args.appid,
+            count: args.count,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_app_depot_versions',
+    {
+      title: 'Get Steam app depot versions',
+      description: 'Get depot versions for one app using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getAppDepotVersions({
+            appid: args.appid,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_partner_app_list',
+    {
+      title: 'Get Steam partner app list',
+      description: 'Get appids associated with the configured publisher Web API key.',
+      inputSchema: {
+        typeFilter: z.array(appTypeFilterSchema).min(1).max(6).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getPartnerAppList({
+            typeFilter: args.typeFilter,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_players_banned',
+    {
+      title: 'Get Steam players banned',
+      description: 'Get banned player records for one app using a publisher Web API key.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getPlayersBanned({
+            appid: args.appid,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_server_list',
+    {
+      title: 'Get Steam server list',
+      description: 'Get Steam server records using a publisher Web API key.',
+      inputSchema: {
+        filter: z.string().min(1).max(1000).optional(),
+        limit: z.number().int().positive().max(10000).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await publisherClient.getServerList({
+            filter: args.filter,
+            limit: args.limit,
           }),
         });
       } catch (error: unknown) {
