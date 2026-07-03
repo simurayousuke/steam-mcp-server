@@ -1,6 +1,7 @@
 import { SteamMcpError } from './errors.js';
 
 export type HttpJsonClientOptions = {
+  rateLimitRps?: number;
   timeoutMs: number;
   userAgent: string;
 };
@@ -11,6 +12,9 @@ export type JsonRequestOptions = {
 };
 
 export class HttpJsonClient {
+  private nextRequestAt = 0;
+  private rateLimitQueue = Promise.resolve();
+
   constructor(private readonly options: HttpJsonClientOptions) {}
 
   async getJson<T>(url: URL, options: JsonRequestOptions = {}): Promise<T> {
@@ -65,6 +69,7 @@ export class HttpJsonClient {
       signal?: AbortSignal;
     },
   ): Promise<Response> {
+    await this.waitForRateLimit();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.options.timeoutMs);
     const signal = mergeAbortSignals(controller.signal, options.signal);
@@ -120,6 +125,28 @@ export class HttpJsonClient {
       clearTimeout(timeout);
     }
   }
+
+  private async waitForRateLimit(): Promise<void> {
+    const rateLimitRps = this.options.rateLimitRps;
+
+    if (rateLimitRps === undefined || rateLimitRps <= 0) {
+      return;
+    }
+
+    const minIntervalMs = 1000 / rateLimitRps;
+    const wait = this.rateLimitQueue.then(async () => {
+      const waitMs = Math.max(0, this.nextRequestAt - Date.now());
+
+      if (waitMs > 0) {
+        await sleep(waitMs);
+      }
+
+      this.nextRequestAt = Date.now() + minIntervalMs;
+    });
+
+    this.rateLimitQueue = wait.catch(() => undefined);
+    await wait;
+  }
 }
 
 function mapHttpStatusToErrorCode(status: number): SteamMcpError['code'] {
@@ -170,4 +197,10 @@ export function redactUrl(url: URL): string {
   }
 
   return redacted.toString();
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

@@ -37,6 +37,7 @@ export function createSteamMcpServer(): McpServer {
   const credentialManager = new SteamCredentialManager(config.STEAM_WEB_API_KEY);
   const server = new McpServer(metadata);
   const http = new HttpJsonClient({
+    rateLimitRps: config.STEAM_RATE_LIMIT_RPS,
     timeoutMs: config.STEAM_REQUEST_TIMEOUT_MS,
     userAgent: config.userAgent,
   });
