@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { pathToFileURL } from 'node:url';
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';

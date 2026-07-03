@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Read-only MCP server for Steam public data and Steam Web API data.",
+  "bin": {
+    "steam-mcp-server": "./dist/index.js"
+  },
   "engines": {
     "node": ">=20"
   },
