@@ -22,7 +22,7 @@ Implemented high-level tools cover:
 - Store app list pagination through `IStoreService/GetAppList`
 - Trade history, trade offers, individual trade offer, and trade offer summary reads through `IEconService`; cache flush and mutation endpoints are not exposed as high-level tools
 - Market eligibility, listing asset ID, and popular market item reads through `IEconMarketService`; listing cancellation is not exposed as a high-level tool
-- Public Steam Economy asset class and asset price read endpoints
+- Public Steam Economy asset class and asset price read endpoints, plus publisher-only `CanTrade`, exported-assets, and market-price reads through `ISteamEconomy`
 - Game server account public info and server IP/SteamID lookup through `IGameServersService`; token-bearing account-list and login-token endpoints are not exposed as high-level tools
 - Game notification session enumeration and session detail reads through `IGameNotificationsService`; create, update, request, and delete notification methods are not exposed as high-level tools
 - Game Inventory history command details, user history, and asset history reads through `IGameInventory`; history command execution and item definition updates are not exposed as high-level tools
@@ -44,6 +44,7 @@ Implemented high-level tools cover:
 - Private wishlists are not read through cookies or passwords.
 - Steam trade tools are read-only and require the user's Web API key; trade mutations are not exposed.
 - Steam Market partner tools are read-only and require `STEAM_PUBLISHER_KEY`; listing cancellation is not exposed.
+- Steam Economy publisher tools are read-only and require `STEAM_PUBLISHER_KEY`; asset transactions and trade initiation are not exposed.
 - Partner financial tools require a dedicated `STEAM_FINANCIAL_KEY`; they do not reuse `STEAM_PUBLISHER_KEY`, and the key is never returned in tool output.
 - Publisher-only, financial, transaction, inventory mutation, and other write-capable APIs are not callable by default.
 - Game server account-list and login-token APIs are intentionally excluded from high-level tools because they expose or operate on server login credentials.
@@ -52,6 +53,7 @@ Implemented high-level tools cover:
 - Inventory Service add, consume, exchange, consolidate, and modify methods are intentionally excluded from high-level tools because they change user inventory state.
 - Lobby creation and member-removal APIs are intentionally excluded from high-level tools because they mutate lobby state.
 - Microtransaction initialization, finalization, refund, agreement adjustment, agreement cancellation, and agreement processing APIs are intentionally excluded from high-level tools because they create charges, capture payments, refund money, or mutate billing state.
+- Steam Economy asset transaction and trade initiation APIs are intentionally excluded from high-level tools because they start purchases or initiate trade flows.
 - Cheat reporting write APIs are intentionally excluded from high-level tools because they submit cheating reports, request or remove bans, or mutate secure multiplayer session state.
 - Broadcast metadata posting and Steam Community abuse-report APIs are intentionally excluded from high-level tools because they write user-visible or moderation state.
 - Workshop payment-rule and item-description APIs are intentionally excluded from high-level tools because they mutate monetization or item metadata.

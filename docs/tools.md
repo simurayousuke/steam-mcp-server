@@ -53,6 +53,9 @@
 
 - `steam_get_asset_class_info`
 - `steam_get_asset_prices`
+- `steam_economy_can_trade`
+- `steam_get_exported_assets_for_user`
+- `steam_get_market_prices`
 
 ## Game Servers
 

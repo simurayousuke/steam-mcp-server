@@ -6,6 +6,7 @@ function createEconomyClient(
   getJson: (url: URL) => Promise<unknown>,
   options: {
     webApiKey?: string | (() => string | undefined);
+    publisherKey?: string | (() => string | undefined);
   } = {},
 ): SteamEconomyClient {
   return new SteamEconomyClient({
@@ -13,6 +14,7 @@ function createEconomyClient(
       getJson,
     },
     webApiKey: options.webApiKey,
+    publisherKey: options.publisherKey,
     cacheTtlMs: 60_000,
   });
 }
@@ -137,6 +139,89 @@ describe('SteamEconomyClient', () => {
       }),
     ).rejects.toMatchObject({
       code: 'authentication_required',
+    });
+    expect(requestCount).toBe(0);
+  });
+
+  it('calls publisher Economy read endpoints with a publisher key', async () => {
+    const requestedPaths: string[] = [];
+    const requestedParams: Record<string, string | null>[] = [];
+    const client = createEconomyClient(
+      async (url) => {
+        requestedPaths.push(url.pathname);
+        requestedParams.push({
+          appid: url.searchParams.get('appid'),
+          contextid: url.searchParams.get('contextid'),
+          key: url.searchParams.get('key'),
+          steamid: url.searchParams.get('steamid'),
+          targetid: url.searchParams.get('targetid'),
+        });
+        return {
+          response: {},
+        };
+      },
+      {
+        publisherKey: 'publisher-key',
+      },
+    );
+
+    await client.canTrade({
+      appid: 440,
+      steamId: '76561197960434622',
+      targetId: '76561197960265728',
+    });
+    await client.getExportedAssetsForUser({
+      appid: 440,
+      steamId: '76561197960434622',
+      contextId: '2',
+    });
+    await client.getMarketPrices({
+      appid: 440,
+    });
+
+    expect(requestedPaths).toEqual([
+      '/ISteamEconomy/CanTrade/v1/',
+      '/ISteamEconomy/GetExportedAssetsForUser/v1/',
+      '/ISteamEconomy/GetMarketPrices/v1/',
+    ]);
+    expect(requestedParams).toEqual([
+      {
+        appid: '440',
+        contextid: null,
+        key: 'publisher-key',
+        steamid: '76561197960434622',
+        targetid: '76561197960265728',
+      },
+      {
+        appid: '440',
+        contextid: '2',
+        key: 'publisher-key',
+        steamid: '76561197960434622',
+        targetid: null,
+      },
+      {
+        appid: '440',
+        contextid: null,
+        key: 'publisher-key',
+        steamid: null,
+        targetid: null,
+      },
+    ]);
+  });
+
+  it('requires a publisher key before making publisher Economy requests', async () => {
+    let requestCount = 0;
+    const client = createEconomyClient(async () => {
+      requestCount += 1;
+      return {};
+    });
+
+    await expect(
+      client.getMarketPrices({
+        appid: 440,
+      }),
+    ).rejects.toMatchObject({
+      code: 'authorization_required',
     });
     expect(requestCount).toBe(0);
   });

@@ -82,6 +82,7 @@ Use `steam_oauth_set_access_token` only when you already obtained a Steam OAuth 
 - `steam_get_market_eligibility`, `steam_get_market_asset_id`, and `steam_get_market_popular` require `STEAM_PUBLISHER_KEY`; market listing cancellation is not exposed.
 - `steam_get_store_app_list` requires a Web API key and uses the current `IStoreService/GetAppList` endpoint instead of the deprecated `ISteamApps/GetAppList`.
 - `steam_get_asset_class_info` and `steam_get_asset_prices` require a Web API key and expose read-only Steam Economy metadata and price data; transaction/trade endpoints are not exposed.
+- `steam_economy_can_trade`, `steam_get_exported_assets_for_user`, and `steam_get_market_prices` require `STEAM_PUBLISHER_KEY`; Economy asset transaction and trade initiation endpoints are not exposed.
 - `steam_get_game_server_account_public_info`, `steam_get_server_steam_ids_by_ip`, and `steam_get_server_ips_by_steam_id` require a Web API key; game server account-list and login-token endpoints are not exposed because they can reveal or operate on server login credentials.
 - `steam_get_game_notification_sessions` and `steam_get_game_notification_session_details` require `STEAM_PUBLISHER_KEY`; game notification create, update, request, and delete APIs are not exposed because they change user-visible notification state.
 - `steam_get_game_inventory_history_command_details`, `steam_get_game_inventory_user_history`, and `steam_get_game_inventory_asset_history` require `STEAM_PUBLISHER_KEY`; history command execution and item definition updates are not exposed.

@@ -5,6 +5,7 @@ import type { HttpJsonClient } from '../common/http.js';
 export type SteamEconomyClientOptions = {
   http: Pick<HttpJsonClient, 'getJson'>;
   webApiKey?: string | (() => string | undefined);
+  publisherKey?: string | (() => string | undefined);
   cacheTtlMs: number;
 };
 
@@ -23,6 +24,22 @@ export type AssetPricesRequest = {
   appid: number;
   currency?: string;
   language?: string;
+};
+
+export type CanTradeRequest = {
+  appid: number;
+  steamId: string;
+  targetId: string;
+};
+
+export type ExportedAssetsForUserRequest = {
+  steamId: string;
+  appid: number;
+  contextId: string;
+};
+
+export type MarketPricesRequest = {
+  appid: number;
 };
 
 export class SteamEconomyClient {
@@ -85,6 +102,66 @@ export class SteamEconomyClient {
     };
   }
 
+  async canTrade(request: CanTradeRequest): Promise<Record<string, unknown>> {
+    const response = await this.callPublisher('CanTrade', {
+      appid: request.appid,
+      steamid: request.steamId,
+      targetid: request.targetId,
+    });
+
+    return {
+      query: request,
+      response,
+    };
+  }
+
+  async getExportedAssetsForUser(request: ExportedAssetsForUserRequest): Promise<Record<string, unknown>> {
+    const response = await this.callPublisher('GetExportedAssetsForUser', {
+      steamid: request.steamId,
+      appid: request.appid,
+      contextid: request.contextId,
+    });
+
+    return {
+      query: request,
+      response,
+    };
+  }
+
+  async getMarketPrices(request: MarketPricesRequest): Promise<Record<string, unknown>> {
+    const response = await this.callPublisher('GetMarketPrices', {
+      appid: request.appid,
+    });
+
+    return {
+      query: request,
+      response,
+    };
+  }
+
+  private async callPublisher(
+    methodName: string,
+    params: Record<string, string | number | undefined>,
+  ): Promise<unknown> {
+    const publisherKey = resolvePublisherKey(this.options.publisherKey);
+
+    if (!publisherKey) {
+      throw missingPublisherKey();
+    }
+
+    const url = new URL(`https://partner.steam-api.com/ISteamEconomy/${methodName}/v1/`);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('key', publisherKey);
+
+    for (const [name, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        url.searchParams.set(name, String(value));
+      }
+    }
+
+    return this.getCachedJson(url);
+  }
+
   private async getCachedJson(url: URL): Promise<unknown> {
     const cacheKey = url.toString();
     const cached = this.cache.get(cacheKey);
@@ -125,9 +202,20 @@ function resolveWebApiKey(webApiKey: string | (() => string | undefined) | undef
   return typeof webApiKey === 'function' ? webApiKey() : webApiKey;
 }
 
+function resolvePublisherKey(publisherKey: string | (() => string | undefined) | undefined): string | undefined {
+  return typeof publisherKey === 'function' ? publisherKey() : publisherKey;
+}
+
 function missingWebApiKey(): SteamMcpError {
   return new SteamMcpError({
     code: 'authentication_required',
     message: 'This Steam Economy Web API method requires STEAM_WEB_API_KEY.',
+  });
+}
+
+function missingPublisherKey(): SteamMcpError {
+  return new SteamMcpError({
+    code: 'authorization_required',
+    message: 'This Steam Economy publisher method requires STEAM_PUBLISHER_KEY.',
   });
 }

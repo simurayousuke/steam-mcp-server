@@ -63,6 +63,9 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_market_popular`
 - `steam_get_asset_class_info`
 - `steam_get_asset_prices`
+- `steam_economy_can_trade`
+- `steam_get_exported_assets_for_user`
+- `steam_get_market_prices`
 - `steam_get_game_server_account_public_info`
 - `steam_get_server_steam_ids_by_ip`
 - `steam_get_server_ips_by_steam_id`

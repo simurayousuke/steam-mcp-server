@@ -129,6 +129,7 @@ export function createSteamMcpServer(): McpServer {
   const economyClient = new SteamEconomyClient({
     http,
     webApiKey: () => credentialManager.getWebApiKey(),
+    publisherKey: () => credentialManager.getPublisherKey(),
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
   const econServiceClient = new SteamEconServiceClient({
@@ -195,7 +196,7 @@ export function createSteamMcpServer(): McpServer {
   registerCommunityTools(server, communityClient, authManager);
   registerEconMarketTools(server, econMarketClient, authManager);
   registerEconServiceTools(server, econServiceClient);
-  registerEconomyTools(server, economyClient);
+  registerEconomyTools(server, economyClient, authManager);
   registerGameInventoryTools(server, gameInventoryClient, authManager);
   registerGameNotificationsTools(server, gameNotificationsClient, authManager);
   registerGameServersTools(server, gameServersClient);
