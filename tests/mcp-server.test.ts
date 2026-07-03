@@ -21,6 +21,7 @@ describe('Steam MCP server', () => {
         expect.arrayContaining([
           'steam_health_check',
           'steam_auth_start',
+          'steam_api_get_coverage_summary',
           'steam_api_list_interfaces',
           'steam_api_call_readonly',
           'steam_search_apps',

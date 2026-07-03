@@ -13,6 +13,7 @@ The default policy is read-only. Official Steam Web API methods will be discover
 - `steam_auth_status`
 - `steam_auth_complete`
 - `steam_auth_logout`
+- `steam_api_get_coverage_summary`
 - `steam_api_refresh_catalog`
 - `steam_api_list_interfaces`
 - `steam_api_list_methods`
