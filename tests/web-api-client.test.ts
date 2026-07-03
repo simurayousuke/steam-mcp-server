@@ -94,4 +94,93 @@ describe('SteamWebApiClient', () => {
       ],
     });
   });
+
+  it('fetches servers at address', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(async (url) => {
+      requestedUrl = url;
+      return {
+        response: {
+          success: true,
+          servers: [],
+        },
+      };
+    });
+
+    await expect(client.getServersAtAddress({ address: '127.0.0.1' })).resolves.toMatchObject({
+      address: '127.0.0.1',
+      response: {
+        success: true,
+        servers: [],
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/ISteamApps/GetServersAtAddress/v1/');
+    expect(requestedUrl?.searchParams.get('addr')).toBe('127.0.0.1');
+  });
+
+  it('fetches named global stats for a game', async () => {
+    let requestedUrl: URL | undefined;
+    const client = createWebApiClient(async (url) => {
+      requestedUrl = url;
+      return {
+        response: {
+          result: 1,
+          globalstats: {
+            StatA: {
+              total: '10',
+            },
+          },
+        },
+      };
+    });
+
+    await expect(
+      client.getGlobalStatsForGame({
+        appid: 620,
+        statNames: ['StatA'],
+      }),
+    ).resolves.toMatchObject({
+      query: {
+        appid: 620,
+        statNames: ['StatA'],
+      },
+      response: {
+        result: 1,
+      },
+    });
+    expect(requestedUrl?.pathname).toBe('/ISteamUserStats/GetGlobalStatsForGame/v1/');
+    expect(requestedUrl?.searchParams.get('count')).toBe('1');
+    expect(requestedUrl?.searchParams.get('name[0]')).toBe('StatA');
+  });
+
+  it('fetches games followed and followed game count', async () => {
+    const client = createWebApiClient(async (url) => {
+      if (url.pathname.includes('GetGamesFollowedCount')) {
+        return {
+          response: {
+            followed_game_count: 2,
+          },
+        };
+      }
+
+      return {
+        response: {
+          appids: [10, 20],
+        },
+      };
+    });
+
+    await expect(client.getGamesFollowed({ steamId: '76561197960434622' })).resolves.toMatchObject({
+      steamId: '76561197960434622',
+      response: {
+        appids: [10, 20],
+      },
+    });
+    await expect(client.getGamesFollowedCount({ steamId: '76561197960434622' })).resolves.toMatchObject({
+      steamId: '76561197960434622',
+      response: {
+        followed_game_count: 2,
+      },
+    });
+  });
 });

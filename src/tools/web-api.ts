@@ -1,10 +1,16 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
+import type { SteamOpenIdAuthManager } from '../auth/session.js';
+import { SteamMcpError } from '../common/errors.js';
 import { toolFailure, toolSuccess } from '../common/tool-result.js';
 import type { SteamWebApiClient } from '../steam/web-api-client.js';
 
-export function registerWebApiTools(server: McpServer, webApiClient: SteamWebApiClient): void {
+export function registerWebApiTools(
+  server: McpServer,
+  webApiClient: SteamWebApiClient,
+  authManager: SteamOpenIdAuthManager,
+): void {
   server.registerTool(
     'steam_get_news_for_app',
     {
@@ -84,4 +90,128 @@ export function registerWebApiTools(server: McpServer, webApiClient: SteamWebApi
       }
     },
   );
+
+  server.registerTool(
+    'steam_get_servers_at_address',
+    {
+      title: 'Get Steam servers at address',
+      description: 'Query official Steam Web API server records for an IP or IP:queryport address.',
+      inputSchema: {
+        address: z.string().min(1),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getServersAtAddress(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_global_stats_for_game',
+    {
+      title: 'Get Steam global stats for game',
+      description: 'Fetch global Steam stats for named stats on one app.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        statNames: z.array(z.string().min(1)).min(1).max(100),
+        startDate: z.number().int().positive().optional(),
+        endDate: z.number().int().positive().optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getGlobalStatsForGame(args),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_games_followed',
+    {
+      title: 'Get followed Steam games',
+      description: 'Fetch games followed by a Steam user. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getGamesFollowed({
+            steamId: resolveSteamId(args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_games_followed_count',
+    {
+      title: 'Get followed Steam game count',
+      description: 'Fetch followed game count for a Steam user. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await webApiClient.getGamesFollowedCount({
+            steamId: resolveSteamId(args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+}
+
+function resolveSteamId(explicitSteamId: string | undefined, authManager: SteamOpenIdAuthManager): string {
+  if (explicitSteamId) {
+    return explicitSteamId;
+  }
+
+  const [steamId] = authManager.getStatus().authenticatedSteamIds;
+
+  if (!steamId) {
+    throw new SteamMcpError({
+      code: 'authentication_required',
+      message: 'steamId is required when no Steam OpenID session is authenticated.',
+    });
+  }
+
+  return steamId;
 }

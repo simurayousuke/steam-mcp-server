@@ -86,7 +86,7 @@ export function createSteamMcpServer(): McpServer {
   registerCommunityTools(server, communityClient, authManager);
   registerPlayerTools(server, playerClient, authManager);
   registerStoreTools(server, storeClient, authManager);
-  registerWebApiTools(server, webApiClient);
+  registerWebApiTools(server, webApiClient, authManager);
   registerWorkshopTools(server, workshopClient);
 
   return server;

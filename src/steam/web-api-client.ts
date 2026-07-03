@@ -37,6 +37,12 @@ const achievementPercentagesResponseSchema = z
   })
   .passthrough();
 
+const genericResponseEnvelopeSchema = z
+  .object({
+    response: z.record(z.unknown()).default({}),
+  })
+  .passthrough();
+
 export type SteamWebApiClientOptions = {
   http: Pick<HttpJsonClient, 'getJson'>;
   cacheTtlMs: number;
@@ -57,6 +63,21 @@ export type GetCurrentPlayersRequest = {
 
 export type GetGlobalAchievementPercentagesRequest = {
   appid: number;
+};
+
+export type GetServersAtAddressRequest = {
+  address: string;
+};
+
+export type GetGlobalStatsForGameRequest = {
+  appid: number;
+  statNames: string[];
+  startDate?: number;
+  endDate?: number;
+};
+
+export type StoreSteamIdRequest = {
+  steamId: string;
 };
 
 export class SteamWebApiClient {
@@ -143,6 +164,96 @@ export class SteamWebApiClient {
       appid: request.appid,
       achievements: parsed.data.achievementpercentages.achievements,
       count: parsed.data.achievementpercentages.achievements.length,
+    };
+  }
+
+  async getServersAtAddress(request: GetServersAtAddressRequest): Promise<Record<string, unknown>> {
+    const url = new URL('https://api.steampowered.com/ISteamApps/GetServersAtAddress/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('addr', request.address);
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam server address response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      address: request.address,
+      response: parsed.data.response,
+    };
+  }
+
+  async getGlobalStatsForGame(request: GetGlobalStatsForGameRequest): Promise<Record<string, unknown>> {
+    const statNames = request.statNames.map((statName) => statName.trim()).filter((statName) => statName.length > 0);
+
+    if (statNames.length === 0) {
+      throw new SteamMcpError({
+        code: 'validation_error',
+        message: 'At least one stat name is required.',
+      });
+    }
+
+    const url = new URL('https://api.steampowered.com/ISteamUserStats/GetGlobalStatsForGame/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('appid', String(request.appid));
+    url.searchParams.set('count', String(statNames.length));
+    statNames.forEach((statName, index) => url.searchParams.set(`name[${index}]`, statName));
+    setOptionalParam(url, 'startdate', request.startDate);
+    setOptionalParam(url, 'enddate', request.endDate);
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam global stats response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      query: {
+        appid: request.appid,
+        statNames,
+        startDate: request.startDate,
+        endDate: request.endDate,
+      },
+      response: parsed.data.response,
+    };
+  }
+
+  async getGamesFollowed(request: StoreSteamIdRequest): Promise<Record<string, unknown>> {
+    const url = new URL('https://api.steampowered.com/IStoreService/GetGamesFollowed/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('steamid', request.steamId);
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam followed games response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      steamId: request.steamId,
+      response: parsed.data.response,
+    };
+  }
+
+  async getGamesFollowedCount(request: StoreSteamIdRequest): Promise<Record<string, unknown>> {
+    const url = new URL('https://api.steampowered.com/IStoreService/GetGamesFollowedCount/v1/');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('steamid', request.steamId);
+
+    const raw = await this.getCachedJson(url);
+    const parsed = genericResponseEnvelopeSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      throw invalidWebApiResponse('Steam followed game count response did not match the expected schema.', parsed.error);
+    }
+
+    return {
+      steamId: request.steamId,
+      response: parsed.data.response,
     };
   }
 
