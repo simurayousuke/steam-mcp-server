@@ -27,6 +27,10 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_get_player_summary`
 - `steam_get_owned_games`
 - `steam_get_recently_played_games`
+- `steam_get_single_game_playtime`
+- `steam_get_steam_level`
+- `steam_get_badges`
+- `steam_get_community_badge_progress`
 - `steam_get_friend_list`
 - `steam_get_player_bans`
 - `steam_get_user_group_list`

@@ -112,6 +112,72 @@ describe('SteamPlayerClient', () => {
     expect(requestedUrl?.searchParams.get('relationship')).toBe('friend');
   });
 
+  it('calls Steam player service profile endpoints', async () => {
+    const requestedPaths: string[] = [];
+    const requestedParams: Record<string, string | null>[] = [];
+    const client = new SteamPlayerClient({
+      webApiKey: 'configured-key',
+      cacheTtlMs: 60_000,
+      http: {
+        getJson: async (url) => {
+          requestedPaths.push(url.pathname);
+          requestedParams.push({
+            appid: url.searchParams.get('appid'),
+            badgeid: url.searchParams.get('badgeid'),
+            steamid: url.searchParams.get('steamid'),
+          });
+          return {
+            response: {},
+          };
+        },
+      },
+    });
+
+    await client.getSingleGamePlaytime({
+      steamId: '76561197960434622',
+      appid: 620,
+    });
+    await client.getSteamLevel({
+      steamId: '76561197960434622',
+    });
+    await client.getBadges({
+      steamId: '76561197960434622',
+    });
+    await client.getCommunityBadgeProgress({
+      steamId: '76561197960434622',
+      badgeid: 2,
+    });
+
+    expect(requestedPaths).toEqual([
+      '/IPlayerService/GetSingleGamePlaytime/v1/',
+      '/IPlayerService/GetSteamLevel/v1/',
+      '/IPlayerService/GetBadges/v1/',
+      '/IPlayerService/GetCommunityBadgeProgress/v1/',
+    ]);
+    expect(requestedParams).toEqual([
+      {
+        appid: '620',
+        badgeid: null,
+        steamid: '76561197960434622',
+      },
+      {
+        appid: null,
+        badgeid: null,
+        steamid: '76561197960434622',
+      },
+      {
+        appid: null,
+        badgeid: null,
+        steamid: '76561197960434622',
+      },
+      {
+        appid: null,
+        badgeid: '2',
+        steamid: '76561197960434622',
+      },
+    ]);
+  });
+
   it('calls Steam player bans with comma-separated SteamIDs', async () => {
     let requestedUrl: URL | undefined;
     const client = new SteamPlayerClient({

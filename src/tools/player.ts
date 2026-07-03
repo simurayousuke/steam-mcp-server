@@ -125,6 +125,118 @@ export function registerPlayerTools(
   );
 
   server.registerTool(
+    'steam_get_single_game_playtime',
+    {
+      title: 'Get Steam single game playtime',
+      description: 'Get playtime for one Steam app and player. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        appid: z.number().int().positive(),
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getSingleGamePlaytime({
+            steamId: resolveSteamId(args.steamId, authManager),
+            appid: args.appid,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_steam_level',
+    {
+      title: 'Get Steam level',
+      description: 'Get the Steam level for a player. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getSteamLevel({
+            steamId: resolveSteamId(args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_badges',
+    {
+      title: 'Get Steam badges',
+      description: 'Get badges owned by a Steam player. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getBadges({
+            steamId: resolveSteamId(args.steamId, authManager),
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'steam_get_community_badge_progress',
+    {
+      title: 'Get Steam community badge progress',
+      description: 'Get quest progress for a Steam community badge. If steamId is omitted, use the authenticated OpenID SteamID.',
+      inputSchema: {
+        badgeid: z.number().int().positive(),
+        steamId: z.string().min(1).optional(),
+      },
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async (args) => {
+      try {
+        return toolSuccess({
+          data: await playerClient.getCommunityBadgeProgress({
+            steamId: resolveSteamId(args.steamId, authManager),
+            badgeid: args.badgeid,
+          }),
+        });
+      } catch (error: unknown) {
+        return toolFailure(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'steam_get_friend_list',
     {
       title: 'Get Steam friend list',

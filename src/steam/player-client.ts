@@ -26,8 +26,16 @@ export type RecentlyPlayedGamesRequest = SteamIdRequest & {
   count?: number;
 };
 
+export type SingleGamePlaytimeRequest = SteamIdRequest & {
+  appid: number;
+};
+
 export type FriendListRequest = SteamIdRequest & {
   relationship?: string;
+};
+
+export type CommunityBadgeProgressRequest = SteamIdRequest & {
+  badgeid: number;
 };
 
 export type PlayerBansRequest = {
@@ -71,6 +79,32 @@ export class SteamPlayerClient {
     return this.call('IPlayerService', 'GetRecentlyPlayedGames', 1, {
       steamid: request.steamId,
       count: request.count,
+    });
+  }
+
+  async getSingleGamePlaytime(request: SingleGamePlaytimeRequest): Promise<Record<string, unknown>> {
+    return this.call('IPlayerService', 'GetSingleGamePlaytime', 1, {
+      steamid: request.steamId,
+      appid: request.appid,
+    });
+  }
+
+  async getSteamLevel(request: SteamIdRequest): Promise<Record<string, unknown>> {
+    return this.call('IPlayerService', 'GetSteamLevel', 1, {
+      steamid: request.steamId,
+    });
+  }
+
+  async getBadges(request: SteamIdRequest): Promise<Record<string, unknown>> {
+    return this.call('IPlayerService', 'GetBadges', 1, {
+      steamid: request.steamId,
+    });
+  }
+
+  async getCommunityBadgeProgress(request: CommunityBadgeProgressRequest): Promise<Record<string, unknown>> {
+    return this.call('IPlayerService', 'GetCommunityBadgeProgress', 1, {
+      steamid: request.steamId,
+      badgeid: request.badgeid,
     });
   }
 
