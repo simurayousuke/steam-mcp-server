@@ -6,6 +6,7 @@ import { SteamOpenIdAuthManager } from '../auth/session.js';
 import { HttpJsonClient } from '../common/http.js';
 import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
+import { registerSteamCatalogResources } from '../resources/catalog-resources.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
 import { SteamAppSpecificClient } from '../steam/app-specific-client.js';
 import { SteamCheatReportingClient } from '../steam/cheat-reporting-client.js';
@@ -243,6 +244,7 @@ export function createSteamMcpServer(): McpServer {
   registerWebApiTools(server, webApiClient, authManager);
   registerWishlistTools(server, wishlistClient, authManager);
   registerWorkshopTools(server, workshopClient);
+  registerSteamCatalogResources(server, catalogClient, apiAllowlist);
   registerSteamResources(server, {
     authManager,
     playerClient,

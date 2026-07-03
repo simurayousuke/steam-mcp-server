@@ -108,6 +108,10 @@ docs/             使用、覆盖、工具和开发文档
 steam://apps/{appid}
 steam://apps/{appid}/news
 steam://apps/{appid}/schema
+steam://api/coverage
+steam://api/interfaces
+steam://api/interfaces/{interfaceName}/methods
+steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}
 steam://players/{steamid}
 steam://players/{steamid}/owned-games
 steam://players/{steamid}/wishlist

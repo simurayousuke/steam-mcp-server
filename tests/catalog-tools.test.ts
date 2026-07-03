@@ -4,7 +4,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { describe, expect, it } from 'vitest';
 
 import type { SteamWebApiMethodSchema } from '../src/catalog/steam-web-api-catalog.js';
-import { buildCatalogCoverageSummary, registerCatalogTools } from '../src/tools/catalog.js';
+import { buildCatalogCoverageSummary } from '../src/catalog/coverage-summary.js';
+import { registerCatalogTools } from '../src/tools/catalog.js';
 
 const methodSchemas: SteamWebApiMethodSchema[] = [
   {

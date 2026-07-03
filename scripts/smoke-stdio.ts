@@ -93,13 +93,22 @@ async function main(): Promise<void> {
     );
     assertIncludes(
       resources.resources.map((resource) => resource.uri),
-      ['steam://me', 'steam://me/overview', 'steam://me/owned-games', 'steam://me/wishlist', 'steam://me/wishlist/count'],
+      [
+        'steam://api/coverage',
+        'steam://api/interfaces',
+        'steam://me',
+        'steam://me/overview',
+        'steam://me/owned-games',
+        'steam://me/wishlist',
+        'steam://me/wishlist/count',
+      ],
       'resources',
     );
     assertIncludes(
       resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate),
       [
         'steam://players/{steamid}/owned-games',
+        'steam://api/interfaces/{interfaceName}/methods',
         'steam://players/{steamid}/wishlist',
         'steam://profiles/{vanity}/wishlist',
         'steam://me/apps/{appid}/playtime',

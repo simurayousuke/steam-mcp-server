@@ -120,6 +120,10 @@ async function main(): Promise<void> {
       throw new Error('Missing steam://me/overview over HTTP.');
     }
 
+    if (!resources.resources.some((resource) => resource.uri === 'steam://api/coverage')) {
+      throw new Error('Missing steam://api/coverage over HTTP.');
+    }
+
     console.log(
       JSON.stringify(
         {

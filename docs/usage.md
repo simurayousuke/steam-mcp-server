@@ -150,6 +150,8 @@ Add optional authenticated-user sections when you need a richer snapshot:
 
 MCP clients that prefer resources can read the same authenticated profile through `steam://me`, for example `steam://me/overview`, `steam://me/owned-games`, `steam://me/wishlist`, `steam://me/recently-played`, `steam://me/bans`, `steam://me/apps/620/achievements`, and `steam://me/apps/620/stats`.
 
+Catalog-aware clients can read Steam Web API discovery data through `steam://api/coverage`, `steam://api/interfaces`, `steam://api/interfaces/ISteamNews/methods`, and `steam://api/interfaces/ISteamNews/methods/GetNewsForApp/versions/2`.
+
 ## Web API Key Flow
 
 Use `steam_auth_set_web_api_key` to store a key in memory for the running MCP server process:
@@ -211,6 +213,10 @@ The server exposes dynamic JSON resources:
 steam://apps/{appid}
 steam://apps/{appid}/news
 steam://apps/{appid}/schema
+steam://api/coverage
+steam://api/interfaces
+steam://api/interfaces/{interfaceName}/methods
+steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}
 steam://players/{steamid}
 steam://players/{steamid}/owned-games
 steam://players/{steamid}/wishlist
@@ -241,7 +247,7 @@ steam://me/badges/{badgeid}/progress
 steam://me/friends
 ```
 
-Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile.
+Player library resources and `steam://apps/{appid}/schema` use official Steam Web API methods that require a Web API key from `STEAM_WEB_API_KEY` or `steam_auth_set_web_api_key`. Wishlist resources only return data Steam exposes for the target profile. Catalog resources use `ISteamWebAPIUtil/GetSupportedAPIList` and include the same generic read-only access metadata as the catalog tools.
 
 After Steam OpenID authentication, `steam://me` resources resolve the authenticated SteamID automatically.
 

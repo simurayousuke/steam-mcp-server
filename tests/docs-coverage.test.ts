@@ -122,6 +122,8 @@ describe('official Steam Web API audit documentation', () => {
       'steam://me/owned-games',
       'steam://me/wishlist',
       'steam://me/recently-played',
+      'steam://api/coverage',
+      'steam://api/interfaces/{interfaceName}/methods',
     ];
 
     for (const entry of expectedUsageEntries) {
@@ -137,6 +139,8 @@ describe('official Steam Web API audit documentation', () => {
       'MCP Tools',
       'MCP Resources',
       'steam://me/overview',
+      'steam://api/coverage',
+      'steam://api/interfaces/{interfaceName}/methods',
       'npm run audit:steam-catalog',
     ];
 

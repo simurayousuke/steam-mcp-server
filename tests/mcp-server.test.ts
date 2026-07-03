@@ -144,6 +144,8 @@ describe('Steam MCP server', () => {
           'steam://apps/{appid}',
           'steam://apps/{appid}/news',
           'steam://apps/{appid}/schema',
+          'steam://api/interfaces/{interfaceName}/methods',
+          'steam://api/interfaces/{interfaceName}/methods/{methodName}/versions/{version}',
           'steam://players/{steamid}',
           'steam://players/{steamid}/owned-games',
           'steam://players/{steamid}/wishlist',
@@ -167,6 +169,8 @@ describe('Steam MCP server', () => {
       expect(resources.resources.map((resource) => resource.uri)).toEqual(
         expect.arrayContaining([
           'steam://me',
+          'steam://api/coverage',
+          'steam://api/interfaces',
           'steam://me/overview',
           'steam://me/owned-games',
           'steam://me/wishlist',
