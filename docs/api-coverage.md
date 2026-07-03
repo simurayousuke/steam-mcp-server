@@ -13,6 +13,7 @@ This server handles Steam API coverage through two layers.
 Implemented high-level tools cover:
 
 - Steam OpenID identity verification
+- Steam OAuth login URL generation, callback-fragment completion, in-memory OAuth access-token storage, and read-only Steam Cloud file enumeration with `read_cloud`
 - Steam Web API catalog discovery
 - Safe read-only Web API calls
 - Anonymous Steam Web API server info through `ISteamWebAPIUtil/GetServerInfo`
@@ -30,6 +31,7 @@ Implemented high-level tools cover:
 ## Known Boundaries
 
 - Steam OpenID proves SteamID ownership but does not grant broad private-data access.
+- Steam OAuth access tokens are only stored in memory and are never returned in tool output.
 - Private wishlists are not read through cookies or passwords.
 - Publisher-only, financial, transaction, inventory mutation, and other write-capable APIs are not callable by default.
 - Game server account-list and login-token APIs are intentionally excluded from high-level tools because they expose or operate on server login credentials.

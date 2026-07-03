@@ -17,12 +17,17 @@ The server also exposes MCP resources for app details, app news, app stats schem
 - `steam_auth_logout`
 - `steam_auth_set_web_api_key`
 - `steam_auth_clear_web_api_key`
+- `steam_oauth_start`
+- `steam_oauth_complete`
+- `steam_oauth_set_access_token`
+- `steam_oauth_clear_access_token`
 - `steam_api_get_coverage_summary`
 - `steam_api_refresh_catalog`
 - `steam_api_list_interfaces`
 - `steam_api_list_methods`
 - `steam_api_get_method_schema`
 - `steam_api_call_readonly`
+- `steam_cloud_enumerate_user_files`
 - `steam_resolve_vanity_url`
 - `steam_get_player_summary`
 - `steam_get_player_summaries`

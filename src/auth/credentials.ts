@@ -5,15 +5,20 @@ export type CredentialStatus = {
   hasEnvironmentWebApiKey: boolean;
   hasSessionWebApiKey: boolean;
   hasPublisherKey: boolean;
+  hasOAuthClientId: boolean;
+  hasOAuthAccessToken: boolean;
+  hasSessionOAuthAccessToken: boolean;
   webApiKeySource: WebApiKeySource;
 };
 
 export class SteamCredentialManager {
   private sessionWebApiKey: string | undefined;
+  private sessionOAuthAccessToken: string | undefined;
 
   constructor(
     private readonly environmentWebApiKey: string | undefined,
     private readonly environmentPublisherKey: string | undefined = undefined,
+    private readonly environmentOAuthClientId: string | undefined = undefined,
   ) {}
 
   getWebApiKey(): string | undefined {
@@ -24,8 +29,21 @@ export class SteamCredentialManager {
     return this.environmentPublisherKey;
   }
 
+  getOAuthClientId(): string | undefined {
+    return this.environmentOAuthClientId;
+  }
+
+  getOAuthAccessToken(): string | undefined {
+    return this.sessionOAuthAccessToken;
+  }
+
   setSessionWebApiKey(webApiKey: string): CredentialStatus {
     this.sessionWebApiKey = webApiKey.trim();
+    return this.getStatus();
+  }
+
+  setSessionOAuthAccessToken(accessToken: string): CredentialStatus {
+    this.sessionOAuthAccessToken = accessToken.trim();
     return this.getStatus();
   }
 
@@ -35,6 +53,16 @@ export class SteamCredentialManager {
 
     return {
       clearedSessionWebApiKey,
+      ...this.getStatus(),
+    };
+  }
+
+  clearSessionOAuthAccessToken(): { clearedSessionOAuthAccessToken: boolean } & CredentialStatus {
+    const clearedSessionOAuthAccessToken = this.sessionOAuthAccessToken !== undefined;
+    this.sessionOAuthAccessToken = undefined;
+
+    return {
+      clearedSessionOAuthAccessToken,
       ...this.getStatus(),
     };
   }
@@ -53,6 +81,9 @@ export class SteamCredentialManager {
       hasEnvironmentWebApiKey,
       hasSessionWebApiKey,
       hasPublisherKey: Boolean(this.environmentPublisherKey),
+      hasOAuthClientId: Boolean(this.environmentOAuthClientId),
+      hasOAuthAccessToken: Boolean(this.sessionOAuthAccessToken),
+      hasSessionOAuthAccessToken: Boolean(this.sessionOAuthAccessToken),
       webApiKeySource,
     };
   }

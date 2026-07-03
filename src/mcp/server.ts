@@ -7,6 +7,7 @@ import { HttpJsonClient } from '../common/http.js';
 import { loadApiAllowlist } from '../config/allowlist.js';
 import { loadConfig } from '../config/env.js';
 import { registerSteamResources } from '../resources/steam-resources.js';
+import { SteamCloudClient } from '../steam/cloud-client.js';
 import { SteamCommunityClient } from '../steam/community-client.js';
 import { SteamEconomyClient } from '../steam/economy-client.js';
 import { SteamGameServersClient } from '../steam/game-servers-client.js';
@@ -19,6 +20,7 @@ import { SteamWebApiReadonlyCaller } from '../steam/web-api-readonly-caller.js';
 import { SteamWorkshopClient } from '../steam/workshop-client.js';
 import { registerAuthTools } from '../tools/auth.js';
 import { registerCatalogTools } from '../tools/catalog.js';
+import { registerCloudTools } from '../tools/cloud.js';
 import { registerCommunityTools } from '../tools/community.js';
 import { registerEconomyTools } from '../tools/economy.js';
 import { registerGameServersTools } from '../tools/game-servers.js';
@@ -42,7 +44,11 @@ export function createSteamMcpServer(): McpServer {
   const metadata = getServerMetadata();
   const config = loadConfig();
   const apiAllowlist = loadApiAllowlist(config.STEAM_API_ALLOWLIST_FILE);
-  const credentialManager = new SteamCredentialManager(config.STEAM_WEB_API_KEY, config.STEAM_PUBLISHER_KEY);
+  const credentialManager = new SteamCredentialManager(
+    config.STEAM_WEB_API_KEY,
+    config.STEAM_PUBLISHER_KEY,
+    config.STEAM_OAUTH_CLIENT_ID,
+  );
   const server = new McpServer(metadata);
   const http = new HttpJsonClient({
     rateLimitRps: config.STEAM_RATE_LIMIT_RPS,
@@ -81,6 +87,11 @@ export function createSteamMcpServer(): McpServer {
     language: config.STEAM_DEFAULT_LANGUAGE,
     cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
   });
+  const cloudClient = new SteamCloudClient({
+    http,
+    oauthAccessToken: () => credentialManager.getOAuthAccessToken(),
+    cacheTtlMs: config.STEAM_CACHE_TTL_SECONDS * 1000,
+  });
   const workshopClient = new SteamWorkshopClient({
     http,
     webApiKey: () => credentialManager.getWebApiKey(),
@@ -115,6 +126,7 @@ export function createSteamMcpServer(): McpServer {
   registerHealthTool(server, metadata);
   registerAuthTools(server, authManager, credentialManager);
   registerCatalogTools(server, catalogClient, readonlyCaller, apiAllowlist);
+  registerCloudTools(server, cloudClient);
   registerCommunityTools(server, communityClient, authManager);
   registerEconomyTools(server, economyClient);
   registerGameServersTools(server, gameServersClient);

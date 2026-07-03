@@ -24,9 +24,14 @@ describe('Steam MCP server', () => {
           'steam_auth_start',
           'steam_auth_set_web_api_key',
           'steam_auth_clear_web_api_key',
+          'steam_oauth_start',
+          'steam_oauth_complete',
+          'steam_oauth_set_access_token',
+          'steam_oauth_clear_access_token',
           'steam_api_get_coverage_summary',
           'steam_api_list_interfaces',
           'steam_api_call_readonly',
+          'steam_cloud_enumerate_user_files',
           'steam_search_apps',
           'steam_get_app_reviews',
           'steam_get_store_package',
@@ -121,6 +126,7 @@ describe('Steam MCP server', () => {
         credentials: {
           hasWebApiKey: true,
           hasSessionWebApiKey: true,
+          hasOAuthAccessToken: false,
           webApiKeySource: 'session',
         },
       });
@@ -133,10 +139,25 @@ describe('Steam MCP server', () => {
       expect(authStatus.structuredContent).toMatchObject({
         credentials: {
           hasWebApiKey: true,
+          hasOAuthAccessToken: false,
           webApiKeySource: 'session',
         },
       });
       expect(JSON.stringify(authStatus.structuredContent)).not.toContain('fake-session-key');
+
+      const setOAuthResult = await client.callTool({
+        name: 'steam_oauth_set_access_token',
+        arguments: {
+          accessToken: 'fake-oauth-token',
+        },
+      });
+      expect(setOAuthResult.structuredContent).toMatchObject({
+        credentials: {
+          hasOAuthAccessToken: true,
+          hasSessionOAuthAccessToken: true,
+        },
+      });
+      expect(JSON.stringify(setOAuthResult.structuredContent)).not.toContain('fake-oauth-token');
 
       const wishlistWithoutIdentity = await client.callTool({
         name: 'steam_get_user_wishlist',

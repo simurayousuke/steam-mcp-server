@@ -12,6 +12,10 @@
 - `steam_auth_logout`
 - `steam_auth_set_web_api_key`
 - `steam_auth_clear_web_api_key`
+- `steam_oauth_start`
+- `steam_oauth_complete`
+- `steam_oauth_set_access_token`
+- `steam_oauth_clear_access_token`
 
 ## Steam Web API Catalog
 
@@ -24,6 +28,7 @@
 
 ## Official Web API High-Level Tools
 
+- `steam_cloud_enumerate_user_files`
 - `steam_get_news_for_app`
 - `steam_get_web_api_server_info`
 - `steam_get_number_of_current_players`

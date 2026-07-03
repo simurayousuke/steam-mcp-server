@@ -12,6 +12,9 @@ describe('SteamCredentialManager', () => {
       hasEnvironmentWebApiKey: true,
       hasSessionWebApiKey: false,
       hasPublisherKey: false,
+      hasOAuthClientId: false,
+      hasOAuthAccessToken: false,
+      hasSessionOAuthAccessToken: false,
       webApiKeySource: 'environment',
     });
   });
@@ -24,6 +27,7 @@ describe('SteamCredentialManager', () => {
       hasEnvironmentWebApiKey: true,
       hasSessionWebApiKey: true,
       hasPublisherKey: false,
+      hasOAuthAccessToken: false,
       webApiKeySource: 'session',
     });
     expect(manager.getWebApiKey()).toBe('session-secret');
@@ -32,6 +36,7 @@ describe('SteamCredentialManager', () => {
       clearedSessionWebApiKey: true,
       hasWebApiKey: true,
       hasPublisherKey: false,
+      hasOAuthAccessToken: false,
       webApiKeySource: 'environment',
     });
     expect(manager.getWebApiKey()).toBe('environment-secret');
@@ -46,7 +51,29 @@ describe('SteamCredentialManager', () => {
       hasEnvironmentWebApiKey: false,
       hasSessionWebApiKey: false,
       hasPublisherKey: true,
+      hasOAuthClientId: false,
+      hasOAuthAccessToken: false,
+      hasSessionOAuthAccessToken: false,
       webApiKeySource: 'none',
     });
+  });
+
+  it('stores OAuth access tokens in memory without exposing the token', () => {
+    const manager = new SteamCredentialManager(undefined, undefined, 'oauth-client-id');
+
+    expect(manager.getOAuthClientId()).toBe('oauth-client-id');
+    expect(manager.setSessionOAuthAccessToken(' oauth-token ')).toMatchObject({
+      hasOAuthClientId: true,
+      hasOAuthAccessToken: true,
+      hasSessionOAuthAccessToken: true,
+    });
+    expect(manager.getOAuthAccessToken()).toBe('oauth-token');
+
+    expect(manager.clearSessionOAuthAccessToken()).toMatchObject({
+      clearedSessionOAuthAccessToken: true,
+      hasOAuthAccessToken: false,
+      hasSessionOAuthAccessToken: false,
+    });
+    expect(manager.getOAuthAccessToken()).toBeUndefined();
   });
 });
